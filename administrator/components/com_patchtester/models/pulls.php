@@ -52,6 +52,9 @@ class PatchtesterModelPulls extends JModelList
 		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$searchId = $this->getUserStateFromRequest($this->context.'.filter.searchid', 'filter_searchid');
+		$this->setState('filter.searchid', $searchId);
+
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_patchtester');
 
@@ -102,6 +105,7 @@ class PatchtesterModelPulls extends JModelList
 		$this->ordering = $this->getState('list.ordering', 'title');
 		$this->orderDir = $this->getState('list.direction', 'asc');
 		$search = $this->getState('filter.search');
+		$searchId = $this->getState('filter.searchid');
 
 		$github = new JGithub();
 		$pulls = $github->pulls->getAll($this->getState('github_user'), $this->getState('github_repo'));
@@ -110,6 +114,10 @@ class PatchtesterModelPulls extends JModelList
 		foreach ($pulls AS $i => &$pull)
 		{
 			if($search && false === strpos($pull->title, $search)) {
+				unset($pulls[$i]);
+				continue;
+			}
+			if($searchId && $pull->number != $searchId) {
 				unset($pulls[$i]);
 				continue;
 			}
