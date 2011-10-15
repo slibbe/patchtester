@@ -27,12 +27,13 @@
 		<filename>patchtester.php</filename>
 	</files>
 	<administration>
-		<menu img="class:patchtester">com_patchtester</menu>
+		<menu img="components/com_patchtester/assets/images/icon-16-patchtester.png">com_patchtester</menu>
 		<files folder="admin">
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<filename>controller.php</filename>
 			<filename>patchtester.php</filename>
+			<folder>assets</folder>
 			<folder>controllers</folder>
 			<folder>models</folder>
 			<folder>sql</folder>
