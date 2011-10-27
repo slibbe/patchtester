@@ -118,6 +118,10 @@ class PatchtesterModelPulls extends JModelList
 					unset($pulls[$i]);
 					continue;
 				}
+				if($searchId && $pull->number != $searchId) {
+				unset($pulls[$i]);
+				continue;
+				}
 				$matches = array();
 				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
 				$pull->joomlacode_issue = isset($matches[1]) ? $matches[1] : 0;
@@ -128,16 +132,6 @@ class PatchtesterModelPulls extends JModelList
 			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 
 			return array();
-/*=======
-			if($searchId && $pull->number != $searchId) {
-				unset($pulls[$i]);
-				continue;
-			}
-			$matches = array();
-			preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
-			$pull->joomlacode_issue = isset($matches[1]) ? $matches[1] : 0;
->>>>>>> ordering
-*/
 		}
 	}
 
