@@ -119,8 +119,8 @@ class PatchtesterModelPulls extends JModelList
 					continue;
 				}
 				if($searchId && $pull->number != $searchId) {
-				unset($pulls[$i]);
-				continue;
+					unset($pulls[$i]);
+					continue;
 				}
 				$matches = array();
 				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
