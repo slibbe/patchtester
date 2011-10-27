@@ -25,10 +25,19 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 <form action="<?php echo JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
-			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" title="<?php echo JText::_('COM_BANNERS_SEARCH_IN_TITLE'); ?>" />
+			<strong><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></strong><br />
+			<label class="filter-search-lbl" for="filter_searchid"><?php echo JText::_('COM_PATCHTESTER_SEARCH_IN_PULL_ID'); ?></label>
+			<input type="text" name="filter_searchid" id="filter_searchid" size="5"
+			value="<?php echo $this->escape($this->state->get('filter.searchid')); ?>"
+			title="<?php echo JText::_('COM_PATCHTESTER_SEARCH_IN_PULL_ID'); ?>" />
+			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('COM_PATCHTESTER_SEARCH_IN_TITLE'); ?></label>
+			<input type="text" name="filter_search" id="filter_search"
+			value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
+			title="<?php echo JText::_('COM_PATCHTESTER_SEARCH_IN_TITLE'); ?>" />
 			<button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+			<button type="button" onclick="document.id('filter_search').value='';document.id('filter_searchid').value='';this.form.submit();">
+				<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>
+			</button>
 		</div>
 	</fieldset>
 	<div class="clr"> </div>

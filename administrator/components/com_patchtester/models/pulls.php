@@ -52,6 +52,9 @@ class PatchtesterModelPulls extends JModelList
 		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
+		$searchId = $this->getUserStateFromRequest($this->context.'.filter.searchid', 'filter_searchid');
+		$this->setState('filter.searchid', $searchId);
+
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_patchtester');
 
@@ -102,6 +105,7 @@ class PatchtesterModelPulls extends JModelList
 		$this->ordering = $this->getState('list.ordering', 'title');
 		$this->orderDir = $this->getState('list.direction', 'asc');
 		$search = $this->getState('filter.search');
+		$searchId = $this->getState('filter.searchid');
 
 		try {
 			$github = new JGithub();
@@ -124,6 +128,16 @@ class PatchtesterModelPulls extends JModelList
 			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 
 			return array();
+/*=======
+			if($searchId && $pull->number != $searchId) {
+				unset($pulls[$i]);
+				continue;
+			}
+			$matches = array();
+			preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
+			$pull->joomlacode_issue = isset($matches[1]) ? $matches[1] : 0;
+>>>>>>> ordering
+*/
 		}
 	}
 
