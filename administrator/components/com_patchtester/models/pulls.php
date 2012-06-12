@@ -1,8 +1,8 @@
 <?php
 /**
- * @package		PatchTester
- * @copyright	Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
- * @license		GNU General Public License version 2 or later; see LICENSE.txt
+ * @package        PatchTester
+ * @copyright      Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
+ * @license        GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 defined('_JEXEC') or die;
@@ -12,7 +12,7 @@ jimport('joomla.application.component.modellist');
 /**
  * Methods supporting a list of pull request.
  *
- * @package	    PatchTester
+ * @package        PatchTester
  */
 class PatchtesterModelPulls extends JModelList
 {
@@ -20,13 +20,15 @@ class PatchtesterModelPulls extends JModelList
 	/**
 	 * Constructor.
 	 *
-	 * @param	array	An optional associative array of configuration settings.
-	 * @see		JController
-	 * @since	1.6
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JController
+	 * @since   11.1
 	 */
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'id', 'id',
 				'title', 'title',
@@ -44,15 +46,15 @@ class PatchtesterModelPulls extends JModelList
 	 *
 	 * Note. Calling getState in this method will result in recursion.
 	 *
-	 * @since	1.6
+	 * @since    1.6
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the filter state.
-		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$searchId = $this->getUserStateFromRequest($this->context.'.filter.searchid', 'filter_searchid');
+		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid');
 		$this->setState('filter.searchid', $searchId);
 
 		// Load the parameters.
@@ -73,9 +75,10 @@ class PatchtesterModelPulls extends JModelList
 	 * different modules that might need different sets of data or different
 	 * ordering requirements.
 	 *
-	 * @param	string		$id	A prefix for the store id.
-	 * @return	string		A store id.
-	 * @since	1.6
+	 * @param    string        $id    A prefix for the store id.
+	 *
+	 * @return    string        A store id.
+	 * @since    1.6
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -86,7 +89,7 @@ class PatchtesterModelPulls extends JModelList
 	{
 		$query = $this->_db->getQuery(true);
 		$query->select('*');
-		$query->from('#__tests');
+		$query->from('#__patchtester_tests');
 		$query->where('applied = 1');
 
 		$this->_db->setQuery($query);
@@ -98,7 +101,8 @@ class PatchtesterModelPulls extends JModelList
 	{
 		jimport('joomla.client.github');
 
-		if ($this->getState('github_user') == '' || $this->getState('github_repo') == '') {
+		if ($this->getState('github_user') == '' || $this->getState('github_repo') == '')
+		{
 			return array();
 		}
 
@@ -107,28 +111,57 @@ class PatchtesterModelPulls extends JModelList
 		$search = $this->getState('filter.search');
 		$searchId = $this->getState('filter.searchid');
 
-		try {
+		try
+		{
 			$github = new JGithub();
-			$pulls = $github->pulls->getAll($this->getState('github_user'), $this->getState('github_repo'));
+			$pulls = $github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'));
 			usort($pulls, array($this, 'sortItems'));
 
-			foreach ($pulls AS $i => &$pull)
+			foreach ($pulls as $i => &$pull)
 			{
-				if($search && false === strpos($pull->title, $search)) {
+				if ($search && false === strpos($pull->title, $search))
+				{
 					unset($pulls[$i]);
 					continue;
 				}
-				if($searchId && $pull->number != $searchId) {
+
+				if ($searchId && $pull->number != $searchId)
+				{
 					unset($pulls[$i]);
 					continue;
 				}
+
+				// Try to find a joomlacode issue number
+				$pulls[$i]->joomlacode_issue = 0;
+
 				$matches = array();
+
 				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
-				$pull->joomlacode_issue = isset($matches[1]) ? $matches[1] : 0;
+
+				if (isset($matches[1]))
+				{
+					$pulls[$i]->joomlacode_issue = (int) $matches[1];
+				}
+				else
+				{
+					preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
+
+					if (isset($matches[1]))
+					{
+						preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
+
+						if (isset($matches[1]))
+						{
+							$pulls[$i]->joomlacode_issue = (int) $matches[1];
+						}
+					}
+				}
 			}
 
 			return $pulls;
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 
 			return array();
@@ -144,7 +177,7 @@ class PatchtesterModelPulls extends JModelList
 
 			case 'number' :
 			default :
-				return ($this->orderDir == 'asc') ? $b->number < $a->number :  $b->number > $a->number;
+				return ($this->orderDir == 'asc') ? $b->number < $a->number : $b->number > $a->number;
 		}
 	}
 }

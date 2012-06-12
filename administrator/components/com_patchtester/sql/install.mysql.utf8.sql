@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS `#__tests` (
+CREATE TABLE IF NOT EXISTS `#__patchtester_tests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pull_id` int(11) NOT NULL,
-  `data` text NOT NULL,
+  `data` longtext NOT NULL,
   `patched_by` int(11) NOT NULL,
   `applied` int(11) NOT NULL,
   `applied_version` varchar(25) NOT NULL,

@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS `#__tests`
+DROP TABLE IF EXISTS `#__patchtester_tests`
