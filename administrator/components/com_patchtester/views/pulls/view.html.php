@@ -28,10 +28,10 @@ class PatchtesterViewPulls extends JView
 		//@TODO: move the check
 		$checkErrs = array();
 
-		if(true == extension_loaded  ('openssl'))
+		if(false == extension_loaded  ('openssl'))
 			$checkErrs[] = 'The OpenSSL extension must be installed and enabled in your php.ini';
 
-		if(true == in_array('https', stream_get_wrappers()))
+		if(false == in_array('https', stream_get_wrappers()))
 			$checkErrs[] = 'https wrappers must be enabled';
 
 		if (count($checkErrs))
