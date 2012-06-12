@@ -25,6 +25,31 @@ class PatchtesterViewPulls extends JView
 	 */
 	public function display($tpl = null)
 	{
+		//@TODO: move the check
+		$checkErrs = array();
+
+		if(true == extension_loaded  ('openssl'))
+			$checkErrs[] = 'The OpenSSL extension must be installed and enabled in your php.ini';
+
+		if(true == in_array('https', stream_get_wrappers()))
+			$checkErrs[] = 'https wrappers must be enabled';
+
+		if (count($checkErrs))
+		{
+			$application = JFactory::getApplication();
+
+			$application->enqueueMessage(
+				'Your system does not meet the requirements to run the PullTester extension:'
+				, 'error');
+
+			foreach ($checkErrs as $error)
+			{
+				$application->enqueueMessage($error, 'error');
+			}
+
+			return $this;
+		}
+
 		$this->state = $this->get('State');
 		$this->items = $this->get('Items');
 		$this->patches = $this->get('AppliedPatches');
@@ -37,6 +62,7 @@ class PatchtesterViewPulls extends JView
 		}
 
 		$this->addToolbar();
+
 		parent::display($tpl);
 	}
 
