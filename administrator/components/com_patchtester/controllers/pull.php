@@ -24,7 +24,7 @@ class PatchtesterControllerPull extends JController
 			$this->getModel('pull')
 				->apply(JRequest::getVar('pull_id'));
 
-			$msg = 'Patch successfully applied';
+			$msg = JText::_('COM_PATCHTESTER_APPLY_OK');
 			$type = 'message';
 		}
 		catch (Exception $e)
@@ -43,12 +43,12 @@ class PatchtesterControllerPull extends JController
 			$this->getModel('pull')
 				->revert(JRequest::getVar('pull_id'));
 
-			$msg = 'Patch successfully reverted';
+			$msg = JText::_('COM_PATCHTESTER_REVERT_OK');
 			$type = 'message';
 		}
 		catch (Exception $e)
 		{
-			$msg = $e->getMessage() ?: 'Patch did not revert';
+			$msg = $e->getMessage();
 			$type = 'error';
 		}
 

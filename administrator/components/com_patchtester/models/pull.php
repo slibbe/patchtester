@@ -201,14 +201,15 @@ class PatchtesterModelPull extends JModel
 			$table->store();
 			*/
 			$table->delete();
-			return true;
+
+			return $this;
 		}
 
 		$files = json_decode($table->data);
 
 		if (!$files)
 		{
-			throw new Exception(sprintf('%s - Error retrieving table data (%s)'
+			throw new Exception(sprintf(JText::_('%s - Error retrieving table data (%s)')
 				, __METHOD__, htmlentities($table->data)));
 		}
 
@@ -223,14 +224,16 @@ class PatchtesterModelPull extends JModel
 						, JPATH_ROOT . '/' . $file->old)
 					)
 					{
-						throw new Exception(sprintf('Can not copy file %s to %s'
+						throw new Exception(sprintf(
+							JText::_('Can not copy file %s to %s')
 							, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'
 							, JPATH_ROOT . '/' . $file->old));
 					}
 
 					if (!JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new Exception(sprintf('Can not delete the file: %s'
+						throw new Exception(sprintf(
+							JText::_('Can not delete the file: %s')
 							, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
 					}
 					break;
@@ -238,7 +241,9 @@ class PatchtesterModelPull extends JModel
 				case 'added':
 					if (!JFile::delete(JPath::clean(JPATH_ROOT . '/' . $file->new)))
 					{
-						throw new Exception(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->new));
+						throw new Exception(sprintf(
+							JText::_('Can not delete the file: %s')
+							, JPATH_ROOT . '/' . $file->new));
 					}
 					break;
 			}
