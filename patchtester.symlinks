@@ -1,0 +1,5 @@
+# Project Patchtester
+basePath=
+
+administrator/components/com_patchtester
+components/com_patchtester
