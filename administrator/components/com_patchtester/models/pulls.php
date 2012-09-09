@@ -57,15 +57,18 @@ class PatchtesterModelPulls extends JModelList
 		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid');
 		$this->setState('filter.searchid', $searchId);
 
-		// Load the parameters.
-		$params = JComponentHelper::getParams('com_patchtester');
+        // Load the parameters.
+        $params = JComponentHelper::getParams('com_patchtester');
 
-		$this->setState('params', $params);
-		$this->setState('github_user', $params->get('org', 'joomla'));
-		$this->setState('github_repo', $params->get('repo', 'joomla-cms'));
+        $this->setState('params', $params);
+        $this->setState('github_user', $params->get('org', 'joomla'));
+        $this->setState('github_repo', $params->get('repo', 'joomla-cms'));
 
-		// List state information.
-		parent::populateState('number', 'desc');
+        // List state information.
+        parent::populateState('number', 'desc');
+
+        //-- GitHubs default list limit is 30
+        $this->state->set('list.limit', 30);
 	}
 
 	/**
@@ -111,10 +114,12 @@ class PatchtesterModelPulls extends JModelList
 		$search = $this->getState('filter.search');
 		$searchId = $this->getState('filter.searchid');
 
+        $page = $this->getPagination()->pagesCurrent;
+
 		try
 		{
-			$github = new JGithub();
-			$pulls = $github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'));
+			$github = new JGithub;
+			$pulls = $github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
 			usort($pulls, array($this, 'sortItems'));
 
 			foreach ($pulls as $i => &$pull)
@@ -180,4 +185,17 @@ class PatchtesterModelPulls extends JModelList
 				return ($this->orderDir == 'asc') ? $b->number < $a->number : $b->number > $a->number;
 		}
 	}
+
+    public function getTotal()
+    {
+       // $g = new PtGithub;
+
+        //$repo = $g->repos->get('joomla', 'joomla-cms');
+
+        return PtGithub::getInstance()
+            ->repos->get('joomla', 'joomla-cms')
+            ->open_issues_count;
+
+        //return $repo->open_issues_count;
+    }
 }

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
  *
  * @package  PatchTester
  */
-class PatchTesterController extends JController
+class PatchTesterController extends JControllerLegacy
 {
 	protected $default_view = 'Pulls';
 

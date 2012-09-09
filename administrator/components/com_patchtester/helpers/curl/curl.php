@@ -37,7 +37,7 @@ class PTCurl extends JURI
 	 *
 	 * @throws Exception
 	 *
-	 * @return JCurl
+	 * @return PTCurl
 	 */
 	public static function getAdapter($uri = null)
 	{
@@ -72,7 +72,7 @@ class PTCurl extends JURI
 	 *
 	 * @param   array  $options  The cURL options.
 	 *
-	 * @return JCurl
+	 * @return PTCurl
 	 */
 	public function setOptions($options)
 	{
@@ -94,7 +94,7 @@ class PTCurl extends JURI
 
 		curl_setopt_array($ch, $this->curlOptions);
 
-		curl_setopt($ch, CURLOPT_URL, $this->_uri);
+		curl_setopt($ch, CURLOPT_URL, $this->uri);
 
 		if ( ! array_key_exists(CURLOPT_SSL_VERIFYHOST, $this->curlOptions))
 		{

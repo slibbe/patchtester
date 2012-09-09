@@ -16,8 +16,10 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_patchtester'))
 }
 
 // Include dependencies
-jimport('joomla.application.component.controller');
+//jimport('joomla.application.component.controller');
 
-$controller = JController::getInstance('PatchTester');
+JLoader::registerPrefix('Pt', __DIR__.'/helpers');
+
+$controller = JControllerLegacy::getInstance('PatchTester');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();

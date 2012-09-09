@@ -15,10 +15,11 @@ jimport('joomla.application.component.view');
  *
  * @package        PatchTester
  */
-class PatchtesterViewPulls extends JView
+class PatchtesterViewPulls extends JViewLegacy
 {
 	protected $items;
 	protected $state;
+    protected $pagination;
 
 	/**
 	 * Display the view
@@ -53,12 +54,17 @@ class PatchtesterViewPulls extends JView
 		$this->state = $this->get('State');
 		$this->items = $this->get('Items');
 		$this->patches = $this->get('AppliedPatches');
+        $this->pagination = $this->get('Pagination');
 
 		// Check for errors.
-		if (count($errors = $this->get('Errors')))
+        $errors = $this->get('Errors');
+
+		if (count($errors))
 		{
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
+            var_dump($errors);
+            var_dump($this->pagination);
+//			JError::raiseError(500, implode("\n", $errors));
+//			return false;
 		}
 
 		$this->addToolbar();

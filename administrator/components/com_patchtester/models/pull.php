@@ -12,7 +12,7 @@ defined('_JEXEC') or die;
  *
  * @package        PatchTester
  */
-class PatchtesterModelPull extends JModel
+class PatchtesterModelPull extends JModelLegacy
 {
 	/**
 	 * Method to auto-populate the model state.
@@ -92,7 +92,7 @@ class PatchtesterModelPull extends JModel
 	public function apply($id)
 	{
 		//@todo Use the JCurl class
-		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/curl.php';
+//		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/curl.php';
 
 		$table = JTable::getInstance('tests', 'PatchTesterTable');
 		$github = new JGithub;
@@ -195,11 +195,6 @@ class PatchtesterModelPull extends JModel
 
 		if ($table->applied_version != $version->getShortVersion())
 		{
-			/*
-			$table->applied = 0;
-			$table->applied_version = '';
-			$table->store();
-			*/
 			$table->delete();
 
 			return $this;
@@ -249,11 +244,6 @@ class PatchtesterModelPull extends JModel
 			}
 		}
 
-		/*
-		$table->applied_version = '';
-		$table->applied = 0;
-		$table->store();
-		*/
 		$table->delete();
 
 		return true;

@@ -8,7 +8,7 @@
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
   <authorEmail>ianlenmac@gmail.com</authorEmail>
   <authorUrl>http://github.com/ianmacl</authorUrl>
-  <version>1.1</version>
+  <version>1.2</version>
   <description>COM_PATCHTESTER_XML_DESCRIPTION</description>
   <install>
     <sql>
@@ -26,19 +26,19 @@
   <administration>
     <menu img="components/com_patchtester/assets/images/icon-16-patchtester.png">com_patchtester</menu>
     <files folder="admin">
-        <folder>assets</folder>
-        <folder>backups</folder>
-        <folder>controllers</folder>
-        <folder>helpers</folder>
-        <folder>install</folder>
-        <folder>language</folder>
-        <folder>models</folder>
-        <folder>tables</folder>
-        <folder>views</folder>
-        <filename>access.xml</filename>
-        <filename>config.xml</filename>
-        <filename>controller.php</filename>
-        <filename>patchtester.php</filename>
+      <folder>assets</folder>
+      <folder>backups</folder>
+      <folder>controllers</folder>
+      <folder>helpers</folder>
+      <folder>install</folder>
+      <folder>language</folder>
+      <folder>models</folder>
+      <folder>tables</folder>
+      <folder>views</folder>
+      <filename>access.xml</filename>
+      <filename>config.xml</filename>
+      <filename>controller.php</filename>
+      <filename>patchtester.php</filename>
     </files>
   </administration>
   <updateservers>

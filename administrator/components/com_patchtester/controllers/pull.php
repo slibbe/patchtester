@@ -15,17 +15,17 @@ jimport('joomla.application.component.controllerform');
  *
  * @package        PatchTester
  */
-class PatchtesterControllerPull extends JController
+class PatchtesterControllerPull extends JControllerLegacy
 {
 	public function apply()
 	{
 		try
 		{
 			$this->getModel('pull')
-				->apply(JRequest::getVar('pull_id'));
+				->apply(JFactory::getApplication()->input->getInt('pull_id'));
 
 			$msg = JText::_('COM_PATCHTESTER_APPLY_OK');
-			$type = 'message';
+			$type = 'success';
 		}
 		catch (Exception $e)
 		{
@@ -41,10 +41,10 @@ class PatchtesterControllerPull extends JController
 		try
 		{
 			$this->getModel('pull')
-				->revert(JRequest::getVar('pull_id'));
+				->revert(JFactory::getApplication()->input->getInt('pull_id'));
 
 			$msg = JText::_('COM_PATCHTESTER_REVERT_OK');
-			$type = 'message';
+			$type = 'success';
 		}
 		catch (Exception $e)
 		{
