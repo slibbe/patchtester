@@ -24,7 +24,8 @@ foreach($this->items as $i => $item) :
     <td>
         <a class="icon icon16-github hasTip"
            title="<?php echo JText::_('COM_PATCHTESTER_OPEN_IN_GITHUB'); ?>"
-           href="<?php echo $item->html_url; ?>">
+           href="<?php echo $item->html_url; ?>"
+           target="_blank">
             <?php echo $item->title; ?>
         </a>
     </td>
