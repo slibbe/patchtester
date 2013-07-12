@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<extension type="component" version="1.7" method="upgrade">
+<extension type="component" version="3.1" method="upgrade">
   <name>com_patchtester</name>
   <author>Ian MacLennan</author>
   <creationDate>October 2011</creationDate>
@@ -8,7 +7,7 @@
   <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
   <authorEmail>ianlenmac@gmail.com</authorEmail>
   <authorUrl>http://github.com/ianmacl</authorUrl>
-  <version>1.2</version>
+  <version>1.5.0.alpha</version>
   <description>COM_PATCHTESTER_XML_DESCRIPTION</description>
   <install>
     <sql>
@@ -41,7 +40,4 @@
       <filename>patchtester.php</filename>
     </files>
   </administration>
-  <updateservers>
-    <server type="extension">https://raw.github.com/ianmacl/patchtester/master/updates/patchtester.xml</server>
-  </updateservers>
 </extension>
