@@ -117,8 +117,6 @@ class PatchtesterModelPull extends JModelLegacy
 	public function apply($id)
 	{
 		jimport('joomla.filesystem.file');
-		//@todo Use the JCurl class
-//		require_once JPATH_COMPONENT_ADMINISTRATOR . '/helpers/curl.php';
 
 		$table = JTable::getInstance('tests', 'PatchTesterTable');
 		$github = new JGithub;

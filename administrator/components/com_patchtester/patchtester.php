@@ -15,9 +15,6 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_patchtester'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-// Include dependencies
-//jimport('joomla.application.component.controller');
-
 JLoader::registerPrefix('PT', __DIR__.'/helpers');
 
 $controller = JControllerLegacy::getInstance('PatchTester');
