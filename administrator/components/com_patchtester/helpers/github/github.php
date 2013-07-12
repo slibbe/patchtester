@@ -4,18 +4,18 @@
  * Date: 08.09.12
  * Time: 19:08
  *
- * @property-read  PtGithubRepos  $repos  GitHub API object for repos.
+ * @property-read  PTGithubRepos  $repos  GitHub API object for repos.
  */
-class PtGithub extends JGithub
+class PTGithub extends JGithub
 {
     /**
-     * @var    PtGithubRepos
+     * @var    PTGithubRepos
      */
     protected $repos;
 
     public static function getInstance(JRegistry $options = null, JGithubHttp $client = null)
     {
-        return new PtGithub($options, $client);
+        return new PTGithub($options, $client);
     }
 
     public function __get($name)
@@ -24,7 +24,7 @@ class PtGithub extends JGithub
         {
             if ($this->repos == null)
             {
-                $this->repos = new PtGithubRepos($this->options, $this->client);
+                $this->repos = new PTGithubRepos($this->options, $this->client);
             }
 
             return $this->repos;

@@ -8,7 +8,7 @@
 /**
  * A.
  */
-class PtGithubRepos extends JGithubObject
+class PTGithubRepos extends JGithubObject
 {
     public function get($user, $repo)
     {

@@ -192,7 +192,7 @@ class PatchtesterModelPulls extends JModelList
 
         //$repo = $g->repos->get('joomla', 'joomla-cms');
 
-        return PtGithub::getInstance()
+        return PTGithub::getInstance()
             ->repos->get('joomla', 'joomla-cms')
             ->open_issues_count;
 

@@ -25,7 +25,7 @@ class PatchtesterControllerPull extends JControllerLegacy
 				->apply(JFactory::getApplication()->input->getInt('pull_id'));
 
 			$msg = JText::_('COM_PATCHTESTER_APPLY_OK');
-			$type = 'success';
+			$type = 'message';
 		}
 		catch (Exception $e)
 		{
@@ -44,7 +44,7 @@ class PatchtesterControllerPull extends JControllerLegacy
 				->revert(JFactory::getApplication()->input->getInt('pull_id'));
 
 			$msg = JText::_('COM_PATCHTESTER_REVERT_OK');
-			$type = 'success';
+			$type = 'message';
 		}
 		catch (Exception $e)
 		{
