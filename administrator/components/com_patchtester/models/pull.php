@@ -1,8 +1,9 @@
 <?php
 /**
- * @package        PatchTester
- * @copyright      Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
- * @license        GNU General Public License version 2 or later; see LICENSE.txt
+ * @package    PatchTester
+ *
+ * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
 defined('_JEXEC') or die;
@@ -10,26 +11,30 @@ defined('_JEXEC') or die;
 /**
  * Methods supporting pull requests.
  *
- * @package        PatchTester
+ * @package  PatchTester
+ * @since    1.0
  */
 class PatchtesterModelPull extends JModelLegacy
 {
 	/**
-	 * @var  JHttp
+	 * @var    JHttp
+	 * @since  2.0
 	 */
 	protected $transport;
 
 	/**
 	 * Github object
 	 *
-	 * @var  PTGithub
+	 * @var    PTGithub
+	 * @since  2.0
 	 */
 	protected $github;
 
 	/**
 	 * Object containing the rate limit data
 	 *
-	 * @var  object
+	 * @var    object
+	 * @since  2.0
 	 */
 	protected $rate;
 
@@ -38,8 +43,7 @@ class PatchtesterModelPull extends JModelLegacy
 	 *
 	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
 	 *
-	 * @since   12.2
-	 * @throws  Exception
+	 * @since   2.0
 	 */
 	public function __construct($config = array())
 	{
@@ -73,9 +77,10 @@ class PatchtesterModelPull extends JModelLegacy
 	/**
 	 * Method to auto-populate the model state.
 	 *
-	 * Note. Calling getState in this method will result in recursion.
+	 * @return  void
 	 *
-	 * @since       1.6
+	 * @note    Calling getState() in this method will result in recursion.
+	 * @since   1.0
 	 */
 	protected function populateState()
 	{
@@ -88,6 +93,15 @@ class PatchtesterModelPull extends JModelLegacy
 		parent::populateState();
 	}
 
+	/**
+	 * Method to parse a patch and extract the affected files
+	 *
+	 * @param   string  $patch  Patch file to parse
+	 *
+	 * @return  array  Array of files within a patch
+	 *
+	 * @since   1.0
+	 */
 	protected function parsePatch($patch)
 	{
 		$state = 0;
@@ -104,8 +118,10 @@ class PatchtesterModelPull extends JModelLegacy
 					{
 						$state = 1;
 					}
-					$file = new stdClass;
+
+					$file         = new stdClass;
 					$file->action = 'modified';
+
 					break;
 
 				case 1:
@@ -136,15 +152,27 @@ class PatchtesterModelPull extends JModelLegacy
 
 					if (strpos($line, '@@') === 0)
 					{
-						$state = 0;
+						$state   = 0;
 						$files[] = $file;
 					}
+
 					break;
 			}
 		}
+
 		return $files;
 	}
 
+	/**
+	 * Patches the code with the supplied pull request
+	 *
+	 * @param   integer  $id  ID of the pull request to apply
+	 *
+	 * @return  boolean
+	 *
+	 * @since   1.0
+	 * @throws  Exception
+	 */
 	public function apply($id)
 	{
 		// Only act if there are API hits remaining
@@ -181,8 +209,7 @@ class PatchtesterModelPull extends JModelLegacy
 						throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
 					}
 
-					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' .
-						$pull->head->ref . '/' . $file->new;
+					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' . $pull->head->ref . '/' . $file->new;
 
 					$file->body = $this->transport->get($url)->body;
 				}
@@ -198,8 +225,9 @@ class PatchtesterModelPull extends JModelLegacy
 				{
 					if (!JFile::copy(JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new Exception(sprintf('Can not copy file %s to %s'
-							, JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
+						throw new Exception(
+							sprintf('Can not copy file %s to %s', JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
+						);
 					}
 				}
 
@@ -211,6 +239,7 @@ class PatchtesterModelPull extends JModelLegacy
 						{
 							throw new Exception(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
 						}
+
 						break;
 
 					case 'deleted':
@@ -218,15 +247,16 @@ class PatchtesterModelPull extends JModelLegacy
 						{
 							throw new Exception(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
 						}
+
 						break;
 				}
 			}
 
-			$table = JTable::getInstance('tests', 'PatchTesterTable');
-			$table->pull_id = $pull->number;
-			$table->data = json_encode($files);
-			$table->patched_by = JFactory::getUser()->id;
-			$table->applied = 1;
+			$table                  = JTable::getInstance('tests', 'PatchTesterTable');
+			$table->pull_id         = $pull->number;
+			$table->data            = json_encode($files);
+			$table->patched_by      = JFactory::getUser()->id;
+			$table->applied         = 1;
 			$table->applied_version = JVERSION;
 
 			if (!$table->store())
@@ -242,6 +272,16 @@ class PatchtesterModelPull extends JModelLegacy
 		return true;
 	}
 
+	/**
+	 * Reverts the specified pull request
+	 *
+	 * @param   integer  $id  ID of the pull request to Reverts
+	 *
+	 * @return  boolean
+	 *
+	 * @since   1.0
+	 * @throws  Exception
+	 */
 	public function revert($id)
 	{
 		$table = JTable::getInstance('tests', 'PatchTesterTable');
@@ -259,8 +299,7 @@ class PatchtesterModelPull extends JModelLegacy
 
 		if (!$files)
 		{
-			throw new Exception(sprintf(JText::_('%s - Error retrieving table data (%s)')
-				, __METHOD__, htmlentities($table->data)));
+			throw new Exception(sprintf(JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
 		}
 
 		jimport('joomla.filesystem.file');
@@ -271,32 +310,30 @@ class PatchtesterModelPull extends JModelLegacy
 			{
 				case 'deleted':
 				case 'modified':
-					if (!JFile::copy(
-						JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'
-						, JPATH_ROOT . '/' . $file->old)
-					)
+					if (!JFile::copy(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt', JPATH_ROOT . '/' . $file->old))
 					{
-						throw new Exception(sprintf(
-							JText::_('Can not copy file %s to %s')
-							, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'
-							, JPATH_ROOT . '/' . $file->old));
+						throw new Exception(
+							sprintf(
+								JText::_('Can not copy file %s to %s'),
+								JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt',
+								JPATH_ROOT . '/' . $file->old
+							)
+						);
 					}
 
 					if (!JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new Exception(sprintf(
-							JText::_('Can not delete the file: %s')
-							, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
+						throw new Exception(sprintf(JText::_('Can not delete the file: %s'), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
 					}
+
 					break;
 
 				case 'added':
 					if (!JFile::delete(JPath::clean(JPATH_ROOT . '/' . $file->new)))
 					{
-						throw new Exception(sprintf(
-							JText::_('Can not delete the file: %s')
-							, JPATH_ROOT . '/' . $file->new));
+						throw new Exception(sprintf(JText::_('Can not delete the file: %s'), JPATH_ROOT . '/' . $file->new));
 					}
+
 					break;
 			}
 		}
@@ -305,5 +342,4 @@ class PatchtesterModelPull extends JModelLegacy
 
 		return true;
 	}
-
 }

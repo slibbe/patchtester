@@ -1,32 +1,34 @@
 <?php
 /**
- * @package        PatchTester
- * @copyright      Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
- * @license        GNU General Public License version 2 or later; see LICENSE.txt
+ * @package    PatchTester
+ *
+ * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.modellist');
-
 /**
- * Methods supporting a list of pull request.
+ * Methods supporting a list of pull requests.
  *
- * @package        PatchTester
+ * @package  PatchTester
+ * @since    1.0
  */
 class PatchtesterModelPulls extends JModelList
 {
 	/**
 	 * Github object
 	 *
-	 * @var  PTGithub
+	 * @var    PTGithub
+	 * @since  2.0
 	 */
 	protected $github;
 
 	/**
 	 * Object containing the rate limit data
 	 *
-	 * @var  object
+	 * @var    object
+	 * @since  2.0
 	 */
 	protected $rate;
 
@@ -36,7 +38,7 @@ class PatchtesterModelPulls extends JModelList
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
 	 * @see     JController
-	 * @since   11.1
+	 * @since   1.0
 	 */
 	public function __construct($config = array())
 	{
@@ -81,13 +83,16 @@ class PatchtesterModelPulls extends JModelList
 		}
 	}
 
-
 	/**
 	 * Method to auto-populate the model state.
 	 *
-	 * Note. Calling getState in this method will result in recursion.
+	 * @param   string  $ordering   An optional ordering field.
+	 * @param   string  $direction  An optional direction (asc|desc).
 	 *
-	 * @since    1.6
+	 * @return  void
+	 *
+	 * @note    Calling getState() in this method will result in recursion.
+	 * @since   1.0
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
@@ -98,32 +103,58 @@ class PatchtesterModelPulls extends JModelList
 		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid');
 		$this->setState('filter.searchid', $searchId);
 
-        // Load the parameters.
-        $params = JComponentHelper::getParams('com_patchtester');
+		// Load the parameters.
+		$params = JComponentHelper::getParams('com_patchtester');
 
-        $this->setState('params', $params);
-        $this->setState('github_user', $params->get('org', 'joomla'));
-        $this->setState('github_repo', $params->get('repo', 'joomla-cms'));
+		$this->setState('params', $params);
+		$this->setState('github_user', $params->get('org', 'joomla'));
+		$this->setState('github_repo', $params->get('repo', 'joomla-cms'));
 
-        // List state information.
-        parent::populateState('number', 'desc');
+		// List state information.
+		parent::populateState('number', 'desc');
 
-        // GitHub's default list limit is 30
-        $this->setState('list.limit', 30);
+		// GitHub's default list limit is 30
+		$this->setState('list.limit', 30);
 	}
 
+	/**
+	 * Retrieves a list of applied patches
+	 *
+	 * @return  mixed
+	 *
+	 * @since   1.0
+	 */
 	public function getAppliedPatches()
 	{
-		$query = $this->_db->getQuery(true);
-		$query->select('*');
-		$query->from('#__patchtester_tests');
-		$query->where('applied = 1');
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true)
+			->select('*')
+			->from('#__patchtester_tests')
+			->where('applied = 1');
 
-		$this->_db->setQuery($query);
-		$tests = $this->_db->loadObjectList('pull_id');
-		return $tests;
+		$db->setQuery($query);
+
+		try
+		{
+			$tests = $db->loadObjectList('pull_id');
+
+			return $tests;
+		}
+		catch (RuntimeException $e)
+		{
+			$this->setError($e->getMessage());
+
+			return false;
+		}
 	}
 
+	/**
+	 * Method to get an array of data items.
+	 *
+	 * @return  mixed  An array of data items on success, false on failure.
+	 *
+	 * @since   1.0
+	 */
 	public function getItems()
 	{
 		if ($this->getState('github_user') == '' || $this->getState('github_repo') == '')
@@ -133,10 +164,10 @@ class PatchtesterModelPulls extends JModelList
 
 		$this->ordering = $this->getState('list.ordering', 'title');
 		$this->orderDir = $this->getState('list.direction', 'asc');
-		$search = $this->getState('filter.search');
-		$searchId = $this->getState('filter.searchid');
+		$search         = $this->getState('filter.search');
+		$searchId       = $this->getState('filter.searchid');
 
-        $page = $this->getPagination()->pagesCurrent;
+		$page = $this->getPagination()->pagesCurrent;
 
 		try
 		{
@@ -161,7 +192,7 @@ class PatchtesterModelPulls extends JModelList
 						continue;
 					}
 
-					// Try to find a joomlacode issue number
+					// Try to find a Joomlacode issue number
 					$pulls[$i]->joomlacode_issue = 0;
 
 					$matches = array();
@@ -203,6 +234,16 @@ class PatchtesterModelPulls extends JModelList
 		}
 	}
 
+	/**
+	 * Method to sort the items array
+	 *
+	 * @param   object  $a  First sort object
+	 * @param   object  $b  Second sort object
+	 *
+	 * @return  mixed
+	 *
+	 * @since   1.0
+	 */
 	public function sortItems($a, $b)
 	{
 		switch ($this->ordering)
@@ -216,15 +257,22 @@ class PatchtesterModelPulls extends JModelList
 		}
 	}
 
-    public function getTotal()
-    {
-	    if ($this->rate->remaining > 0)
-	    {
-	        return $this->github->repos->get('joomla', 'joomla-cms')->open_issues_count;
-	    }
-	    else
-	    {
-		    return 0;
-	    }
-    }
+	/**
+	 * Method to get the total number of items for the data set.
+	 *
+	 * @return  integer  The total number of items available in the data set.
+	 *
+	 * @since   2.0
+	 */
+	public function getTotal()
+	{
+		if ($this->rate->remaining > 0)
+		{
+			return $this->github->repos->get('joomla', 'joomla-cms')->open_issues_count;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 }

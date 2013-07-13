@@ -1,47 +1,83 @@
 <?php
 /**
- * @package        PatchTester
- * @copyright      Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
- * @license        GNU General Public License version 2 or later; see LICENSE.txt
+ * @package    PatchTester
+ *
+ * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
-// No direct access
 defined('_JEXEC') or die;
-
-jimport('joomla.application.component.view');
 
 /**
  * View class for a list of pull requests.
  *
- * @package        PatchTester
+ * @package  PatchTester
+ * @since    1.0
  */
 class PatchtesterViewPulls extends JViewLegacy
 {
+	/**
+	 * Array of open pull requests
+	 *
+	 * @var    array
+	 * @since  1.0
+	 */
 	protected $items;
-	protected $state;
-    protected $pagination;
 
 	/**
-	 * Display the view
+	 * Object containing data about applied patches
+	 *
+	 * @var    object
+	 * @since  1.0
+	 */
+	protected $patches;
+
+	/**
+	 * State object
+	 *
+	 * @var    JRegistry
+	 * @since  1.0
+	 */
+	protected $state;
+
+	/**
+	 * Pagination object
+	 *
+	 * @var    JPagination
+	 * @since  2.0
+	 */
+	protected $pagination;
+
+	/**
+	 * Execute and display a template script.
+	 *
+	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+	 *
+	 * @return  mixed  A string if successful, otherwise a Error object.
+	 *
+	 * @see     fetch()
+	 * @since   1.0
 	 */
 	public function display($tpl = null)
 	{
-		//@TODO: move the check
+		// TODO: move the check
 		$checkErrs = array();
 
-		if(false == extension_loaded  ('openssl'))
+		if (!extension_loaded('openssl'))
+		{
 			$checkErrs[] = 'The OpenSSL extension must be installed and enabled in your php.ini';
+		}
 
-		if(false == in_array('https', stream_get_wrappers()))
+		if (!in_array('https', stream_get_wrappers()))
+		{
 			$checkErrs[] = 'https wrappers must be enabled';
+		}
 
 		if (count($checkErrs))
 		{
 			$application = JFactory::getApplication();
 
-			$application->enqueueMessage(
-				'Your system does not meet the requirements to run the PullTester extension:'
-				, 'error');
+			$application->enqueueMessage('Your system does not meet the requirements to run the PullTester extension:', 'error');
 
 			foreach ($checkErrs as $error)
 			{
@@ -51,33 +87,36 @@ class PatchtesterViewPulls extends JViewLegacy
 			return $this;
 		}
 
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
-		$this->patches = $this->get('AppliedPatches');
-        $this->pagination = $this->get('Pagination');
+		$this->state      = $this->get('State');
+		$this->items      = $this->get('Items');
+		$this->patches    = $this->get('AppliedPatches');
+		$this->pagination = $this->get('Pagination');
 
 		// Check for errors.
-        $errors = $this->get('Errors');
+		$errors = $this->get('Errors');
 
 		if (count($errors))
 		{
-            var_dump($errors);
-            var_dump($this->pagination);
-//			JError::raiseError(500, implode("\n", $errors));
-//			return false;
+			JError::raiseError(500, implode("\n", $errors));
+
+			return false;
 		}
 
 		$this->addToolbar();
 
-		parent::display($tpl);
+		return parent::display($tpl);
 	}
 
 	/**
 	 * Add the page title and toolbar.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
 	 */
 	protected function addToolbar()
 	{
-		JToolBarHelper::title('Joomla! Patch Tester', 'patchtester');
+		JToolBarHelper::title(JText::_('COM_PATCHTESTER'), 'patchtester');
 		JToolBarHelper::preferences('com_patchtester');
 
 		JFactory::getDocument()->addStyleDeclaration(

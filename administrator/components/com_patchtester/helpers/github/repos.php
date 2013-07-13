@@ -1,58 +1,53 @@
 <?php
 /**
- * User: elkuku
- * Date: 08.09.12
- * Time: 18:54
+ * @package    PatchTester
+ *
+ * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
 /**
- * A.
+ * GitHub API Repos class.
+ *
+ * @package  PatchTester
+ * @since    2.0
  */
 class PTGithubRepos extends JGithubObject
 {
-    public function get($user, $repo)
-    {
-        $path = '/repos/'.$user.'/'.$repo;
+	/**
+	 * Retrieve information about the specified repository
+	 *
+	 * @param   string  $user  The username or organization name of the repository owner
+	 * @param   string  $repo  The repository to retrieve
+	 *
+	 * @return  object
+	 *
+	 * @since   2.0
+	 * @throws  DomainException
+	 */
+	public function get($user, $repo)
+	{
+		$path = '/repos/' . $user . '/' . $repo;
 
-        // Send the request.
-        $response = $this->client->get($this->fetchUrl($path));
+		// Send the request.
+		return $this->processResponse($this->client->get($this->fetchUrl($path)));
+	}
 
-        // Validate the response code.
-        if($response->code != 200)
-        {
-            // Decode the error response and throw an exception.
-            $error = json_decode($response->body);
+	/**
+	 * List public repositories for the specified user.
+	 *
+	 * @param   string  $user  The username to retrieve repositories for
+	 *
+	 * @return  object
+	 *
+	 * @since   2.0
+	 * @throws  DomainException
+	 */
+	public function getPublicRepos($user)
+	{
+		$path = '/users/' . $user . '/repos';
 
-            throw new DomainException($error->message, $response->code);
-        }
-
-        return json_decode($response->body);
-    }
-
-    /**
-     * @param string $user
-     * @param string $type       all, owner, public, private, member. Default: all.
-     * @param string $sort       created, updated, pushed, full_name, default: full_name.
-     * @param string $direction  asc or desc, default: when using full_name: asc, otherwise desc.
-     *
-     * @return mixed
-     * @throws DomainException
-     */
-    public function getPublicRepos($user, $type = 'all', $sort = 'full_name', $direction = 'desc')
-    {
-        $path = '/users/'.$user.'/repos';
-
-        // Send the request.
-        $response = $this->client->get($this->fetchUrl($path));
-
-        // Validate the response code.
-        if($response->code != 200)
-        {
-            // Decode the error response and throw an exception.
-            $error = json_decode($response->body);
-            throw new DomainException($error->message, $response->code);
-        }
-
-        return json_decode($response->body);
-    }
+		// Send the request.
+		return $this->processResponse($this->client->get($this->fetchUrl($path)));
+	}
 }

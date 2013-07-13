@@ -1,35 +1,26 @@
 <?php
 /**
- * @package        PatchTester
- * @copyright      Copyright (C) 2011 Ian MacLennan, Inc. All rights reserved.
- * @license        GNU General Public License version 2 or later; see LICENSE.txt
+ * @package    PatchTester
+ *
+ * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 Open Source Matters, Inc. All rights reserved.
+ * @license    GNU General Public License version 2 or later
  */
 
-// No direct access
 defined('_JEXEC') or die;
 
 /**
  * PatchTester Controller
  *
  * @package  PatchTester
+ * @since    1.0
  */
 class PatchTesterController extends JControllerLegacy
 {
-	protected $default_view = 'Pulls';
-
 	/**
-	 * Method to display a view.
+	 * The default view for the display method.
 	 *
-	 * @param    boolean            $cachable     If true, the view output will be cached
-	 * @param    array              $urlparams    An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
-	 *
-	 * @return    JController        This object to support chaining.
-	 * @since    1.5
+	 * @var    string
+	 * @since  1.0
 	 */
-	public function display($cachable = false, $urlparams = false)
-	{
-		parent::display();
-
-		return $this;
-	}
+	protected $default_view = 'pulls';
 }
