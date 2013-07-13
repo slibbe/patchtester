@@ -53,7 +53,23 @@ class PatchtesterModelPulls extends JModelList
 		parent::__construct($config);
 
 		// Set up the Github object
-		$this->github = new PTGithub;
+		$params = JComponentHelper::getParams('com_patchtester');
+
+		$options = new JRegistry;
+
+		// Set the username and password if set in the params
+		if ($params->get('gh_user', '') && $params->get('gh_password'))
+		{
+			$options->set('api.username', $params->get('gh_user', ''));
+			$options->set('api.password', $params->get('gh_password', ''));
+		}
+		else
+		{
+			// Display a message about the lowered API limit without credentials
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
+		}
+
+		$this->github = new PTGithub($options);
 
 		// Store the rate data for reuse during this request cycle
 		$this->rate = $this->github->account->getRateLimit()->rate;
@@ -61,7 +77,7 @@ class PatchtesterModelPulls extends JModelList
 		// Check the API rate limit, display a message if over
 		if ($this->rate->remaining == 0)
 		{
-			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', JFactory::getDate($this->rate->reset)));
+			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', JFactory::getDate($this->rate->reset)), 'notice');
 		}
 	}
 

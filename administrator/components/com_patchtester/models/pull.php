@@ -53,7 +53,18 @@ class PatchtesterModelPull extends JModelLegacy
 		$this->transport = JHttpFactory::getHttp($options, 'curl');
 
 		// Set up the Github object
-		$this->github = new PTGithub;
+		$params = JComponentHelper::getParams('com_patchtester');
+
+		$options = new JRegistry;
+
+		// Set the username and password if set in the params
+		if ($params->get('gh_user', '') && $params->get('gh_password'))
+		{
+			$options->set('api.username', $params->get('gh_user', ''));
+			$options->set('api.password', $params->get('gh_password', ''));
+		}
+
+		$this->github = new PTGithub($options);
 
 		// Store the rate data for reuse during this request cycle
 		$this->rate = $this->github->account->getRateLimit()->rate;
