@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="component" version="3.1" method="upgrade">
   <name>com_patchtester</name>
-  <author>Ian MacLennan</author>
+  <author>Joomla! Project</author>
   <creationDate>October 2011</creationDate>
   <copyright>(C) 2011 - 2012 Ian MacLennan, (C) 2013 Open Source Matters, Inc. All rights reserved.</copyright>
   <license>GNU General Public License version 2 or later</license>
-  <authorEmail>ianlenmac@gmail.com</authorEmail>
-  <authorUrl>http://github.com/ianmacl</authorUrl>
+  <authorEmail>admin@joomla.org</authorEmail>
+  <authorUrl>http://www.joomla.org</authorUrl>
   <version>2.0.0.alpha</version>
   <description>COM_PATCHTESTER_XML_DESCRIPTION</description>
   <install>
