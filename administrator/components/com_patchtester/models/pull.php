@@ -20,6 +20,20 @@ class PatchtesterModelPull extends JModelLegacy
 	protected $transport;
 
 	/**
+	 * Github object
+	 *
+	 * @var  PTGithub
+	 */
+	protected $github;
+
+	/**
+	 * Object containing the rate limit data
+	 *
+	 * @var  object
+	 */
+	protected $rate;
+
+	/**
 	 * Constructor
 	 *
 	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
@@ -37,6 +51,12 @@ class PatchtesterModelPull extends JModelLegacy
 		$options->set('timeout', 120);
 
 		$this->transport = JHttpFactory::getHttp($options, 'curl');
+
+		// Set up the Github object
+		$this->github = new PTGithub;
+
+		// Store the rate data for reuse during this request cycle
+		$this->rate = $this->github->account->getRateLimit()->rate;
 	}
 
 	/**
@@ -116,91 +136,96 @@ class PatchtesterModelPull extends JModelLegacy
 
 	public function apply($id)
 	{
-		jimport('joomla.filesystem.file');
-
-		$table = JTable::getInstance('tests', 'PatchTesterTable');
-		$github = new JGithub;
-		$pull = $github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $id);
-
-		if (is_null($pull->head->repo))
+		// Only act if there are API hits remaining
+		if ($this->rate->remaining > 0)
 		{
-			throw new Exception(JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
-		}
+			$pull = $this->github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $id);
 
-		$patch = $this->transport->get($pull->diff_url)->body;
-
-		$files = $this->parsePatch($patch);
-
-		foreach ($files as $file)
-		{
-			if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->old))
+			if (is_null($pull->head->repo))
 			{
-				throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S'), $file->old));
-			}
-			if ($file->action == 'added' || $file->action == 'modified')
-			{
-
-				// if the backup file already exists, we can't apply the patch
-				if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->new) . '.txt'))
-				{
-					throw new Exception(sprintf(JText::_('COM_PATCHTESTER_CONFLICT_S'), $file->new));
-				}
-
-				if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->old))
-				{
-					throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
-				}
-
-				$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' .
-					$pull->head->ref . '/' . $file->new;
-
-				$file->body = $this->transport->get($url)->body;
-			}
-		}
-
-		// at this point, we have ensured that we have all the new files and there are no conflicts
-
-		foreach ($files as $file)
-		{
-			// we only create a backup if the file already exists
-			if ($file->action == 'deleted' || (file_exists(JPATH_ROOT . '/' . $file->new) && $file->action == 'modified'))
-			{
-				if (!JFile::copy(JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
-				{
-					throw new Exception(sprintf('Can not copy file %s to %s'
-						, JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
-				}
+				throw new Exception(JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
 			}
 
-			switch ($file->action)
+			$patch = $this->transport->get($pull->diff_url)->body;
+
+			$files = $this->parsePatch($patch);
+
+			foreach ($files as $file)
 			{
-				case 'modified':
-				case 'added':
-					if (!JFile::write(JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
+				if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->old))
+				{
+					throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S'), $file->old));
+				}
+
+				if ($file->action == 'added' || $file->action == 'modified')
+				{
+					// If the backup file already exists, we can't apply the patch
+					if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->new) . '.txt'))
 					{
-						throw new Exception(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
+						throw new Exception(sprintf(JText::_('COM_PATCHTESTER_CONFLICT_S'), $file->new));
 					}
-					break;
 
-				case 'deleted':
-					if (!JFile::delete(JPATH::clean(JPATH_ROOT . '/' . $file->old)))
+					if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->old))
 					{
-						throw new Exception(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
+						throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
 					}
-					break;
+
+					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' .
+						$pull->head->ref . '/' . $file->new;
+
+					$file->body = $this->transport->get($url)->body;
+				}
+			}
+
+			jimport('joomla.filesystem.file');
+
+			// At this point, we have ensured that we have all the new files and there are no conflicts
+			foreach ($files as $file)
+			{
+				// We only create a backup if the file already exists
+				if ($file->action == 'deleted' || (file_exists(JPATH_ROOT . '/' . $file->new) && $file->action == 'modified'))
+				{
+					if (!JFile::copy(JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+					{
+						throw new Exception(sprintf('Can not copy file %s to %s'
+							, JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
+					}
+				}
+
+				switch ($file->action)
+				{
+					case 'modified':
+					case 'added':
+						if (!JFile::write(JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
+						{
+							throw new Exception(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
+						}
+						break;
+
+					case 'deleted':
+						if (!JFile::delete(JPATH::clean(JPATH_ROOT . '/' . $file->old)))
+						{
+							throw new Exception(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
+						}
+						break;
+				}
+			}
+
+			$table = JTable::getInstance('tests', 'PatchTesterTable');
+			$table->pull_id = $pull->number;
+			$table->data = json_encode($files);
+			$table->patched_by = JFactory::getUser()->id;
+			$table->applied = 1;
+			$table->applied_version = JVERSION;
+
+			if (!$table->store())
+			{
+				throw new Exception($table->getError());
 			}
 		}
-
-		$table->pull_id = $pull->number;
-		$table->data = json_encode($files);
-		$table->patched_by = JFactory::getUser()->id;
-		$table->applied = 1;
-		$version = new JVersion;
-		$table->applied_version = $version->getShortVersion();
-
-		if (!$table->store())
+		else
 		{
-			throw new Exception($table->getError());
+			throw new Exception(JText::sprintf('COM_PATCHTESTER_API_LIMIT_ACTION', JFactory::getDate($this->rate->reset)));
 		}
 
 		return true;
@@ -208,16 +233,11 @@ class PatchtesterModelPull extends JModelLegacy
 
 	public function revert($id)
 	{
-		jimport('joomla.filesystem.file');
-
 		$table = JTable::getInstance('tests', 'PatchTesterTable');
-
 		$table->load($id);
 
-		// we don't want to restore files from an older version
-		$version = new JVersion;
-
-		if ($table->applied_version != $version->getShortVersion())
+		// We don't want to restore files from an older version
+		if ($table->applied_version != JVERSION)
 		{
 			$table->delete();
 
@@ -231,6 +251,8 @@ class PatchtesterModelPull extends JModelLegacy
 			throw new Exception(sprintf(JText::_('%s - Error retrieving table data (%s)')
 				, __METHOD__, htmlentities($table->data)));
 		}
+
+		jimport('joomla.filesystem.file');
 
 		foreach ($files as $file)
 		{

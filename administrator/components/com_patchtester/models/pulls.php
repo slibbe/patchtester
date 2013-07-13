@@ -16,6 +16,19 @@ jimport('joomla.application.component.modellist');
  */
 class PatchtesterModelPulls extends JModelList
 {
+	/**
+	 * Github object
+	 *
+	 * @var  PTGithub
+	 */
+	protected $github;
+
+	/**
+	 * Object containing the rate limit data
+	 *
+	 * @var  object
+	 */
+	protected $rate;
 
 	/**
 	 * Constructor.
@@ -38,6 +51,18 @@ class PatchtesterModelPulls extends JModelList
 		}
 
 		parent::__construct($config);
+
+		// Set up the Github object
+		$this->github = new PTGithub;
+
+		// Store the rate data for reuse during this request cycle
+		$this->rate = $this->github->account->getRateLimit()->rate;
+
+		// Check the API rate limit, display a message if over
+		if ($this->rate->remaining == 0)
+		{
+			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', JFactory::getDate($this->rate->reset)));
+		}
 	}
 
 
@@ -67,25 +92,8 @@ class PatchtesterModelPulls extends JModelList
         // List state information.
         parent::populateState('number', 'desc');
 
-        //-- GitHubs default list limit is 30
-        $this->state->set('list.limit', 30);
-	}
-
-	/**
-	 * Method to get a store id based on model configuration state.
-	 *
-	 * This is necessary because the model is used by the component and
-	 * different modules that might need different sets of data or different
-	 * ordering requirements.
-	 *
-	 * @param    string        $id    A prefix for the store id.
-	 *
-	 * @return    string        A store id.
-	 * @since    1.6
-	 */
-	protected function getStoreId($id = '')
-	{
-		return parent::getStoreId($id);
+        // GitHub's default list limit is 30
+        $this->setState('list.limit', 30);
 	}
 
 	public function getAppliedPatches()
@@ -102,8 +110,6 @@ class PatchtesterModelPulls extends JModelList
 
 	public function getItems()
 	{
-		jimport('joomla.client.github');
-
 		if ($this->getState('github_user') == '' || $this->getState('github_repo') == '')
 		{
 			return array();
@@ -118,49 +124,57 @@ class PatchtesterModelPulls extends JModelList
 
 		try
 		{
-			$github = new JGithub;
-			$pulls = $github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
-			usort($pulls, array($this, 'sortItems'));
-
-			foreach ($pulls as $i => &$pull)
+			// If over the API limit, we can't build this list
+			// TODO - Cache the request data in case of API limiting
+			if ($this->rate->remaining > 0)
 			{
-				if ($search && false === strpos($pull->title, $search))
+				$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
+				usort($pulls, array($this, 'sortItems'));
+
+				foreach ($pulls as $i => &$pull)
 				{
-					unset($pulls[$i]);
-					continue;
-				}
+					if ($search && false === strpos($pull->title, $search))
+					{
+						unset($pulls[$i]);
+						continue;
+					}
 
-				if ($searchId && $pull->number != $searchId)
-				{
-					unset($pulls[$i]);
-					continue;
-				}
+					if ($searchId && $pull->number != $searchId)
+					{
+						unset($pulls[$i]);
+						continue;
+					}
 
-				// Try to find a joomlacode issue number
-				$pulls[$i]->joomlacode_issue = 0;
+					// Try to find a joomlacode issue number
+					$pulls[$i]->joomlacode_issue = 0;
 
-				$matches = array();
+					$matches = array();
 
-				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
-
-				if (isset($matches[1]))
-				{
-					$pulls[$i]->joomlacode_issue = (int) $matches[1];
-				}
-				else
-				{
-					preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
+					preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
 
 					if (isset($matches[1]))
 					{
-						preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
+						$pulls[$i]->joomlacode_issue = (int) $matches[1];
+					}
+					else
+					{
+						preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
 
 						if (isset($matches[1]))
 						{
-							$pulls[$i]->joomlacode_issue = (int) $matches[1];
+							preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
+
+							if (isset($matches[1]))
+							{
+								$pulls[$i]->joomlacode_issue = (int) $matches[1];
+							}
 						}
 					}
 				}
+			}
+			else
+			{
+				$pulls = array();
 			}
 
 			return $pulls;
@@ -188,8 +202,13 @@ class PatchtesterModelPulls extends JModelList
 
     public function getTotal()
     {
-        return PTGithub::getInstance()
-            ->repos->get('joomla', 'joomla-cms')
-            ->open_issues_count;
+	    if ($this->rate->remaining > 0)
+	    {
+	        return $this->github->repos->get('joomla', 'joomla-cms')->open_issues_count;
+	    }
+	    else
+	    {
+		    return 0;
+	    }
     }
 }

@@ -13,11 +13,6 @@ class PTGithub extends JGithub
      */
     protected $repos;
 
-    public static function getInstance(JRegistry $options = null, JGithubHttp $client = null)
-    {
-        return new PTGithub($options, $client);
-    }
-
     public function __get($name)
     {
         if ($name == 'repos')
