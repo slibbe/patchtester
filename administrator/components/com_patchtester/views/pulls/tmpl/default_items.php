@@ -51,19 +51,21 @@ foreach ($this->items as $i => $item) :
 		endif; ?>
 	</td>
 	<td class="center">
-		<?php if ($patch && $patch->applied) :
-			echo '<div class="patchApplied" style="background-color: #adff2f;">';
-			echo JText::_('COM_PATCHTESTER_APPLIED');
-			echo '</div>';
-		else :
-			echo JText::_('COM_PATCHTESTER_NOT_APPLIED');
-		endif; ?>
+		<?php if ($patch && $patch->applied) : ?>
+			<span class="label label-success">
+			<?php echo JText::_('COM_PATCHTESTER_APPLIED'); ?>
+			</span>
+		<?php else : ?>
+			<span class="label">
+			<?php echo JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?>
+			</span>
+		<?php endif; ?>
 	</td>
 	<td class="center">
 		<?php if ($patch && $patch->applied) :
-			echo '<a href="javascript:submitpatch(\'pull.revert\', ' . (int) $patch->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.revert\', ' . (int) $patch->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
 		else :
-			echo '<a href="javascript:submitpatch(\'pull.apply\', ' . (int) $item->number . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.apply\', ' . (int) $item->number . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
 		endif; ?>
 	</td>
 </tr>
