@@ -1,0 +1,15 @@
+# Packages #
+*.zip
+*.tar.*
+
+# Packages directories #
+build/packages
+build/packaging
+build/releases
+
+# IDE & System#
+.buildpath
+.project
+.settings
+.DS_Store
+.idea
