@@ -19,9 +19,6 @@
       <file driver="mysql" charset="utf8">install/sql/mysql/uninstall.mysql.utf8.sql</file>
     </sql>
   </uninstall>
-  <files folder="site">
-    <filename>patchtester.php</filename>
-  </files>
   <administration>
     <menu img="components/com_patchtester/assets/images/icon-16-patchtester.png">com_patchtester</menu>
     <files folder="admin">
