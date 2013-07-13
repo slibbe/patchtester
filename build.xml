@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="patchtester" default="build" basedir=".">
+	<!-- Run all tasks using build target -->
+	<target name="build" depends="phpcs" />
+
+	<!-- Check code style using Joomla Coding Standards -->
+	<target name="phpcs" description="Generate codestyle report using PHP_CodeSniffer">
+		<exec executable="phpcs">
+			<arg value="--report=checkstyle" />
+			<arg value="--extensions=php" />
+			<arg value="-p" />
+			<arg value="--report-file=${basedir}/build/logs/checkstyle.xml" />
+			<arg value="--standard=${basedir}/build/phpcs/Joomla" />
+			<arg value="--ignore=${basedir}/*tmpl/*" />
+			<arg path="${basedir}/administrator/components/com_patchtester" />
+		</exec>
+	</target>
+
+	<!-- Check code style on Travis-CI based on Joomla Platform -->
+	<target name="travis-phpcs" description="Generate codestyle report using PHP_CodeSniffer for output on Travis-CI">
+		<exec executable="phpcs">
+			<arg value="-p" />
+			<arg value="-w" />
+			<arg value="--extensions=php" />
+			<arg value="--report=full" />
+			<arg value="--standard=${basedir}/build/phpcs/Joomla" />
+			<arg value="--ignore=${basedir}/*tmpl/*" />
+			<arg path="${basedir}/administrator/components/com_patchtester" />
+		</exec>
+	</target>
+</project>

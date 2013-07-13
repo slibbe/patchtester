@@ -7,6 +7,9 @@ build/packages
 build/packaging
 build/releases
 
+# Build #
+build/logs
+
 # IDE & System#
 .buildpath
 .project
