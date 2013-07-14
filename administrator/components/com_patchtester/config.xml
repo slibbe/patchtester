@@ -29,7 +29,7 @@
 			<option value="0">JNO</option>
 		</field>
 
-		<field name="cache_lifetime" type="password" default="60"
+		<field name="cache_lifetime" type="text" default="60"
 			description="COM_PATCHTESTER_FIELD_CACHE_LIFETIME_DESC"
 			label="COM_PATCHTESTER_FIELD_CACHE_LIFETIME_LABEL"
 		/>

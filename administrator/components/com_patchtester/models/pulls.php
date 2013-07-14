@@ -164,64 +164,35 @@ class PatchtesterModelPulls extends JModelList
 
 		$this->ordering = $this->getState('list.ordering', 'title');
 		$this->orderDir = $this->getState('list.direction', 'asc');
-		$search         = $this->getState('filter.search');
-		$searchId       = $this->getState('filter.searchid');
-
-		$page = $this->getPagination()->pagesCurrent;
 
 		try
 		{
-			// If over the API limit, we can't build this list
-			// TODO - Cache the request data in case of API limiting
-			if ($this->rate->remaining > 0)
+			$cacheFile = JPATH_CACHE . '/patchtester.json';
+			$params    = $this->getState('params');
+
+			// Check if caching is enabled
+			if ($params->get('cache', 1) == 1)
 			{
-				$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
-				usort($pulls, array($this, 'sortItems'));
+				// Fetch cache time from component parameters and convert to seconds
+				$cacheTime = $params->get('cache_lifetime', 60);
+				$cacheTime = $cacheTime * 60;
 
-				foreach ($pulls as $i => &$pull)
+				// Cache files expired?
+				if (!file_exists($cacheFile) || (time() - @filemtime($cacheFile) > $cacheTime))
 				{
-					if ($search && false === strpos($pull->title, $search))
-					{
-						unset($pulls[$i]);
-						continue;
-					}
-
-					if ($searchId && $pull->number != $searchId)
-					{
-						unset($pulls[$i]);
-						continue;
-					}
-
-					// Try to find a Joomlacode issue number
-					$pulls[$i]->joomlacode_issue = 0;
-
-					$matches = array();
-
-					preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
-
-					if (isset($matches[1]))
-					{
-						$pulls[$i]->joomlacode_issue = (int) $matches[1];
-					}
-					else
-					{
-						preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
-
-						if (isset($matches[1]))
-						{
-							preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
-
-							if (isset($matches[1]))
-							{
-								$pulls[$i]->joomlacode_issue = (int) $matches[1];
-							}
-						}
-					}
+					// Do a request to the GitHub API for new data
+					$pulls = $this->requestFromGithub();
+				}
+				else
+				{
+					// Render from the cached data
+					$pulls = json_decode(file_get_contents($cacheFile));
 				}
 			}
 			else
 			{
-				$pulls = array();
+				// No caching, request from GitHub
+				$pulls = $this->requestFromGithub();
 			}
 
 			return $pulls;
@@ -232,6 +203,83 @@ class PatchtesterModelPulls extends JModelList
 
 			return array();
 		}
+	}
+
+	/**
+	 * Method to request new data from GitHub
+	 *
+	 * @return  array  Pull request data
+	 *
+	 * @since   2.0
+	 */
+	protected function requestFromGithub()
+	{
+		// If over the API limit, we can't build this list
+		if ($this->rate->remaining > 0)
+		{
+			$page     = $this->getPagination()->pagesCurrent;
+			$search   = $this->getState('filter.search');
+			$searchId = $this->getState('filter.searchid');
+
+			$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
+			usort($pulls, array($this, 'sortItems'));
+
+			foreach ($pulls as $i => &$pull)
+			{
+				if ($search && false === strpos($pull->title, $search))
+				{
+					unset($pulls[$i]);
+					continue;
+				}
+
+				if ($searchId && $pull->number != $searchId)
+				{
+					unset($pulls[$i]);
+					continue;
+				}
+
+				// Try to find a Joomlacode issue number
+				$pulls[$i]->joomlacode_issue = 0;
+
+				$matches = array();
+
+				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
+
+				if (isset($matches[1]))
+				{
+					$pulls[$i]->joomlacode_issue = (int) $matches[1];
+				}
+				else
+				{
+					preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
+
+					if (isset($matches[1]))
+					{
+						preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
+
+						if (isset($matches[1]))
+						{
+							$pulls[$i]->joomlacode_issue = (int) $matches[1];
+						}
+					}
+				}
+			}
+
+			// If caching is enabled, save the request data
+			$params = $this->getState('params');
+
+			if ($params->get('cache') == 1)
+			{
+				$data = json_encode($pulls);
+				file_put_contents(JPATH_CACHE . '/patchtester.json', $data);
+			}
+		}
+		else
+		{
+			$pulls = array();
+		}
+
+		return $pulls;
 	}
 
 	/**
