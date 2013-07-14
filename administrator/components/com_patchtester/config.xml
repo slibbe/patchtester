@@ -21,6 +21,18 @@
 			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
 		/>
+
+		<field name="cache" type="radio" class="btn-group" default="1"
+			description="COM_PATCHTESTER_FIELD_CACHE_DESC"
+			label="COM_PATCHTESTER_FIELD_CACHE_LABEL" >
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+
+		<field name="cache_lifetime" type="password" default="60"
+			description="COM_PATCHTESTER_FIELD_CACHE_LIFETIME_DESC"
+			label="COM_PATCHTESTER_FIELD_CACHE_LIFETIME_LABEL"
+		/>
 	</fieldset>
 
 	<fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
