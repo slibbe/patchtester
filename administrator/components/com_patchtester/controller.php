@@ -37,18 +37,43 @@ class PatchTesterController extends JControllerLegacy
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
 		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.folder');
 
-		if (file_exists(JPATH_CACHE . '/patchtester.json') && !JFile::delete(JPATH_CACHE . '/patchtester.json'))
+		$failures  = 0;
+		$successes = 0;
+
+		$cacheFiles = JFolder::files(JPATH_CACHE);
+
+		foreach ($cacheFiles as $file)
 		{
-			$msg     = JText::_('COM_PATCHTESTER_PURGE_FAIL');
-			$msgType = 'error';
-		}
-		else
-		{
-			$msg     = JText::_('COM_PATCHTESTER_PURGE_SUCCESS');
-			$msgType = 'message';
+			if (strpos($file, 'patchtester-page-') === 0)
+			{
+				if (!JFile::delete(JPATH_CACHE . '/' . $file))
+				{
+					$failures++;
+				}
+				else
+				{
+					$successes++;
+				}
+			}
 		}
 
-		$this->setRedirect('index.php?option=com_patchtester&view=pulls', $msg, $msgType);
+		if ($failures > 0)
+		{
+			JFactory::getApplication()->enqueueMessage(JText::plural('COM_PATCHTESTER_PURGE_FAIL', $failures), 'error');
+		}
+
+		if ($successes > 0)
+		{
+			JFactory::getApplication()->enqueueMessage(JText::plural('COM_PATCHTESTER_PURGE_SUCCESS', $successes), 'message');
+		}
+
+		if ($failures == 0 && $successes == 0)
+		{
+			JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_PURGE_NA'), 'message');
+		}
+
+		$this->setRedirect('index.php?option=com_patchtester&view=pulls');
 	}
 }

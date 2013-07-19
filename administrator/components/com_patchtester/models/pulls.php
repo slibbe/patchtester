@@ -167,7 +167,7 @@ class PatchtesterModelPulls extends JModelList
 
 		try
 		{
-			$cacheFile = JPATH_CACHE . '/patchtester.json';
+			$cacheFile = JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json';
 			$params    = $this->getState('params');
 
 			// Check if caching is enabled
@@ -271,7 +271,7 @@ class PatchtesterModelPulls extends JModelList
 			if ($params->get('cache') == 1)
 			{
 				$data = json_encode($pulls);
-				file_put_contents(JPATH_CACHE . '/patchtester.json', $data);
+				file_put_contents(JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json', $data);
 			}
 		}
 		else
