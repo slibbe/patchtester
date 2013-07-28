@@ -31,6 +31,14 @@ class PatchtesterModelPull extends JModelLegacy
 	protected $github;
 
 	/**
+	 * Array containing top level non-production folders
+	 *
+	 * @var    array
+	 * @since  2.0
+	 */
+	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests');
+
+	/**
 	 * Object containing the rate limit data
 	 *
 	 * @var    object
@@ -51,7 +59,7 @@ class PatchtesterModelPull extends JModelLegacy
 
 		// Set up the JHttp object
 		$options = new JRegistry;
-		$options->set('userAgent', 'JPatchTester/1.0');
+		$options->set('userAgent', 'JPatchTester/2.0');
 		$options->set('timeout', 120);
 
 		$this->transport = JHttpFactory::getHttp($options, 'curl');
@@ -153,6 +161,21 @@ class PatchtesterModelPull extends JModelLegacy
 					if (strpos($line, '@@') === 0)
 					{
 						$state   = 0;
+
+						/*
+						 * Check if the patch tester is running in a production environment
+						 * If so, do not patch certain files as errors will be thrown
+						 */
+						if (!file_exists(JPATH_ROOT . '/installation/CHANGELOG'))
+						{
+							$filePath = explode('/', $file->new);
+
+							if (in_array($filePath[0], $this->nonProductionFolders))
+							{
+								continue;
+							}
+						}
+
 						$files[] = $file;
 					}
 
@@ -188,6 +211,13 @@ class PatchtesterModelPull extends JModelLegacy
 			$patch = $this->transport->get($pull->diff_url)->body;
 
 			$files = $this->parsePatch($patch);
+
+			if (!$files)
+			{
+				JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
+
+				return true;
+			}
 
 			foreach ($files as $file)
 			{
