@@ -63,7 +63,7 @@ foreach ($this->items as $i => $item) :
 	</td>
 	<td class="center">
 		<?php if ($patch && $patch->applied) :
-			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.revert\', ' . (int) $patch->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'pull.revert\', ' . (int) $patch->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
 		else :
 			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.apply\', ' . (int) $item->number . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
 		endif; ?>
