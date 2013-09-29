@@ -52,6 +52,7 @@ class PatchtesterModelPull extends JModelLegacy
 	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
 	 *
 	 * @since   2.0
+	 * @throws  RuntimeException
 	 */
 	public function __construct($config = array())
 	{
@@ -62,7 +63,15 @@ class PatchtesterModelPull extends JModelLegacy
 		$options->set('userAgent', 'JPatchTester/2.0');
 		$options->set('timeout', 120);
 
-		$this->transport = JHttpFactory::getHttp($options, 'curl');
+		// Make sure we can use the cURL driver
+		$driver = JHttpFactory::getAvailableDriver($options, 'curl');
+
+		if (!($driver instanceof JHttpTransportCurl))
+		{
+			throw new RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
+		}
+
+		$this->transport = new JHttp($options, $driver);
 
 		// Set up the Github object
 		$params = JComponentHelper::getParams('com_patchtester');
