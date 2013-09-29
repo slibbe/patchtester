@@ -9,6 +9,7 @@
 	<authorUrl>http://www.joomla.org</authorUrl>
 	<version>2.0.0.alpha</version>
 	<description>COM_PATCHTESTER_XML_DESCRIPTION</description>
+	<scriptfile>script.php</scriptfile>
 	<install>
 		<sql>
 			<file driver="mysql" charset="utf8">install/sql/mysql/install.sql</file>
