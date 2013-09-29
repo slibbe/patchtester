@@ -97,10 +97,10 @@ class PatchtesterModelPulls extends JModelList
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// Load the filter state.
-		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
 		$this->setState('filter.search', $search);
 
-		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid');
+		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid', '');
 		$this->setState('filter.searchid', $searchId);
 
 		// Load the parameters.
@@ -167,11 +167,13 @@ class PatchtesterModelPulls extends JModelList
 
 		try
 		{
-			$cacheFile = JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json';
-			$params    = $this->getState('params');
+			$cacheFile  = JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json';
+			$params     = $this->getState('params');
+			$searchId   = $this->getState('filter.searchid');
+			$searchWord = $this->getState('filter.search');
 
-			// Check if caching is enabled
-			if ($params->get('cache', 1) == 1)
+			// Check if caching is enabled or that we aren't filtering
+			if ($params->get('cache', 1) == 1 && $searchId != '' && $searchWord != '')
 			{
 				// Fetch cache time from component parameters and convert to seconds
 				$cacheTime = $params->get('cache_lifetime', 60);
@@ -221,18 +223,21 @@ class PatchtesterModelPulls extends JModelList
 			$search   = $this->getState('filter.search');
 			$searchId = $this->getState('filter.searchid');
 
-			$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
-			usort($pulls, array($this, 'sortItems'));
+			// Check if we're searching for a single PR
+			if ($searchId != '' && $search == '')
+			{
+				$pulls = array();
+				$pulls[0] = $this->github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $searchId);
+			}
+			else
+			{
+				$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
+				usort($pulls, array($this, 'sortItems'));
+			}
 
 			foreach ($pulls as $i => &$pull)
 			{
 				if ($search && false === strpos($pull->title, $search))
-				{
-					unset($pulls[$i]);
-					continue;
-				}
-
-				if ($searchId && $pull->number != $searchId)
 				{
 					unset($pulls[$i]);
 					continue;
@@ -268,7 +273,7 @@ class PatchtesterModelPulls extends JModelList
 			// If caching is enabled, save the request data
 			$params = $this->getState('params');
 
-			if ($params->get('cache') == 1)
+			if ($params->get('cache', 1) == 1 && $searchId != '' && $search != '')
 			{
 				$data = json_encode($pulls);
 				file_put_contents(JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json', $data);
