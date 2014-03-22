@@ -56,7 +56,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<?php echo JText::_('COM_PATCHTESTER_JOOMLACODE_ISSUE'); ?>
 				</th>
 				<th width="20%" class="nowrap center">
-					<?php echo JText::_('JSTATUS'); ?>
+					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'applied', $listDirn, $listOrder); ?>
 				</th>
 				<th width="20%" class="nowrap center">
 					<?php echo JText::_('COM_PATCHTESTER_TEST_THIS_PATCH'); ?>

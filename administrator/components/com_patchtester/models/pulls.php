@@ -45,10 +45,7 @@ class PatchtesterModelPulls extends JModelList
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
-				'id', 'id',
-				'title', 'title',
-				'updated_at', 'updated_at',
-				'user', 'user'
+				'id', 'title', 'updated_at', 'user', 'applied'
 			);
 		}
 
@@ -232,6 +229,7 @@ class PatchtesterModelPulls extends JModelList
 			else
 			{
 				$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
+				$pulls = $this->mergeAppliedData($pulls);
 				usort($pulls, array($this, 'sortItems'));
 			}
 
@@ -304,6 +302,9 @@ class PatchtesterModelPulls extends JModelList
 			case 'title' :
 				return ($this->orderDir == 'asc') ? strcasecmp($a->title, $b->title) : strcasecmp($b->title, $a->title);
 
+			case 'applied' :
+				return ($this->orderDir == 'asc') ? $b->applied > $a->applied : $b->applied < $a->applied;
+
 			case 'number' :
 			default :
 				return ($this->orderDir == 'asc') ? $b->number < $a->number : $b->number > $a->number;
@@ -327,5 +328,35 @@ class PatchtesterModelPulls extends JModelList
 		{
 			return 0;
 		}
+	}
+
+	/**
+	 * Flags pull requests as having been applied in the current environment
+	 *
+	 * @param   array  $pulls  Array of pull data
+	 *
+	 * @return  array
+	 *
+	 * @since   2.0
+	 */
+	protected function mergeAppliedData($pulls)
+	{
+		// Fetch the applied patches
+		$appliedData = $this->getAppliedPatches();
+
+		// Loop through the pulls and add an applied flag
+		foreach ($pulls as $pull)
+		{
+			if (array_key_exists($pull->number, $appliedData))
+			{
+				$pull->applied = 1;
+			}
+			else
+			{
+				$pull->applied = 0;
+			}
+		}
+
+		return $pulls;
 	}
 }
