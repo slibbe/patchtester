@@ -235,7 +235,7 @@ class PatchtesterModelPulls extends JModelList
 
 			foreach ($pulls as $i => &$pull)
 			{
-				if ($search && false === strpos($pull->title, $search))
+				if ($search && false === stripos($pull->title, $search))
 				{
 					unset($pulls[$i]);
 					continue;
