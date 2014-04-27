@@ -116,12 +116,8 @@ class PatchtesterViewPulls extends JViewLegacy
 	 */
 	protected function addToolbar()
 	{
-		JToolBarHelper::title(JText::_('COM_PATCHTESTER'), 'patchtester');
+		JToolBarHelper::title(JText::_('COM_PATCHTESTER'), '');
 		JToolbarHelper::custom('purge', 'delete.png', 'delete_f2.png', 'COM_PATCHTESTER_PURGE_CACHE', false);
 		JToolBarHelper::preferences('com_patchtester');
-
-		JFactory::getDocument()->addStyleDeclaration(
-			'.icon-48-patchtester {background-image: url(components/com_patchtester/assets/images/icon-48-patchtester.png);}'
-		);
 	}
 }
