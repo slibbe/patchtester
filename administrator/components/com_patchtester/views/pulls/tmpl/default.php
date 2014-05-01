@@ -8,12 +8,17 @@
 
 defined('_JEXEC') or die;
 
+/** @type  PatchtesterViewPulls  $this */
+
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.modal');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 
+if (count($this->envErrors)) :
+	$this->loadTemplate('errors');
+else :
 ?>
 <script type="text/javascript">
 	var submitpatch = function (task, id) {
@@ -83,3 +88,4 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
 </form>
+<?php endif;

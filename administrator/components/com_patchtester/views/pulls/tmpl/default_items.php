@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+/** @type  PatchtesterViewPulls  $this */
+
 foreach ($this->items as $i => $item) :
 	$status = '';
 

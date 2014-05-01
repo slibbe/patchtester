@@ -17,6 +17,14 @@ defined('_JEXEC') or die;
 class PatchtesterViewPulls extends JViewLegacy
 {
 	/**
+	 * Array containing environment errors
+	 *
+	 * @var    array
+	 * @since  2.0
+	 */
+	protected $envErrors = array();
+
+	/**
 	 * Array of open pull requests
 	 *
 	 * @var    array
@@ -55,51 +63,37 @@ class PatchtesterViewPulls extends JViewLegacy
 	 *
 	 * @return  mixed  A string if successful, otherwise a Error object.
 	 *
-	 * @see     fetch()
 	 * @since   1.0
 	 */
 	public function display($tpl = null)
 	{
-		// TODO: move the check
-		$checkErrs = array();
-
 		if (!extension_loaded('openssl'))
 		{
-			$checkErrs[] = 'The OpenSSL extension must be installed and enabled in your php.ini';
+			$this->envErrors[] = JText::_('COM_PATCHTESTER_REQUIREMENT_OPENSSL');
 		}
 
 		if (!in_array('https', stream_get_wrappers()))
 		{
-			$checkErrs[] = 'https wrappers must be enabled';
+			$this->envErrors[] = JText::_('COM_PATCHTESTER_REQUIREMENT_HTTPS');
 		}
 
-		if (count($checkErrs))
+		// Only process the data if there are no environment errors
+		if (!count($this->envErrors))
 		{
-			$application = JFactory::getApplication();
+			$this->state      = $this->get('State');
+			$this->items      = $this->get('Items');
+			$this->patches    = $this->get('AppliedPatches');
+			$this->pagination = $this->get('Pagination');
 
-			$application->enqueueMessage('Your system does not meet the requirements to run the PullTester extension:', 'error');
+			// Check for errors.
+			$errors = $this->get('Errors');
 
-			foreach ($checkErrs as $error)
+			if (count($errors))
 			{
-				$application->enqueueMessage($error, 'error');
+				JError::raiseError(500, implode("\n", $errors));
+
+				return false;
 			}
-
-			return $this;
-		}
-
-		$this->state      = $this->get('State');
-		$this->items      = $this->get('Items');
-		$this->patches    = $this->get('AppliedPatches');
-		$this->pagination = $this->get('Pagination');
-
-		// Check for errors.
-		$errors = $this->get('Errors');
-
-		if (count($errors))
-		{
-			JError::raiseError(500, implode("\n", $errors));
-
-			return false;
 		}
 
 		$this->addToolbar();
@@ -117,7 +111,12 @@ class PatchtesterViewPulls extends JViewLegacy
 	protected function addToolbar()
 	{
 		JToolBarHelper::title(JText::_('COM_PATCHTESTER'), 'patchtester');
-		JToolbarHelper::custom('purge', 'delete.png', 'delete_f2.png', 'COM_PATCHTESTER_PURGE_CACHE', false);
+
+		if (!count($this->envErrors))
+		{
+			JToolbarHelper::custom('purge', 'delete.png', 'delete_f2.png', 'COM_PATCHTESTER_PURGE_CACHE', false);
+		}
+
 		JToolBarHelper::preferences('com_patchtester');
 
 		JFactory::getDocument()->addStyleDeclaration(
