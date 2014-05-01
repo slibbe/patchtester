@@ -25,7 +25,7 @@ class PatchtesterModelPull extends JModelLegacy
 	/**
 	 * Github object
 	 *
-	 * @var    PTGithub
+	 * @var    JGithub
 	 * @since  2.0
 	 */
 	protected $github;
@@ -85,7 +85,7 @@ class PatchtesterModelPull extends JModelLegacy
 			$options->set('api.password', $params->get('gh_password', ''));
 		}
 
-		$this->github = new PTGithub($options);
+		$this->github = new JGithub($options);
 
 		// Store the rate data for reuse during this request cycle
 		$this->rate = $this->github->account->getRateLimit()->rate;

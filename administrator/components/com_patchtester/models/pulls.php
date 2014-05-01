@@ -19,7 +19,7 @@ class PatchtesterModelPulls extends JModelList
 	/**
 	 * Github object
 	 *
-	 * @var    PTGithub
+	 * @var    JGithub
 	 * @since  2.0
 	 */
 	protected $github;
@@ -68,7 +68,7 @@ class PatchtesterModelPulls extends JModelList
 			JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
 		}
 
-		$this->github = new PTGithub($options);
+		$this->github = new JGithub($options);
 
 		// Store the rate data for reuse during this request cycle
 		$this->rate = $this->github->account->getRateLimit()->rate;

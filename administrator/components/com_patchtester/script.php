@@ -20,7 +20,7 @@ class Com_PatchtesterInstallerScript
 	 * @var    string
 	 * @since  2.0
 	 */
-	protected $minCmsVersion = '3.2.0';
+	protected $minCmsVersion = '3.3.0';
 
 	/**
 	 * Array of templates with supported overrides
@@ -42,9 +42,6 @@ class Com_PatchtesterInstallerScript
 	 */
 	public function preflight($type, $parent)
 	{
-		// After releasing CMS 3.2.0, enable the below check
-		return true;
-
 		if (version_compare(JVERSION, $this->minCmsVersion, 'lt'))
 		{
 			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_ERROR_INSTALL_JVERSION', $this->minCmsVersion));
