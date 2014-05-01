@@ -9,18 +9,22 @@
 defined('_JEXEC') or die;
 
 /**
- * PatchTester Controller
+ * Pulls Table class
  *
  * @package  PatchTester
  * @since    1.0
  */
-class PatchTesterController extends JControllerLegacy
+class PatchtesterTablePulls extends JTable
 {
 	/**
-	 * The default view for the display method.
+	 * Constructor
 	 *
-	 * @var    string
-	 * @since  1.0
+	 * @param   JDatabaseDriver  &$db  JDatabaseDriver object.
+	 *
+	 * @since   1.0
 	 */
-	protected $default_view = 'pulls';
+	public function __construct(&$db)
+	{
+		parent::__construct('#__patchtester_pulls', 'id', $db);
+	}
 }

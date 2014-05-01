@@ -37,7 +37,7 @@ class PatchtesterModelPulls extends JModelList
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
 	 *
-	 * @see     JController
+	 * @see     JControllerLegacy
 	 * @since   1.0
 	 */
 	public function __construct($config = array())
@@ -45,7 +45,7 @@ class PatchtesterModelPulls extends JModelList
 		if (empty($config['filter_fields']))
 		{
 			$config['filter_fields'] = array(
-				'id', 'title', 'updated_at', 'user', 'applied'
+				'id', 'title', 'applied'
 			);
 		}
 
@@ -72,12 +72,6 @@ class PatchtesterModelPulls extends JModelList
 
 		// Store the rate data for reuse during this request cycle
 		$this->rate = $this->github->authorization->getRateLimit()->rate;
-
-		// Check the API rate limit, display a message if over
-		if ($this->rate->remaining == 0)
-		{
-			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', JFactory::getDate($this->rate->reset)), 'notice');
-		}
 	}
 
 	/**
@@ -97,9 +91,6 @@ class PatchtesterModelPulls extends JModelList
 		$search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
 		$this->setState('filter.search', $search);
 
-		$searchId = $this->getUserStateFromRequest($this->context . '.filter.searchid', 'filter_searchid', '');
-		$this->setState('filter.searchid', $searchId);
-
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_patchtester');
 
@@ -108,10 +99,7 @@ class PatchtesterModelPulls extends JModelList
 		$this->setState('github_repo', $params->get('repo', 'joomla-cms'));
 
 		// List state information.
-		parent::populateState('number', 'desc');
-
-		// GitHub's default list limit is 30
-		$this->setState('list.limit', 30);
+		parent::populateState('a.pull_id', 'desc');
 	}
 
 	/**
@@ -123,13 +111,14 @@ class PatchtesterModelPulls extends JModelList
 	 */
 	public function getAppliedPatches()
 	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true)
-			->select('*')
-			->from('#__patchtester_tests')
-			->where('applied = 1');
+		$db = $this->getDbo();
 
-		$db->setQuery($query);
+		$db->setQuery(
+		   $db->getQuery(true)
+				->select('*')
+				->from($db->quoteName('#__patchtester_tests'))
+				->where($db->quoteName('applied') . ' = 1')
+		);
 
 		try
 		{
@@ -146,111 +135,83 @@ class PatchtesterModelPulls extends JModelList
 	}
 
 	/**
-	 * Method to get an array of data items.
+	 * Method to get a JDatabaseQuery object for retrieving the data set from a database.
 	 *
-	 * @return  mixed  An array of data items on success, false on failure.
+	 * @return  JDatabaseQuery  A JDatabaseQuery object to retrieve the data set.
 	 *
-	 * @since   1.0
+	 * @since   2.0
 	 */
-	public function getItems()
+	protected function getListQuery()
 	{
-		if ($this->getState('github_user') == '' || $this->getState('github_repo') == '')
+		// Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		// Select the required fields from the table.
+		$query->select($this->getState('list.select', 'a.*'));
+		$query->from($db->quoteName('#__patchtester_pulls', 'a'));
+
+		// Filter by search
+		$search = $this->getState('filter.search');
+
+		if (!empty($search))
 		{
-			return array();
-		}
-
-		$this->ordering = $this->getState('list.ordering', 'title');
-		$this->orderDir = $this->getState('list.direction', 'asc');
-
-		try
-		{
-			$cacheFile  = JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json';
-			$params     = $this->getState('params');
-			$searchId   = $this->getState('filter.searchid');
-			$searchWord = $this->getState('filter.search');
-
-			// Check if caching is enabled or that we aren't filtering
-			if ($params->get('cache', 1) == 1 && $searchId != '' && $searchWord != '')
+			if (stripos($search, 'id:') === 0)
 			{
-				// Fetch cache time from component parameters and convert to seconds
-				$cacheTime = $params->get('cache_lifetime', 60);
-				$cacheTime = $cacheTime * 60;
-
-				// Cache files expired?
-				if (!file_exists($cacheFile) || (time() - @filemtime($cacheFile) > $cacheTime))
-				{
-					// Do a request to the GitHub API for new data
-					$pulls = $this->requestFromGithub();
-				}
-				else
-				{
-					// Render from the cached data
-					$pulls = json_decode(file_get_contents($cacheFile));
-				}
+				$query->where($db->quoteName('a.pull_id') . ' = ' . (int) substr($search, 3));
 			}
 			else
 			{
-				// No caching, request from GitHub
-				$pulls = $this->requestFromGithub();
+				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$query->where('(' . $db->quoteName('a.title') . ' LIKE ' . $search . ')');
 			}
-
-			return $pulls;
 		}
-		catch (Exception $e)
+
+		// Handle the list ordering.
+		$ordering  = $this->getState('list.ordering');
+		$direction = $this->getState('list.direction');
+
+		if (!empty($ordering))
 		{
-			JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-
-			return array();
+			$query->order($db->escape($ordering) . ' ' . $db->escape($direction));
 		}
+
+		return $query;
 	}
 
 	/**
 	 * Method to request new data from GitHub
 	 *
-	 * @return  array  Pull request data
+	 * @return  void
 	 *
 	 * @since   2.0
+	 * @throws  RuntimeException
 	 */
-	protected function requestFromGithub()
+	public function requestFromGithub()
 	{
 		// If over the API limit, we can't build this list
 		if ($this->rate->remaining > 0)
 		{
-			$page     = $this->getPagination()->pagesCurrent;
-			$search   = $this->getState('filter.search');
-			$searchId = $this->getState('filter.searchid');
-
-			// Check if we're searching for a single PR
-			if ($searchId != '' && $search == '')
-			{
-				$pulls = array();
-				$pulls[0] = $this->github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $searchId);
-			}
-			else
-			{
-				$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page);
-				$pulls = $this->mergeAppliedData($pulls);
-				usort($pulls, array($this, 'sortItems'));
-			}
+			$db    = $this->getDbo();
+			$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open');
 
 			foreach ($pulls as $i => &$pull)
 			{
-				if ($search && false === strpos($pull->title, $search))
-				{
-					unset($pulls[$i]);
-					continue;
-				}
+				// Build the data object to store in the database
+				$data              = new stdClass;
+				$data->pull_id     = $pull->number;
+				$data->title       = $pull->title;
+				$data->description = $pull->body;
+				$data->pull_url    = $pull->html_url;
 
 				// Try to find a Joomlacode issue number
-				$pulls[$i]->joomlacode_issue = 0;
-
 				$matches = array();
 
 				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
 
 				if (isset($matches[1]))
 				{
-					$pulls[$i]->joomlacode_issue = (int) $matches[1];
+					$data->joomlacode_id = (int) $matches[1];
 				}
 				else
 				{
@@ -262,101 +223,24 @@ class PatchtesterModelPulls extends JModelList
 
 						if (isset($matches[1]))
 						{
-							$pulls[$i]->joomlacode_issue = (int) $matches[1];
+							$data->joomlacode_id = (int) $matches[1];
 						}
 					}
 				}
-			}
 
-			// If caching is enabled, save the request data
-			$params = $this->getState('params');
-
-			if ($params->get('cache', 1) == 1 && $searchId != '' && $search != '')
-			{
-				$data = json_encode($pulls);
-				file_put_contents(JPATH_CACHE . '/patchtester-page-' . $this->getPagination()->pagesCurrent . '.json', $data);
+				try
+				{
+					$db->insertObject('#__patchtester_pulls', $data, 'id');
+				}
+				catch (RuntimeException $e)
+				{
+					throw new RuntimeException(JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()));
+				}
 			}
 		}
 		else
 		{
-			$pulls = array();
+			throw new RuntimeException(JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', JFactory::getDate($this->rate->reset)));
 		}
-
-		return $pulls;
-	}
-
-	/**
-	 * Method to sort the items array
-	 *
-	 * @param   object  $a  First sort object
-	 * @param   object  $b  Second sort object
-	 *
-	 * @return  mixed
-	 *
-	 * @since   1.0
-	 */
-	public function sortItems($a, $b)
-	{
-		switch ($this->ordering)
-		{
-			case 'title' :
-				return ($this->orderDir == 'asc') ? strcasecmp($a->title, $b->title) : strcasecmp($b->title, $a->title);
-
-			case 'applied' :
-				return ($this->orderDir == 'asc') ? $b->applied > $a->applied : $b->applied < $a->applied;
-
-			case 'number' :
-			default :
-				return ($this->orderDir == 'asc') ? $b->number < $a->number : $b->number > $a->number;
-		}
-	}
-
-	/**
-	 * Method to get the total number of items for the data set.
-	 *
-	 * @return  integer  The total number of items available in the data set.
-	 *
-	 * @since   2.0
-	 */
-	public function getTotal()
-	{
-		if ($this->rate->remaining > 0)
-		{
-			return $this->github->repositories->get('joomla', 'joomla-cms')->open_issues_count;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	/**
-	 * Flags pull requests as having been applied in the current environment
-	 *
-	 * @param   array  $pulls  Array of pull data
-	 *
-	 * @return  array
-	 *
-	 * @since   2.0
-	 */
-	protected function mergeAppliedData($pulls)
-	{
-		// Fetch the applied patches
-		$appliedData = $this->getAppliedPatches();
-
-		// Loop through the pulls and add an applied flag
-		foreach ($pulls as $pull)
-		{
-			if (array_key_exists($pull->number, $appliedData))
-			{
-				$pull->applied = 1;
-			}
-			else
-			{
-				$pull->applied = 0;
-			}
-		}
-
-		return $pulls;
 	}
 }

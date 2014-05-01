@@ -1,3 +1,13 @@
+CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pull_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` varchar(5000) NOT NULL DEFAULT '',
+  `pull_url` varchar(255) NOT NULL,
+  `joomlacode_id` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `#__patchtester_tests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pull_id` int(11) NOT NULL,

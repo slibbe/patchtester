@@ -114,13 +114,29 @@ class PatchtesterViewPulls extends JViewLegacy
 
 		if (!count($this->envErrors))
 		{
-			JToolbarHelper::custom('purge', 'delete.png', 'delete_f2.png', 'COM_PATCHTESTER_PURGE_CACHE', false);
+			JToolbarHelper::custom('pulls.fetch', 'delete.png', 'delete_f2.png', 'COM_PATCHTESTER_TOOLBAR_FETCH_DATA', false);
 		}
 
 		JToolBarHelper::preferences('com_patchtester');
 
 		JFactory::getDocument()->addStyleDeclaration(
 			'.icon-48-patchtester {background-image: url(components/com_patchtester/assets/images/icon-48-patchtester.png);}'
+		);
+	}
+
+	/**
+	 * Returns an array of fields the table can be sorted by
+	 *
+	 * @return  array  Array containing the field name to sort by as the key and display text as value
+	 *
+	 * @since   2.0
+	 */
+	protected function getSortFields()
+	{
+		return array(
+			'a.title'   => JText::_('JGLOBAL_TITLE'),
+			'a.pull_id' => JText::_('COM_PATCHTESTER_PULL_ID'),
+			'applied'   => JText::_('JSTATUS')
 		);
 	}
 }
