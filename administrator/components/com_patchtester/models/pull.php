@@ -88,7 +88,7 @@ class PatchtesterModelPull extends JModelLegacy
 		$this->github = new JGithub($options);
 
 		// Store the rate data for reuse during this request cycle
-		$this->rate = $this->github->account->getRateLimit()->rate;
+		$this->rate = $this->github->authorization->getRateLimit()->rate;
 	}
 
 	/**

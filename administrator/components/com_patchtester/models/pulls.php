@@ -71,7 +71,7 @@ class PatchtesterModelPulls extends JModelList
 		$this->github = new JGithub($options);
 
 		// Store the rate data for reuse during this request cycle
-		$this->rate = $this->github->account->getRateLimit()->rate;
+		$this->rate = $this->github->authorization->getRateLimit()->rate;
 
 		// Check the API rate limit, display a message if over
 		if ($this->rate->remaining == 0)
@@ -322,7 +322,7 @@ class PatchtesterModelPulls extends JModelList
 	{
 		if ($this->rate->remaining > 0)
 		{
-			return $this->github->repos->get('joomla', 'joomla-cms')->open_issues_count;
+			return $this->github->repositories->get('joomla', 'joomla-cms')->open_issues_count;
 		}
 		else
 		{
