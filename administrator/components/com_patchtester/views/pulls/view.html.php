@@ -118,10 +118,6 @@ class PatchtesterViewPulls extends JViewLegacy
 		}
 
 		JToolBarHelper::preferences('com_patchtester');
-
-		JFactory::getDocument()->addStyleDeclaration(
-			'.icon-48-patchtester {background-image: url(components/com_patchtester/assets/images/icon-48-patchtester.png);}'
-		);
 	}
 
 	/**
