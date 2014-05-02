@@ -20,6 +20,11 @@
 			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
 		/>
+
+		<field name="gh_token" type="text"
+			description="COM_PATCHTESTER_FIELD_GH_TOKEN_DESC"
+			label="COM_PATCHTESTER_FIELD_GH_TOKEN_LABEL"
+		/>
 	</fieldset>
 
 	<fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">

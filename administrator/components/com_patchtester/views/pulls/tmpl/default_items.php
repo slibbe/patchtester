@@ -13,14 +13,11 @@ defined('_JEXEC') or die;
 foreach ($this->items as $i => $item) :
 	$status = '';
 
-	if (isset($this->patches[$item->pull_id])) :
-		$patch  = $this->patches[$item->pull_id];
-		$status = ($patch->applied) ? 'success' : '';
-	else :
-		$patch = false;
+	if ($item->applied) :
+		$status = ' class="success"';
 	endif;
 ?>
-<tr class="<?php echo $status ?>">
+<tr<?php echo $status; ?>>
 	<td class="center">
 		<?php echo $item->pull_id; ?>
 	</td>
@@ -47,7 +44,7 @@ foreach ($this->items as $i => $item) :
 		endif; ?>
 	</td>
 	<td class="center">
-		<?php if ($patch && $patch->applied) : ?>
+		<?php if ($item->applied) : ?>
 			<span class="label label-success">
 			<?php echo JText::_('COM_PATCHTESTER_APPLIED'); ?>
 			</span>
@@ -58,8 +55,8 @@ foreach ($this->items as $i => $item) :
 		<?php endif; ?>
 	</td>
 	<td class="center">
-		<?php if ($patch && $patch->applied) :
-			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'pull.revert\', ' . (int) $patch->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
+		<?php if ($item->applied) :
+			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'pull.revert\', ' . (int) $item->applied . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
 		else :
 			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.apply\', ' . (int) $item->pull_id . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
 		endif; ?>

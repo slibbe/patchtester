@@ -56,8 +56,13 @@ class PatchtesterModelPulls extends JModelList
 
 		$options = new JRegistry;
 
+		// If an API token is set in the params, use it for authentication
+		if ($params->get('gh_token', ''))
+		{
+			$options->set('gh.token', $params->get('gh_token', ''));
+		}
 		// Set the username and password if set in the params
-		if ($params->get('gh_user', '') && $params->get('gh_password'))
+		elseif ($params->get('gh_user', '') && $params->get('gh_password'))
 		{
 			$options->set('api.username', $params->get('gh_user', ''));
 			$options->set('api.password', $params->get('gh_password', ''));
@@ -151,6 +156,10 @@ class PatchtesterModelPulls extends JModelList
 		$query->select($this->getState('list.select', 'a.*'));
 		$query->from($db->quoteName('#__patchtester_pulls', 'a'));
 
+		// Join the tests table to get applied patches
+		$query->select($db->quoteName('t.id', 'applied'));
+		$query->join('LEFT', $db->quoteName('#__patchtester_tests', 't') . ' ON t.pull_id = a.pull_id');
+
 		// Filter by search
 		$search = $this->getState('filter.search');
 
@@ -220,7 +229,6 @@ class PatchtesterModelPulls extends JModelList
 				{
 					$pulls = array_merge($pulls, $items);
 				}
-
 			}
 			while ($count);
 

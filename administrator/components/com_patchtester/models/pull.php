@@ -78,8 +78,13 @@ class PatchtesterModelPull extends JModelLegacy
 
 		$options = new JRegistry;
 
+		// If an API token is set in the params, use it for authentication
+		if ($params->get('gh_token', ''))
+		{
+			$options->set('gh.token', $params->get('gh_token', ''));
+		}
 		// Set the username and password if set in the params
-		if ($params->get('gh_user', '') && $params->get('gh_password'))
+		elseif ($params->get('gh_user', '') && $params->get('gh_password'))
 		{
 			$options->set('api.username', $params->get('gh_user', ''));
 			$options->set('api.password', $params->get('gh_password', ''));

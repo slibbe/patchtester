@@ -33,14 +33,6 @@ class PatchtesterViewPulls extends JViewLegacy
 	protected $items;
 
 	/**
-	 * Object containing data about applied patches
-	 *
-	 * @var    object
-	 * @since  1.0
-	 */
-	protected $patches;
-
-	/**
 	 * State object
 	 *
 	 * @var    JRegistry
@@ -82,7 +74,6 @@ class PatchtesterViewPulls extends JViewLegacy
 		{
 			$this->state      = $this->get('State');
 			$this->items      = $this->get('Items');
-			$this->patches    = $this->get('AppliedPatches');
 			$this->pagination = $this->get('Pagination');
 
 			// Check for errors.
