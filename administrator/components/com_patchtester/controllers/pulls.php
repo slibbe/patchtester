@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  * @package  PatchTester
  * @since    2.0
  */
-class PatchtesterControllerPull extends JControllerLegacy
+class PatchtesterControllerPulls extends JControllerLegacy
 {
 	/**
 	 * Fetch pull request data from GitHub

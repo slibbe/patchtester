@@ -41,15 +41,9 @@ foreach ($this->items as $i => $item) :
 		<?php if ($item->joomlacode_id) :
 			$title = ' title="Open link::' . JText::_('COM_PATCHTESTER_OPEN_IN_JOOMLACODE') . '"';
 
-			if (is_int($item->joomlacode_id)) :
 				echo '<a href="http://joomlacode.org/gf/project/joomla/tracker/?action=TrackerItemEdit&tracker_item_id=';
 				echo  $item->joomlacode_id . '"' . $title . ' class="modal hasTip" rel="{handler: \'iframe\', size: {x: 900, y: 500}}">';
 				echo '[#' . $item->joomlacode_id . ']</a>';
-			else :
-				echo '<a href="' . $item->joomlacode_id . '"' . $title;
-				echo ' class="modal hasTip" rel="{handler: \'iframe\', size: {x: 900, y: 500}}">';
-				echo '[#joomlacode]</a>';
-			endif;
 		endif; ?>
 	</td>
 	<td class="center">

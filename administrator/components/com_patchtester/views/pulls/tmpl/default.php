@@ -106,9 +106,9 @@ else :
 			<tbody>
 			<?php if (count($this->items)) :
 				echo $this->loadTemplate('items');
-			else :
-				echo JText::_('COM_PATCHTESTER_NO_ITEMS');
-			endif; ?>
+			else : ?>
+				<td align="center" colspan="6"><?php echo JText::_('COM_PATCHTESTER_NO_ITEMS'); ?></td>
+			<?php endif; ?>
 			</tbody>
 		</table>
 		<?php echo $this->pagination->getListFooter(); ?>

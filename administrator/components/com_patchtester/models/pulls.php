@@ -192,10 +192,42 @@ class PatchtesterModelPulls extends JModelList
 		// If over the API limit, we can't build this list
 		if ($this->rate->remaining > 0)
 		{
-			$db    = $this->getDbo();
-			$pulls = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open');
+			// Sanity check, ensure there aren't any applied patches
+			if (count($this->getAppliedPatches()) >= 1)
+			{
+				throw new RuntimeException(JText::_('COM_PATCHTESTER_ERROR_APPLIED_PATCHES'));
+			}
 
-			foreach ($pulls as $i => &$pull)
+			$pulls = array();
+			$page  = 0;
+
+			do
+			{
+				$page++;
+
+				try
+				{
+					$items = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page, 100);
+				}
+				catch (DomainException $e)
+				{
+					throw new RuntimeException(JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()));
+				}
+
+				$count = is_array($items) ? count($items) : 0;
+
+				if ($count)
+				{
+					$pulls = array_merge($pulls, $items);
+				}
+
+			}
+			while ($count);
+
+			// Dump the old data now
+			$this->getDbo()->truncateTable('#__patchtester_pulls');
+
+			foreach ($pulls as &$pull)
 			{
 				// Build the data object to store in the database
 				$data              = new stdClass;
@@ -230,7 +262,7 @@ class PatchtesterModelPulls extends JModelList
 
 				try
 				{
-					$db->insertObject('#__patchtester_pulls', $data, 'id');
+					$this->getDbo()->insertObject('#__patchtester_pulls', $data, 'id');
 				}
 				catch (RuntimeException $e)
 				{
