@@ -1,22 +1,23 @@
 <?php
 /**
- * @package    PatchTester
+ * Patch testing component for the Joomla! CMS
  *
  * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later
  */
 
-defined('_JEXEC') or die;
+namespace PatchTester\Model;
 
 use Joomla\Registry\Registry;
+
+use PatchTester\Helper;
 
 /**
  * Methods supporting pull requests.
  *
- * @package  PatchTester
- * @since    1.0
+ * @since  2.0
  */
-class PatchtesterModelPull extends JModelLegacy
+class PullModel extends \JModelBase
 {
 	/**
 	 * Array containing top level non-production folders
@@ -32,7 +33,7 @@ class PatchtesterModelPull extends JModelLegacy
 	 * @return  void
 	 *
 	 * @note    Calling getState() in this method will result in recursion.
-	 * @since   1.0
+	 * @since   2.0
 	 */
 	protected function populateState()
 	{
@@ -52,7 +53,7 @@ class PatchtesterModelPull extends JModelLegacy
 	 *
 	 * @return  array  Array of files within a patch
 	 *
-	 * @since   1.0
+	 * @since   2.0
 	 */
 	protected function parsePatch($patch)
 	{
@@ -71,7 +72,7 @@ class PatchtesterModelPull extends JModelLegacy
 						$state = 1;
 					}
 
-					$file         = new stdClass;
+					$file         = new \stdClass;
 					$file->action = 'modified';
 
 					break;
@@ -137,13 +138,13 @@ class PatchtesterModelPull extends JModelLegacy
 	 *
 	 * @return  boolean
 	 *
-	 * @since   1.0
-	 * @throws  Exception
+	 * @since   2.0
+	 * @throws  \RuntimeException
 	 */
 	public function apply($id)
 	{
 		// Get the Github object
-		$github = PatchtesterHelper::initializeGithub();
+		$github = Helper::initializeGithub();
 
 		// Only act if there are API hits remaining
 		if ($github->authorization->getRateLimit()->rate->remaining > 0)
@@ -152,7 +153,7 @@ class PatchtesterModelPull extends JModelLegacy
 
 			if (is_null($pull->head->repo))
 			{
-				throw new Exception(JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
+				throw new \RuntimeException(\JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
 			}
 
 			// Set up the JHttp object
@@ -161,14 +162,14 @@ class PatchtesterModelPull extends JModelLegacy
 			$options->set('timeout', 120);
 
 			// Make sure we can use the cURL driver
-			$driver = JHttpFactory::getAvailableDriver($options, 'curl');
+			$driver = \JHttpFactory::getAvailableDriver($options, 'curl');
 
-			if (!($driver instanceof JHttpTransportCurl))
+			if (!($driver instanceof \JHttpTransportCurl))
 			{
-				throw new RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
+				throw new \RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
 			}
 
-			$transport = new JHttp($options, $driver);
+			$transport = new \JHttp($options, $driver);
 
 			$patch = $transport->get($pull->diff_url)->body;
 
@@ -176,7 +177,8 @@ class PatchtesterModelPull extends JModelLegacy
 
 			if (!$files)
 			{
-				JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
+				// TODO - Should be a better way to enqueue messages without needing the application...
+				\JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
 
 				return true;
 			}
@@ -185,7 +187,7 @@ class PatchtesterModelPull extends JModelLegacy
 			{
 				if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->old))
 				{
-					throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S'), $file->old));
+					throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S'), $file->old));
 				}
 
 				if ($file->action == 'added' || $file->action == 'modified')
@@ -193,12 +195,12 @@ class PatchtesterModelPull extends JModelLegacy
 					// If the backup file already exists, we can't apply the patch
 					if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->new) . '.txt'))
 					{
-						throw new Exception(sprintf(JText::_('COM_PATCHTESTER_CONFLICT_S'), $file->new));
+						throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_CONFLICT_S'), $file->new));
 					}
 
 					if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->old))
 					{
-						throw new Exception(sprintf(JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
+						throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
 					}
 
 					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' . $pull->head->ref . '/' . $file->new;
@@ -215,9 +217,9 @@ class PatchtesterModelPull extends JModelLegacy
 				// We only create a backup if the file already exists
 				if ($file->action == 'deleted' || (file_exists(JPATH_ROOT . '/' . $file->new) && $file->action == 'modified'))
 				{
-					if (!JFile::copy(JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+					if (!\JFile::copy(\JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new Exception(
+						throw new \RuntimeException(
 							sprintf('Can not copy file %s to %s', JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
 						);
 					}
@@ -227,38 +229,38 @@ class PatchtesterModelPull extends JModelLegacy
 				{
 					case 'modified':
 					case 'added':
-						if (!JFile::write(JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
+						if (!\JFile::write(\JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
 						{
-							throw new Exception(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
+							throw new \RuntimeException(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
 						}
 
 						break;
 
 					case 'deleted':
-						if (!JFile::delete(JPATH::clean(JPATH_ROOT . '/' . $file->old)))
+						if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->old)))
 						{
-							throw new Exception(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
+							throw new \RuntimeException(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
 						}
 
 						break;
 				}
 			}
 
-			$table                  = JTable::getInstance('tests', 'PatchTesterTable');
+			$table                  = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
 			$table->pull_id         = $pull->number;
 			$table->data            = json_encode($files);
-			$table->patched_by      = JFactory::getUser()->id;
+			$table->patched_by      = \JFactory::getUser()->id;
 			$table->applied         = 1;
 			$table->applied_version = JVERSION;
 
 			if (!$table->store())
 			{
-				throw new Exception($table->getError());
+				throw new \RuntimeException($table->getError());
 			}
 		}
 		else
 		{
-			throw new Exception(JText::sprintf('COM_PATCHTESTER_API_LIMIT_ACTION', JFactory::getDate($this->rate->reset)));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_API_LIMIT_ACTION', \JFactory::getDate($this->rate->reset)));
 		}
 
 		return true;
@@ -271,12 +273,12 @@ class PatchtesterModelPull extends JModelLegacy
 	 *
 	 * @return  boolean
 	 *
-	 * @since   1.0
-	 * @throws  Exception
+	 * @since   2.0
+	 * @throws  \RuntimeException
 	 */
 	public function revert($id)
 	{
-		$table = JTable::getInstance('tests', 'PatchTesterTable');
+		$table = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
 		$table->load($id);
 
 		// We don't want to restore files from an older version
@@ -291,7 +293,7 @@ class PatchtesterModelPull extends JModelLegacy
 
 		if (!$files)
 		{
-			throw new Exception(sprintf(JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
+			throw new \RuntimeException(sprintf(JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
 		}
 
 		jimport('joomla.filesystem.file');
@@ -302,28 +304,28 @@ class PatchtesterModelPull extends JModelLegacy
 			{
 				case 'deleted':
 				case 'modified':
-					if (!JFile::copy(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt', JPATH_ROOT . '/' . $file->old))
+					if (!\JFile::copy(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt', JPATH_ROOT . '/' . $file->old))
 					{
-						throw new Exception(
+						throw new \RuntimeException(
 							sprintf(
-								JText::_('Can not copy file %s to %s'),
+								\JText::_('Can not copy file %s to %s'),
 								JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt',
 								JPATH_ROOT . '/' . $file->old
 							)
 						);
 					}
 
-					if (!JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+					if (!\JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new Exception(sprintf(JText::_('Can not delete the file: %s'), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
+						throw new \RuntimeException(sprintf(\JText::_('Can not delete the file: %s'), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
 					}
 
 					break;
 
 				case 'added':
-					if (!JFile::delete(JPath::clean(JPATH_ROOT . '/' . $file->new)))
+					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->new)))
 					{
-						throw new Exception(sprintf(JText::_('Can not delete the file: %s'), JPATH_ROOT . '/' . $file->new));
+						throw new \RuntimeException(sprintf(\JText::_('Can not delete the file: %s'), JPATH_ROOT . '/' . $file->new));
 					}
 
 					break;

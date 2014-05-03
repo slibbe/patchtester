@@ -14,8 +14,23 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_patchtester'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-JLoader::register('PatchtesterHelper', __DIR__ . '/helpers/patchtester.php');
+// Application reference
+$app = JFactory::getApplication();
 
-$controller = JControllerLegacy::getInstance('PatchTester');
-$controller->execute(JFactory::getApplication()->input->getCmd('task'));
-$controller->redirect();
+// Register the component namespace to the autoloader
+JLoader::registerNamespace('PatchTester', __DIR__);
+
+// Build the controller class name based on task
+$task = $app->input->getCmd('task', 'display');
+
+// If $task is an empty string, apply our default since JInput might not
+if ($task === '')
+{
+	$task = 'display';
+}
+
+$class = '\\PatchTester\\Controller\\' . ucfirst(strtolower($task)) . 'Controller';
+
+// Instantiate and execute the controller
+$controller = new $class($app->input, $app);
+$controller->execute();

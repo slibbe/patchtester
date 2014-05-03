@@ -1,33 +1,32 @@
 <?php
 /**
- * @package    PatchTester
+ * Patch testing component for the Joomla! CMS
  *
  * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 - 2014 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later
  */
 
-defined('_JEXEC') or die;
+namespace PatchTester;
 
 use Joomla\Registry\Registry;
 
 /**
  * Helper class for the patch tester component
  *
- * @package  PatchTester
- * @since    2.0
+ * @since  2.0
  */
-abstract class PatchtesterHelper
+abstract class Helper
 {
 	/**
 	 * Initializes the JGithub object
 	 *
-	 * @return  JGithub
+	 * @return  \JGithub
 	 *
 	 * @since   2.0
 	 */
 	public static function initializeGithub()
 	{
-		$params = JComponentHelper::getParams('com_patchtester');
+		$params = \JComponentHelper::getParams('com_patchtester');
 
 		$options = new Registry;
 
@@ -45,9 +44,9 @@ abstract class PatchtesterHelper
 		// Display a message about the lowered API limit without credentials
 		else
 		{
-			JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
+			\JFactory::getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
 		}
 
-		return new JGithub($options);
+		return new \JGithub($options);
 	}
 }
