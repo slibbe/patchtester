@@ -35,7 +35,7 @@ class PatchtesterViewPulls extends JViewLegacy
 	/**
 	 * State object
 	 *
-	 * @var    JRegistry
+	 * @var    \Joomla\Registry\Registry
 	 * @since  1.0
 	 */
 	protected $state;

@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * Methods supporting pull requests.
  *
@@ -154,7 +156,7 @@ class PatchtesterModelPull extends JModelLegacy
 			}
 
 			// Set up the JHttp object
-			$options = new JRegistry;
+			$options = new Registry;
 			$options->set('userAgent', 'JPatchTester/2.0');
 			$options->set('timeout', 120);
 

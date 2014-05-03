@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\Registry\Registry;
+
 /**
  * Helper class for the patch tester component
  *
@@ -27,7 +29,7 @@ abstract class PatchtesterHelper
 	{
 		$params = JComponentHelper::getParams('com_patchtester');
 
-		$options = new JRegistry;
+		$options = new Registry;
 
 		// If an API token is set in the params, use it for authentication
 		if ($params->get('gh_token', ''))
