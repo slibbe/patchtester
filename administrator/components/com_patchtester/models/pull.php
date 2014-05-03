@@ -17,84 +17,12 @@ defined('_JEXEC') or die;
 class PatchtesterModelPull extends JModelLegacy
 {
 	/**
-	 * @var    JHttp
-	 * @since  2.0
-	 */
-	protected $transport;
-
-	/**
-	 * Github object
-	 *
-	 * @var    JGithub
-	 * @since  2.0
-	 */
-	protected $github;
-
-	/**
 	 * Array containing top level non-production folders
 	 *
 	 * @var    array
 	 * @since  2.0
 	 */
 	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests');
-
-	/**
-	 * Object containing the rate limit data
-	 *
-	 * @var    object
-	 * @since  2.0
-	 */
-	protected $rate;
-
-	/**
-	 * Constructor
-	 *
-	 * @param   array  $config  An array of configuration options (name, state, dbo, table_path, ignore_request).
-	 *
-	 * @since   2.0
-	 * @throws  RuntimeException
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-
-		// Set up the JHttp object
-		$options = new JRegistry;
-		$options->set('userAgent', 'JPatchTester/2.0');
-		$options->set('timeout', 120);
-
-		// Make sure we can use the cURL driver
-		$driver = JHttpFactory::getAvailableDriver($options, 'curl');
-
-		if (!($driver instanceof JHttpTransportCurl))
-		{
-			throw new RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
-		}
-
-		$this->transport = new JHttp($options, $driver);
-
-		// Set up the Github object
-		$params = JComponentHelper::getParams('com_patchtester');
-
-		$options = new JRegistry;
-
-		// If an API token is set in the params, use it for authentication
-		if ($params->get('gh_token', ''))
-		{
-			$options->set('gh.token', $params->get('gh_token', ''));
-		}
-		// Set the username and password if set in the params
-		elseif ($params->get('gh_user', '') && $params->get('gh_password'))
-		{
-			$options->set('api.username', $params->get('gh_user', ''));
-			$options->set('api.password', $params->get('gh_password', ''));
-		}
-
-		$this->github = new JGithub($options);
-
-		// Store the rate data for reuse during this request cycle
-		$this->rate = $this->github->authorization->getRateLimit()->rate;
-	}
 
 	/**
 	 * Method to auto-populate the model state.
@@ -212,17 +140,35 @@ class PatchtesterModelPull extends JModelLegacy
 	 */
 	public function apply($id)
 	{
+		// Get the Github object
+		$github = PatchtesterHelper::initializeGithub();
+
 		// Only act if there are API hits remaining
-		if ($this->rate->remaining > 0)
+		if ($github->authorization->getRateLimit()->rate->remaining > 0)
 		{
-			$pull = $this->github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $id);
+			$pull = $github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $id);
 
 			if (is_null($pull->head->repo))
 			{
 				throw new Exception(JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
 			}
 
-			$patch = $this->transport->get($pull->diff_url)->body;
+			// Set up the JHttp object
+			$options = new JRegistry;
+			$options->set('userAgent', 'JPatchTester/2.0');
+			$options->set('timeout', 120);
+
+			// Make sure we can use the cURL driver
+			$driver = JHttpFactory::getAvailableDriver($options, 'curl');
+
+			if (!($driver instanceof JHttpTransportCurl))
+			{
+				throw new RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
+			}
+
+			$transport = new JHttp($options, $driver);
+
+			$patch = $transport->get($pull->diff_url)->body;
 
 			$files = $this->parsePatch($patch);
 
@@ -255,7 +201,7 @@ class PatchtesterModelPull extends JModelLegacy
 
 					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' . $pull->head->ref . '/' . $file->new;
 
-					$file->body = $this->transport->get($url)->body;
+					$file->body = $transport->get($url)->body;
 				}
 			}
 

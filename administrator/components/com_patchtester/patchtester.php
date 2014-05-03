@@ -14,6 +14,8 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_patchtester'))
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
+JLoader::register('PatchtesterHelper', __DIR__ . '/helpers/patchtester.php');
+
 $controller = JControllerLegacy::getInstance('PatchTester');
 $controller->execute(JFactory::getApplication()->input->getCmd('task'));
 $controller->redirect();

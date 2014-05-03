@@ -17,22 +17,6 @@ defined('_JEXEC') or die;
 class PatchtesterModelPulls extends JModelList
 {
 	/**
-	 * Github object
-	 *
-	 * @var    JGithub
-	 * @since  2.0
-	 */
-	protected $github;
-
-	/**
-	 * Object containing the rate limit data
-	 *
-	 * @var    object
-	 * @since  2.0
-	 */
-	protected $rate;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param   array  $config  An optional associative array of configuration settings.
@@ -50,33 +34,6 @@ class PatchtesterModelPulls extends JModelList
 		}
 
 		parent::__construct($config);
-
-		// Set up the Github object
-		$params = JComponentHelper::getParams('com_patchtester');
-
-		$options = new JRegistry;
-
-		// If an API token is set in the params, use it for authentication
-		if ($params->get('gh_token', ''))
-		{
-			$options->set('gh.token', $params->get('gh_token', ''));
-		}
-		// Set the username and password if set in the params
-		elseif ($params->get('gh_user', '') && $params->get('gh_password'))
-		{
-			$options->set('api.username', $params->get('gh_user', ''));
-			$options->set('api.password', $params->get('gh_password', ''));
-		}
-		else
-		{
-			// Display a message about the lowered API limit without credentials
-			JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
-		}
-
-		$this->github = new JGithub($options);
-
-		// Store the rate data for reuse during this request cycle
-		$this->rate = $this->github->authorization->getRateLimit()->rate;
 	}
 
 	/**
@@ -198,8 +155,11 @@ class PatchtesterModelPulls extends JModelList
 	 */
 	public function requestFromGithub()
 	{
+		// Get the Github object
+		$github = PatchtesterHelper::initializeGithub();
+
 		// If over the API limit, we can't build this list
-		if ($this->rate->remaining > 0)
+		if ($github->authorization->getRateLimit()->rate->remaining > 0)
 		{
 			// Sanity check, ensure there aren't any applied patches
 			if (count($this->getAppliedPatches()) >= 1)
@@ -216,7 +176,7 @@ class PatchtesterModelPulls extends JModelList
 
 				try
 				{
-					$items = $this->github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page, 100);
+					$items = $github->pulls->getList($this->getState('github_user'), $this->getState('github_repo'), 'open', $page, 100);
 				}
 				catch (DomainException $e)
 				{
