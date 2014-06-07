@@ -128,15 +128,12 @@ class PullsModel extends \JModelDatabase
 
 		if (!empty($search))
 		{
-			if (stripos($search, 'id:') === 0)
-			{
-				$query->where($db->quoteName('a.pull_id') . ' = ' . (int) substr($search, 3));
-			}
-			else
-			{
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('(' . $db->quoteName('a.title') . ' LIKE ' . $search . ')');
-			}
+			$search = $db->quote('%' . $db->escape($search, true) . '%');
+			$query->where(
+				'(' . $db->quoteName('a.title') . ' LIKE ' . $search . ') OR ' .
+				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ') OR ' .
+				'(' . $db->quoteName('a.joomlacode_id') . ' LIKE ' . $search . ')'
+			);
 		}
 
 		// Handle the list ordering.
