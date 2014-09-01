@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.tooltip');
+
 /** @type  PatchtesterViewPulls  $this */
 
 foreach ($this->items as $i => $item) :
@@ -26,9 +28,9 @@ foreach ($this->items as $i => $item) :
 			<?php echo $this->escape($item->title); ?>
 		</a>
 	</td>
-	<td>
+	<td class="center">
 		<?php if ($item->description) :
-			echo JHtml::_('tooltip', htmlspecialchars($item->description), 'Info');
+			echo JHtml::tooltip(htmlspecialchars($item->description), '', '', '<i class="icon-info"></i>');
 		else :
 			echo '&nbsp;';
 		endif;
