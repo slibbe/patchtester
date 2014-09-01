@@ -86,9 +86,6 @@ else :
 					<?php echo JText::_('JGLOBAL_TITLE'); ?>
 				</th>
 				<th class="nowrap center">I</th>
-				<th class="nowrap center">
-					<?php echo JText::_('COM_PATCHTESTER_JOOMLACODE_ISSUE'); ?>
-				</th>
 				<th width="20%" class="nowrap center">
 					<?php echo JText::_('JSTATUS'); ?>
 				</th>

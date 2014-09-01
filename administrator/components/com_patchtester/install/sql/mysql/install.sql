@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `title` varchar(100) NOT NULL,
   `description` varchar(5000) NOT NULL DEFAULT '',
   `pull_url` varchar(255) NOT NULL,
-  `joomlacode_id` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
 
