@@ -36,21 +36,6 @@ foreach ($this->items as $i => $item) :
 		?>
 	</td>
 	<td class="center">
-		<?php if ($item->joomlacode_issue) :
-			$title = ' title="Open link::' . JText::_('COM_PATCHTESTER_OPEN_IN_JOOMLACODE') . '"';
-
-			if (is_int($item->joomlacode_issue)) :
-				echo '<a href="http://joomlacode.org/gf/project/joomla/tracker/?action=TrackerItemEdit&tracker_item_id=';
-				echo  $item->joomlacode_issue . '"' . $title . ' class="modal hasTip" rel="{handler: \'iframe\', size: {x: 900, y: 500}}">';
-				echo '[#' . $item->joomlacode_issue . ']</a>';
-			else :
-				echo '<a href="' . $item->joomlacode_issue . '"' . $title;
-				echo ' class="modal hasTip" rel="{handler: \'iframe\', size: {x: 900, y: 500}}">';
-				echo '[#joomlacode]</a>';
-			endif;
-		endif; ?>
-	</td>
-	<td class="center">
 		<?php if ($patch && $patch->applied) : ?>
 			<span class="label label-success">
 			<?php echo JText::_('COM_PATCHTESTER_APPLIED'); ?>

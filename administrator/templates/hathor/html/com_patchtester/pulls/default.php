@@ -47,9 +47,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
 					<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
 				</th>
 				<th class="title nowrap center">I</th>
-				<th class="title nowrap center">
-					<?php echo JText::_('COM_PATCHTESTER_JOOMLACODE_ISSUE'); ?>
-				</th>
 				<th width="20%" class="title nowrap center">
 					<?php echo JText::_('JSTATUS'); ?>
 				</th>

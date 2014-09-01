@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS [#__patchtester_pulls] (
   [title] [nvarchar](100) NOT NULL,
   [description] [nvarchar](5000) NOT NULL DEFAULT '',
   [pull_url] [nvarchar](255) NOT NULL,
-  [joomlacode_id] [nvarchar](255) NOT NULL DEFAULT '',
  CONSTRAINT [PK_#__patchtester_pulls] PRIMARY KEY CLUSTERED
 (
   [id] ASC
