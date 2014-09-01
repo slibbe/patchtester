@@ -8,6 +8,8 @@
 
 defined('_JEXEC') or die;
 
+JHtml::_('behavior.tooltip');
+
 /** @type  PatchtesterViewPulls  $this */
 
 foreach ($this->items as $i => $item) :
