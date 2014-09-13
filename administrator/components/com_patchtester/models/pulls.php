@@ -125,7 +125,7 @@ class PatchtesterModelPulls extends JModelList
 			$search = $db->quote('%' . $db->escape($search, true) . '%');
 			$query->where(
 				'(' . $db->quoteName('a.title') . ' LIKE ' . $search . ') OR ' .
-				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ') OR '
+				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ')'
 			);
 		}
 
