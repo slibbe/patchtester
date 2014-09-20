@@ -30,7 +30,7 @@ foreach ($this->items as $i => $item) :
 	</td>
 	<td class="center">
 		<?php if ($item->description) :
-			echo JHtml::tooltip(htmlspecialchars($item->description), '', '', '<i class="icon-info"></i>');
+			echo '<a onclick="SqueezeBox.fromElement(this, {handler:\'iframe\', size: {x: 900, y: 600}, url:\'http://issues.joomla.org/tracker/joomla-cms/'.$item->pull_id.'\'})"><i class="icon-info" style="color:#000;cursor:pointer;"></i>';
 		else :
 			echo '&nbsp;';
 		endif;
