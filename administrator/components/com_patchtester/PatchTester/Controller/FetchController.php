@@ -15,7 +15,7 @@ use PatchTester\Model\PullsModel;
  *
  * @since  2.0
  */
-class FetchController extends \JControllerBase
+class FetchController extends DisplayController
 {
 	/**
 	 * Execute the controller.
@@ -29,7 +29,11 @@ class FetchController extends \JControllerBase
 		try
 		{
 			// TODO - Decouple the model and context?
-			$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
+			$model = new PullsModel('com_patchtester.fetch', $state, \JFactory::getDbo());
+
+			// Initialize the state for the model
+			$model->setState($this->initializeState($model));
+
 			$model->requestFromGithub();
 
 			$msg  = \JText::_('COM_PATCHTESTER_FETCH_SUCCESSFUL');

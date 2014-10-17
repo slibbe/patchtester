@@ -102,7 +102,7 @@ class PullsHtmlView extends DefaultHtmlView
 
 		if (!count($this->envErrors))
 		{
-			\JToolbarHelper::custom('pulls.fetch', 'refresh.png', 'refresh_f2.png', 'COM_PATCHTESTER_TOOLBAR_FETCH_DATA', false);
+			\JToolbarHelper::custom('fetch', 'refresh.png', 'refresh_f2.png', 'COM_PATCHTESTER_TOOLBAR_FETCH_DATA', false);
 		}
 
 		\JToolBarHelper::preferences('com_patchtester');
