@@ -14,7 +14,6 @@ CREATE TABLE "#__patchtester_tests" (
   "patched_by" bigint NOT NULL,
   "applied" bigint NOT NULL,
   "applied_version" character varying(25) NOT NULL,
-  "rating" bigint NOT NULL,
   "comments" character varying(3000) DEFAULT '' NOT NULL,
   PRIMARY KEY ("id")
 );
