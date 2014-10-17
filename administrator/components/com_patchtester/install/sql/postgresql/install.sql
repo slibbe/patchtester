@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS "#__patchtester_pulls" (
   "title" character varying(100) NOT NULL,
   "description" character varying(5000) DEFAULT '' NOT NULL,
   "pull_url" character varying(255) NOT NULL,
-  "joomlacode_id" character varying(255) DEFAULT '' NOT NULL,
   PRIMARY KEY ("id")
 );
 

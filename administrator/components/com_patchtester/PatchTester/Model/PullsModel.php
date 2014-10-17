@@ -131,8 +131,7 @@ class PullsModel extends \JModelDatabase
 			$search = $db->quote('%' . $db->escape($search, true) . '%');
 			$query->where(
 				'(' . $db->quoteName('a.title') . ' LIKE ' . $search . ') OR ' .
-				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ') OR ' .
-				'(' . $db->quoteName('a.joomlacode_id') . ' LIKE ' . $search . ')'
+				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ') '
 			);
 		}
 
@@ -337,30 +336,6 @@ class PullsModel extends \JModelDatabase
 				$data->title       = $pull->title;
 				$data->description = $pull->body;
 				$data->pull_url    = $pull->html_url;
-
-				// Try to find a Joomlacode issue number
-				$matches = array();
-
-				preg_match('#\[\#([0-9]+)\]#', $pull->title, $matches);
-
-				if (isset($matches[1]))
-				{
-					$data->joomlacode_id = (int) $matches[1];
-				}
-				else
-				{
-					preg_match('#(http://joomlacode[-\w\./\?\S]+)#', $pull->body, $matches);
-
-					if (isset($matches[1]))
-					{
-						preg_match('#tracker_item_id=([0-9]+)#', $matches[1], $matches);
-
-						if (isset($matches[1]))
-						{
-							$data->joomlacode_id = (int) $matches[1];
-						}
-					}
-				}
 
 				try
 				{

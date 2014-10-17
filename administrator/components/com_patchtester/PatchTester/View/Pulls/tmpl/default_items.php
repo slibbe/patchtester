@@ -24,22 +24,13 @@ foreach ($this->items as $i => $item) :
 			<?php echo $this->escape($item->title); ?>
 		</a>
 	</td>
-	<td>
+	<td class="center">
 		<?php if ($item->description) :
-			echo \JHtml::_('tooltip', $this->escape(($item->description)), 'Info');
+			echo '<a onclick="SqueezeBox.fromElement(this, {handler:\'iframe\', size: {x: 900, y: 600}, url:\'http://issues.joomla.org/tracker/joomla-cms/'.$item->pull_id.'\'})"><i class="icon-info" style="color:#000;cursor:pointer;"></i>';
 		else :
 			echo '&nbsp;';
 		endif;
 		?>
-	</td>
-	<td>
-		<?php if ($item->joomlacode_id) :
-			$title = ' title="Open link::' . \JText::_('COM_PATCHTESTER_OPEN_IN_JOOMLACODE') . '"';
-
-				echo '<a href="http://joomlacode.org/gf/project/joomla/tracker/?action=TrackerItemEdit&tracker_item_id=';
-				echo  $item->joomlacode_id . '"' . $title . ' class="modal hasTip" rel="{handler: \'iframe\', size: {x: 900, y: 500}}">';
-				echo '[#' . $item->joomlacode_id . ']</a>';
-		endif; ?>
 	</td>
 	<td class="center">
 		<?php if ($item->applied) : ?>
