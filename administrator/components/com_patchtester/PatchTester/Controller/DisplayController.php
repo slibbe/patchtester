@@ -151,10 +151,13 @@ class DisplayController extends \JControllerBase
 		// Check if the ordering field is in the white list, otherwise use the incoming value.
 		$value = $this->getApplication()->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $this->defaultOrderColumn);
 
-		if (!in_array($value, $model->getSortFields()))
+		if (method_exists($model, 'getSortFields'))
 		{
-			$value = $this->defaultOrderColumn;
-			$this->getApplication()->setUserState($this->context . '.ordercol', $value);
+			if (!in_array($value, $model->getSortFields()))
+			{
+				$value = $this->defaultOrderColumn;
+				$this->getApplication()->setUserState($this->context . '.ordercol', $value);
+			}
 		}
 
 		$state->set('list.ordering', $value);
