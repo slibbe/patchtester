@@ -15,7 +15,7 @@ use PatchTester\Model\PullModel;
  *
  * @since  2.0
  */
-class ApplyController extends \JControllerBase
+class ApplyController extends DisplayController
 {
 	/**
 	 * Execute the controller.
@@ -29,6 +29,10 @@ class ApplyController extends \JControllerBase
 		try
 		{
 			$model = new PullModel;
+
+			// Initialize the state for the model
+			$model->setState($this->initializeState($model));
+
 			$model->apply($this->getInput()->getUint('pull_id'));
 
 			$msg  = \JText::_('COM_PATCHTESTER_APPLY_OK');

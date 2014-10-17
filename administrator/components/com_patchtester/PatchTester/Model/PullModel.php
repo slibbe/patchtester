@@ -28,25 +28,6 @@ class PullModel extends \JModelBase
 	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests');
 
 	/**
-	 * Method to auto-populate the model state.
-	 *
-	 * @return  void
-	 *
-	 * @note    Calling getState() in this method will result in recursion.
-	 * @since   2.0
-	 */
-	protected function populateState()
-	{
-		// Load the parameters.
-		$params = JComponentHelper::getParams('com_patchtester');
-		$this->setState('params', $params);
-		$this->setState('github_user', $params->get('org', 'joomla'));
-		$this->setState('github_repo', $params->get('repo', 'joomla-cms'));
-
-		parent::populateState();
-	}
-
-	/**
 	 * Method to parse a patch and extract the affected files
 	 *
 	 * @param   string  $patch  Patch file to parse
@@ -149,7 +130,7 @@ class PullModel extends \JModelBase
 		// Only act if there are API hits remaining
 		if ($github->authorization->getRateLimit()->rate->remaining > 0)
 		{
-			$pull = $github->pulls->get($this->getState('github_user'), $this->getState('github_repo'), $id);
+			$pull = $github->pulls->get($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
 
 			if (is_null($pull->head->repo))
 			{
@@ -203,7 +184,7 @@ class PullModel extends \JModelBase
 						throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
 					}
 
-					$url = 'https://raw.github.com/' . $pull->head->user->login . '/' . $pull->head->repo->name . '/' . $pull->head->ref . '/' . $file->new;
+					$url = 'https://raw.github.com/' . urlencode($pull->head->user->login) . '/' . urlencode($pull->head->repo->name) . '/' . urlencode($pull->head->ref) . '/' . $file->new;
 
 					$file->body = $transport->get($url)->body;
 				}
