@@ -11,6 +11,8 @@
 \JHtml::_('behavior.tooltip');
 \JHtml::_('behavior.modal');
 
+$this->document->addStyleSheet($this->baseurl.'/components/com_patchtester/assets/octicons/octicons.csss')
+
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
 $sortFields = $this->getSortFields();
@@ -80,21 +82,26 @@ else :
 				<th width="5%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_PULL_ID'); ?>
 				</th>
-				<th class="nowrap center">
+				<th class="nowrap">
 					<?php echo \JText::_('JGLOBAL_TITLE'); ?>
 				</th>
-				<th class="nowrap center">I</th>
-				<th width="20%" class="nowrap center">
+				<th width="8%" class="nowrap center">
+					<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
+				</th>
+				<th width="8%" class="nowrap center">
+					<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
+				</th>				
+				<th width="10%" class="nowrap center">
 					<?php echo \JText::_('JSTATUS'); ?>
 				</th>
-				<th width="20%" class="nowrap center">
+				<th width="15%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_TEST_THIS_PATCH'); ?>
 				</th>
 			</tr>
 			</thead>
 			<tfoot>
 				<tr>
-					<td colspan="6">
+					<td colspan="7">
 					</td>
 				</tr>
 			</tfoot>
@@ -102,7 +109,7 @@ else :
 			<?php if (count($this->items)) :
 				echo $this->loadTemplate('items');
 			else : ?>
-				<td align="center" colspan="6"><?php echo \JText::_('COM_PATCHTESTER_NO_ITEMS'); ?></td>
+				<td align="center" colspan="7"><?php echo \JText::_('COM_PATCHTESTER_NO_ITEMS'); ?></td>
 			<?php endif; ?>
 			</tbody>
 		</table>
