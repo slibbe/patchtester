@@ -86,7 +86,7 @@ class DisplayController extends \JControllerBase
 		$paths->insert(JPATH_THEMES . '/' . $this->getApplication()->getTemplate() . '/html/' . \JApplicationHelper::getComponentName() . '/' . $view, 2);
 
 		// Add the path for the default layouts
-		$paths->insert(JPATH_BASE . '/components/' . \JApplicationHelper::getComponentName() . '/PatchTester/View/' . $view . '/tmpl', 1);
+		$paths->insert(JPATH_BASE . '/components/' . \JApplicationHelper::getComponentName() . '/PatchTester/View/' . ucfirst($view) . '/tmpl', 1);
 
 		// Build the class names for the model and view
 		$viewClass  = '\\PatchTester\\View\\' . ucfirst($view) . '\\' . ucfirst($view) . ucfirst($format) . 'View';
