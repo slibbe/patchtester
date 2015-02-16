@@ -29,7 +29,7 @@ class FetchController extends DisplayController
 		try
 		{
 			// TODO - Decouple the model and context?
-			$model = new PullsModel('com_patchtester.fetch', $state, \JFactory::getDbo());
+			$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
 
 			// Initialize the state for the model
 			$model->setState($this->initializeState($model));
