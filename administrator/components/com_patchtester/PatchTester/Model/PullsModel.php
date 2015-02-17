@@ -328,23 +328,32 @@ class PullsModel extends \JModelDatabase
 			// Dump the old data now
 			$this->getDb()->truncateTable('#__patchtester_pulls');
 
-			foreach ($pulls as &$pull)
+			// If there are no pulls to insert then bail
+			if (empty($pulls))
+			{
+				return;
+			}
+
+			$data = array();
+
+			foreach ($pulls as $pull)
 			{
 				// Build the data object to store in the database
-				$data              = new \stdClass;
-				$data->pull_id     = $pull->number;
-				$data->title       = $pull->title;
-				$data->description = $pull->body;
-				$data->pull_url    = $pull->html_url;
+				$pullData = array($pull->number, $pull->title, $pull->body, $pull->html_url);
+				$data[] = implode($pullData, ',');
+			}
 
-				try
-				{
-					$this->getDb()->insertObject('#__patchtester_pulls', $data, 'id');
-				}
-				catch (\RuntimeException $e)
-				{
-					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()));
-				}
+			$query = $this->getDb()->getQuery();
+			$query->insert('#__patchtester_pulls')->columns('pull_id, title, description, pull_url')->values($data);
+			$this->getDb()->setQuery($query);
+
+			try
+			{
+				$this->getDb()->execute();
+			}
+			catch (\RuntimeException $e)
+			{
+				throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()));
 			}
 		}
 		else
