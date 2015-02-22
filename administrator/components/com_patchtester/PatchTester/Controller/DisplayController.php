@@ -137,6 +137,9 @@ class DisplayController extends \JControllerBase
 		$search = $this->getApplication()->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
 		$state->set('filter.search', $search);
 
+		$applied = $this->getApplication()->getUserStateFromRequest($this->context . '.filter.applied', 'filter_applied', '');
+		$state->set('filter.applied', $applied);
+
 		// Load the parameters.
 		$params = \JComponentHelper::getParams('com_patchtester');
 

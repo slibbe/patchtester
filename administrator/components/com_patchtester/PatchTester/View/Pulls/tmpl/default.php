@@ -14,9 +14,10 @@
 
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
 
-$listOrder  = $this->escape($this->state->get('list.ordering'));
-$listDirn   = $this->escape($this->state->get('list.direction'));
-$sortFields = $this->getSortFields();
+$listOrder     = $this->escape($this->state->get('list.ordering'));
+$listDirn      = $this->escape($this->state->get('list.direction'));
+$filterApplied = $this->escape($this->state->get('filter.applied'));
+$sortFields    = $this->getSortFields();
 
 if (count($this->envErrors)) :
 	$this->loadTemplate('errors');
@@ -72,53 +73,63 @@ else :
 					<?php echo \JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
 				</select>
 			</div>
+			<div class="btn-group pull-right">
+				<label for="filter_applied" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
+				<select name="filter_applied" class="input-medium" onchange="this.form.submit();">
+					<option value=""><?php echo \JText::_('COM_PATCHTESTER_FILTER_APPLIED_PATCHES'); ?></option>
+					<option value="yes"<?php if ($filterApplied == 'yes') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?></option>
+					<option value="no"<?php if ($filterApplied == 'no') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?></option>
+				</select>
+			</div>
 		</div>
-		<div class="clearfix"> </div>
 
-		<table class="table table-striped">
-			<thead>
-			<tr>
-				<th width="5%" class="nowrap center">
-					<?php echo \JText::_('COM_PATCHTESTER_PULL_ID'); ?>
-				</th>
-				<th class="nowrap">
-					<?php echo \JText::_('JGLOBAL_TITLE'); ?>
-				</th>
-				<th width="8%" class="nowrap center">
-					<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
-				</th>
-				<th width="8%" class="nowrap center">
-					<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
-				</th>
-				<th width="10%" class="nowrap center">
-					<?php echo \JText::_('JSTATUS'); ?>
-				</th>
-				<th width="15%" class="nowrap center">
-					<?php echo \JText::_('COM_PATCHTESTER_TEST_THIS_PATCH'); ?>
-				</th>
-			</tr>
-			</thead>
-			<tfoot>
+		<?php if (empty($this->items)) : ?>
+			<div class="alert alert-no-items">
+				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+			</div>
+		<?php else : ?>
+			<table class="table table-striped">
+				<thead>
 				<tr>
-					<td colspan="7">
-					</td>
+					<th width="5%" class="nowrap center">
+						<?php echo \JText::_('COM_PATCHTESTER_PULL_ID'); ?>
+					</th>
+					<th class="nowrap">
+						<?php echo \JText::_('JGLOBAL_TITLE'); ?>
+					</th>
+					<th width="8%" class="nowrap center">
+						<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
+					</th>
+					<th width="8%" class="nowrap center">
+						<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
+					</th>
+					<th width="10%" class="nowrap center">
+						<?php echo \JText::_('JSTATUS'); ?>
+					</th>
+					<th width="15%" class="nowrap center">
+						<?php echo \JText::_('COM_PATCHTESTER_TEST_THIS_PATCH'); ?>
+					</th>
 				</tr>
-			</tfoot>
-			<tbody>
-			<?php if (count($this->items)) :
-				echo $this->loadTemplate('items');
-			else : ?>
-				<td align="center" colspan="7"><?php echo \JText::_('COM_PATCHTESTER_NO_ITEMS'); ?></td>
-			<?php endif; ?>
-			</tbody>
-		</table>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="7">
+						</td>
+					</tr>
+				</tfoot>
+				<tbody>
+				<?php echo $this->loadTemplate('items'); ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
+
 		<?php echo $this->pagination->getListFooter(); ?>
 
-		<input type="hidden" name="task" value=""/>
-		<input type="hidden" name="boxchecked" value="0"/>
-		<input type="hidden" name="pull_id" id="pull_id" value=""/>
-		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>"/>
-		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>"/>
+		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="boxchecked" value="0" />
+		<input type="hidden" name="pull_id" id="pull_id" value="" />
+		<input type="hidden" name="filter_order" value="<?php echo $listOrder; ?>" />
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo \JHtml::_('form.token'); ?>
 	</div>
 </form>

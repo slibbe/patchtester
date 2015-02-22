@@ -135,6 +135,24 @@ class PullsModel extends \JModelDatabase
 			);
 		}
 
+		// Filter for applied patches
+		$applied = $this->getState()->get('filter.applied');
+
+		if (!empty($applied))
+		{
+			// Not applied patches have a NULL value, so build our value part of the query based on this
+			if ($applied == 'no')
+			{
+				$value = ' IS NULL';
+			}
+			else
+			{
+				$value = ' = 1';
+			}
+
+			$query->where($db->quoteName('applied') . $value);
+		}
+
 		// Handle the list ordering.
 		$ordering  = $this->getState()->get('list.ordering');
 		$direction = $this->getState()->get('list.direction');
