@@ -23,15 +23,15 @@ foreach ($this->items as $i => $item) :
 		<span class="hasTip" title="" data-original-title="<strong>Info</strong><br/><?php echo $item->description; ?>"><?php echo $this->escape($item->title); ?></span>
 	</td>
 	<td class="center">
-		<a class="btn btn-small btn-info" htref="<?php echo $item->html_url; ?>" target="_blank">
+		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
 			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 		</a>
 	</td>
 	<td class="center">
-		<a class="btn btn-small btn-warning" htref="http://issues.joomla.org/tracker/joomla-cms/<?php echo $item->number; ?>" target="_blank">
+		<a class="btn btn-small btn-warning" href="http://issues.joomla.org/tracker/joomla-cms/<?php echo $item->pull_id; ?>" target="_blank">
 			<i class="icon-joomla"></i> <?php echo \JText::_('COM_PATCHTESTER_JISSUE'); ?>
 		</a>
-	</td>	
+	</td>
 	<td class="center">
 		<?php if ($item->applied) : ?>
 			<span class="label label-success">

@@ -12,7 +12,7 @@
 \JHtml::_('behavior.modal');
 \JHtml::_('formbehavior.chosen', 'select');
 
-$this->document->addStyleSheet($this->baseurl.'/components/com_patchtester/assets/octicons/octicons.csss')
+\JFactory::getDocument()->addStyleSheet(\JUri::base() . '/components/com_patchtester/assets/octicons/octicons.css');
 
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
@@ -91,7 +91,7 @@ else :
 				</th>
 				<th width="8%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
-				</th>				
+				</th>
 				<th width="10%" class="nowrap center">
 					<?php echo \JText::_('JSTATUS'); ?>
 				</th>
