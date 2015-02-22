@@ -20,18 +20,18 @@ foreach ($this->items as $i => $item) :
 		<?php echo $item->pull_id; ?>
 	</td>
 	<td>
-		<a class="icon icon16-github hasTip" title="<?php echo \JText::_('COM_PATCHTESTER_OPEN_IN_GITHUB'); ?>" href="<?php echo $item->pull_url; ?>" target="_blank">
-			<?php echo $this->escape($item->title); ?>
+		<span class="hasTip" title="" data-original-title="<strong>Info</strong><br/><?php echo $item->description; ?>"><?php echo $this->escape($item->title); ?></span>
+	</td>
+	<td class="center">
+		<a class="btn btn-small btn-info" htref="<?php echo $item->html_url; ?>" target="_blank">
+			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 		</a>
 	</td>
 	<td class="center">
-		<?php if ($item->description) :
-			echo '<a onclick="SqueezeBox.fromElement(this, {handler:\'iframe\', size: {x: 900, y: 600}, url:\'http://issues.joomla.org/tracker/joomla-cms/'.$item->pull_id.'\'})"><i class="icon-info" style="color:#000;cursor:pointer;"></i>';
-		else :
-			echo '&nbsp;';
-		endif;
-		?>
-	</td>
+		<a class="btn btn-small btn-warning" htref="http://issues.joomla.org/tracker/joomla-cms/<?php echo $item->number; ?>" target="_blank">
+			<i class="icon-joomla"></i> <?php echo \JText::_('COM_PATCHTESTER_JISSUE'); ?>
+		</a>
+	</td>	
 	<td class="center">
 		<?php if ($item->applied) : ?>
 			<span class="label label-success">
