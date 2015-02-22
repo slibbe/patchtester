@@ -43,15 +43,6 @@ else :
 </script>
 
 <form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
-	<div id="filter-bar" class="btn-toolbar">
-		<div class="btn-group pull-right">
-			<label for="sortTable" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
-			<select name="sortTable" id="sortTable" class="input-medium" onchange="Joomla.orderTable()">
-				<option value=""><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></option>
-				<?php echo \JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
-			</select>
-		</div>
-	</div>
 	<div id="j-main-container">
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
@@ -72,6 +63,13 @@ else :
 					<option value=""><?php echo \JText::_('JFIELD_ORDERING_DESC');?></option>
 					<option value="asc" <?php if ($listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo \JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
 					<option value="desc" <?php if ($listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo \JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
+				</select>
+			</div>
+			<div class="btn-group pull-right">
+				<label for="sortTable" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
+				<select name="sortTable" id="sortTable" class="input-medium" onchange="Joomla.orderTable()">
+					<option value=""><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></option>
+					<?php echo \JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
 				</select>
 			</div>
 		</div>
