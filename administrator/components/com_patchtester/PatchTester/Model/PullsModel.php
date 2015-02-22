@@ -340,12 +340,15 @@ class PullsModel extends \JModelDatabase
 			{
 				// Build the data object to store in the database
 				$pullData = array($pull->number, $pull->title, $pull->body, $pull->html_url);
-				$data[] = implode($pullData, ',');
+				$data[] = implode($this->getDb()->quote($pullData), ',');
 			}
 
-			$query = $this->getDb()->getQuery();
-			$query->insert('#__patchtester_pulls')->columns('pull_id, title, description, pull_url')->values($data);
-			$this->getDb()->setQuery($query);
+			$this->getDb()->setQuery(
+				$this->db->getQuery(true)
+					->insert('#__patchtester_pulls')
+					->columns('pull_id, title, description, pull_url')
+					->values($data)
+			);
 
 			try
 			{
