@@ -292,7 +292,7 @@ class PullsModel extends \JModelDatabase
 		$github = Helper::initializeGithub();
 
 		// If over the API limit, we can't build this list
-		if ($github->authorization->getRateLimit()->rate->remaining > 0)
+		if ($github->authorization->getRateLimit()->resources->core->remaining > 0)
 		{
 			// Sanity check, ensure there aren't any applied patches
 			if (count($this->getAppliedPatches()) >= 1)
