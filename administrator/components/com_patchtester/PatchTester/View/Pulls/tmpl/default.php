@@ -12,7 +12,7 @@
 \JHtml::_('behavior.modal');
 \JHtml::_('formbehavior.chosen', 'select');
 
-\JFactory::getDocument()->addStyleSheet(\JUri::base() . '/components/com_patchtester/assets/octicons/octicons.css');
+\JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
 
 $listOrder  = $this->escape($this->state->get('list.ordering'));
 $listDirn   = $this->escape($this->state->get('list.direction'));
