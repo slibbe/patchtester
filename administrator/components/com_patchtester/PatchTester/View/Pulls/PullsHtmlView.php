@@ -98,7 +98,7 @@ class PullsHtmlView extends DefaultHtmlView
 	 */
 	protected function addToolbar()
 	{
-		\JToolBarHelper::title(\JText::_('COM_PATCHTESTER'), 'patchtester');
+		\JToolBarHelper::title(\JText::_('COM_PATCHTESTER'), '');
 
 		if (!count($this->envErrors))
 		{
