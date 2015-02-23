@@ -15,6 +15,7 @@ To use the latest code from this GitHub repo:
 Click Apply Patch to apply the proposed changes from the pull request.
 Click Revert Patch to revert an applied patch.
 
+You can check out this repo's [Wiki](https://github.com/joomla-extensions/patchtester/wiki) for more information about the extension.
 
 Video tutorial:
 http://www.youtube.com/watch?v=4OWgusZgIfk
