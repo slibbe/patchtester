@@ -92,7 +92,7 @@ class PullModel extends \JModelBase
 						 * Check if the patch tester is running in a production environment
 						 * If so, do not patch certain files as errors will be thrown
 						 */
-						if (!file_exists(JPATH_ROOT . '/installation/CHANGELOG'))
+						if (!file_exists(JPATH_ROOT . '/installation/index.php'))
 						{
 							$filePath = explode('/', $file->new);
 
