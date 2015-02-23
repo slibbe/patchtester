@@ -425,13 +425,11 @@ class PullsModel extends \JModelDatabase
 
 			return (int) $this->getDb()->loadResult();
 		}
-		// Otherwise fall back to inefficient way of counting all results.
-		else
-		{
-			$this->getDb()->setQuery($query)->execute();
 
-			return (int) $this->getDb()->getNumRows();
-		}
+		// Otherwise fall back to inefficient way of counting all results.
+		$this->getDb()->setQuery($query)->execute();
+
+		return (int) $this->getDb()->getNumRows();
 	}
 
 	/**

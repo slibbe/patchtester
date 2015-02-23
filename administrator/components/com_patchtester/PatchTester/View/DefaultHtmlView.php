@@ -31,32 +31,30 @@ class DefaultHtmlView extends \JViewHtml
 		$file = isset($tpl) ? $this->getLayout() . '_' . $tpl : $this->getLayout();
 		$path = $this->getPath($file);
 
-		if ($path)
-		{
-			// Unset so as not to introduce into template scope
-			unset($tpl);
-			unset($file);
-
-			// Never allow a 'this' property
-			if (isset($this->this))
-			{
-				unset($this->this);
-			}
-
-			// Start an output buffer.
-			ob_start();
-
-			// Load the template.
-			include $path;
-
-			// Get the layout contents.
-			$output = ob_get_clean();
-
-			return $output;
-		}
-		else
+		if (!$path)
 		{
 			throw new \RuntimeException(\JText::sprintf('JLIB_APPLICATION_ERROR_LAYOUTFILE_NOT_FOUND', $file), 500);
 		}
+
+		// Unset so as not to introduce into template scope
+		unset($tpl);
+		unset($file);
+
+		// Never allow a 'this' property
+		if (isset($this->this))
+		{
+			unset($this->this);
+		}
+
+		// Start an output buffer.
+		ob_start();
+
+		// Load the template.
+		include $path;
+
+		// Get the layout contents.
+		$output = ob_get_clean();
+
+		return $output;
 	}
 }
