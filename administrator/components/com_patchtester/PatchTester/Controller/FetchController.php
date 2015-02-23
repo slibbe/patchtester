@@ -26,26 +26,50 @@ class FetchController extends DisplayController
 	 */
 	public function execute()
 	{
+		// We don't want this request to be cached.
+		header('Pragma: no-cache');
+		header('Cache-Control: no-cache');
+		header('Expires: -1');
+
 		try
 		{
+			// Fetch our page from the session
+			$page = \JFactory::getSession()->get('com_patchtester_fetcher_page', 1);
+
 			// TODO - Decouple the model and context?
 			$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
 
 			// Initialize the state for the model
 			$model->setState($this->initializeState($model));
 
-			$model->requestFromGithub();
-
-			$msg  = \JText::_('COM_PATCHTESTER_FETCH_SUCCESSFUL');
-			$type = 'message';
+			$status = $model->requestFromGithub($page);
 		}
 		catch (\Exception $e)
 		{
-			$msg  = $e->getMessage();
-			$type = 'error';
+			$response = new \JResponseJson($e);
+
+			echo json_encode($response);
+
+			$this->getApplication()->close(1);
 		}
 
-		$this->getApplication()->enqueueMessage($msg, $type);
-		$this->getApplication()->redirect(\JRoute::_('index.php?option=com_patchtester', false));
+		// Update the UI and session now
+		if (isset($status['page']))
+		{
+			\JFactory::getSession()->set('com_patchtester_fetcher_page', $status['page']);
+			$message = \JText::sprintf('COM_PATCHTESTER_FETCH_PAGE_NUMBER', $status['page']);
+			unset($status['page']);
+		}
+		else
+		{
+			$status['header'] = \JText::_('COM_PATCHTESTER_FETCH_SUCCESSFUL', true);
+			$message = \JText::_('COM_PATCHTESTER_FETCH_COMPLETE_CLOSE_WINDOW', true);
+		}
+
+		$response = new \JResponseJson($status, $message, false, true);
+
+		echo json_encode($response);
+
+		$this->getApplication()->close();
 	}
 }

@@ -299,63 +299,42 @@ class PullsModel extends \JModelDatabase
 	/**
 	 * Method to request new data from GitHub
 	 *
-	 * @return  void
+	 * @param   integer  $page  The page of the request
+	 *
+	 * @return  array
 	 *
 	 * @since   2.0
 	 * @throws  \RuntimeException
 	 */
-	public function requestFromGithub()
+	public function requestFromGithub($page)
 	{
 		// Get the Github object
 		$github = Helper::initializeGithub();
-		$rate   = $github->authorization->getRateLimit();
 
-		// If over the API limit, we can't build this list
-		if ($rate->resources->core->remaining == 0)
+		// If on page 1, dump the old data
+		if ($page === 1)
 		{
-			throw new \RuntimeException(
-				\JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', \JFactory::getDate($rate->resources->core->reset))
+			$this->getDb()->truncateTable('#__patchtester_pulls');
+		}
+
+		try
+		{
+			// TODO - Option to configure the batch size
+			$pulls = $github->pulls->getList(
+				$this->getState()->get('github_user'), $this->getState()->get('github_repo'), 'open', $page, 100
 			);
 		}
-
-		// Sanity check, ensure there aren't any applied patches
-		if (count($this->getAppliedPatches()) >= 1)
+		catch (\DomainException $e)
 		{
-			throw new \RuntimeException(\JText::_('COM_PATCHTESTER_ERROR_APPLIED_PATCHES'));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()));
 		}
 
-		$pulls = array();
-		$page  = 0;
+		$count = is_array($pulls) ? count($pulls) : 0;
 
-		do
+		// If there are no pulls to insert then bail, assume we're finished
+		if ($count === 0 || empty($pulls))
 		{
-			$page++;
-
-			try
-			{
-				$items = $github->pulls->getList($this->getState()->get('github_user'), $this->getState()->get('github_repo'), 'open', $page, 100);
-			}
-			catch (\DomainException $e)
-			{
-				throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()));
-			}
-
-			$count = is_array($items) ? count($items) : 0;
-
-			if ($count)
-			{
-				$pulls = array_merge($pulls, $items);
-			}
-		}
-		while ($count);
-
-		// Dump the old data now
-		$this->getDb()->truncateTable('#__patchtester_pulls');
-
-		// If there are no pulls to insert then bail
-		if (empty($pulls))
-		{
-			return;
+			return array('complete' => true);
 		}
 
 		$data = array();
@@ -382,6 +361,9 @@ class PullsModel extends \JModelDatabase
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()));
 		}
+
+		// Need to make another request
+		return array('complete' => false, 'page' => ($page + 1));
 	}
 
 	/**

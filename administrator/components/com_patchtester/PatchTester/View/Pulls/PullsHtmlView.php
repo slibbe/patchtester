@@ -102,7 +102,19 @@ class PullsHtmlView extends DefaultHtmlView
 
 		if (!count($this->envErrors))
 		{
-			\JToolbarHelper::custom('fetch', 'refresh.png', 'refresh_f2.png', 'COM_PATCHTESTER_TOOLBAR_FETCH_DATA', false);
+			$toolbar = \JToolbar::getInstance('toolbar');
+			$toolbar->appendButton(
+				'Popup',
+				'refresh',
+				'COM_PATCHTESTER_TOOLBAR_FETCH_DATA',
+				'index.php?option=com_patchtester&view=fetch&tmpl=component',
+				500,
+				210,
+				0,
+				0,
+				'window.parent.location.reload()',
+				'COM_PATCHTESTER_HEADING_FETCH_DATA'
+			);
 		}
 
 		\JToolBarHelper::preferences('com_patchtester');

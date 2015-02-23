@@ -95,7 +95,15 @@ class DisplayController extends \JControllerBase
 		// Sanity check - Ensure our classes exist
 		if (!class_exists($viewClass))
 		{
-			throw new \RuntimeException(sprintf('The view class for the %1%s view in the %2%s was not found.', $view, $format), 500);
+			// Try to use a default view
+			$viewClass = '\\PatchTester\\View\\Default' . ucfirst($format) . 'View';
+
+			if (!class_exists($viewClass))
+			{
+				throw new \RuntimeException(
+					sprintf('The view class for the %1$s view in the %2$s was not found.', $view, $format), 500
+				);
+			}
 		}
 
 		if (!class_exists($modelClass))

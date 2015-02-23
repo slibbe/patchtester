@@ -35,6 +35,7 @@
    		<folder>css</folder>
         <folder>fonts</folder>
    		<folder>images</folder>
+        <folder>js</folder>
    	</media>
 	<administration>
 		<menu img="../media/com_patchtester/images/icon-16-patchtester.png">com_patchtester</menu>
