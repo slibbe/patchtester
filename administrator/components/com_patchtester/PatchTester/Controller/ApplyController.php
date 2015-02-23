@@ -33,9 +33,15 @@ class ApplyController extends DisplayController
 			// Initialize the state for the model
 			$model->setState($this->initializeState($model));
 
-			$model->apply($this->getInput()->getUint('pull_id'));
+			if ($model->apply($this->getInput()->getUint('pull_id')))
+			{
+				$msg  = \JText::_('COM_PATCHTESTER_APPLY_OK');
+			}
+			else
+			{
+				$msg = \JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH');
+			}
 
-			$msg  = \JText::_('COM_PATCHTESTER_APPLY_OK');
 			$type = 'message';
 		}
 		catch (\Exception $e)

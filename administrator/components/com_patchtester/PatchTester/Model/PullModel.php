@@ -164,10 +164,7 @@ class PullModel extends \JModelBase
 
 		if (!$files)
 		{
-			// TODO - Should be a better way to enqueue messages without needing the application...
-			\JFactory::getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
-
-			return true;
+			return false;
 		}
 
 		foreach ($files as $file)
