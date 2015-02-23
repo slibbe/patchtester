@@ -165,7 +165,7 @@ class PullModel extends \JModelBase
 		if (!$files)
 		{
 			// TODO - Should be a better way to enqueue messages without needing the application...
-			\JFactory::getApplication()->enqueueMessage(JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
+			\JFactory::getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_NO_FILES_TO_PATCH', 'message'));
 
 			return true;
 		}
@@ -275,7 +275,7 @@ class PullModel extends \JModelBase
 
 		if (!$files)
 		{
-			throw new \RuntimeException(sprintf(JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
+			throw new \RuntimeException(sprintf(\JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
 		}
 
 		jimport('joomla.filesystem.file');
