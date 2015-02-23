@@ -308,11 +308,14 @@ class PullsModel extends \JModelDatabase
 	{
 		// Get the Github object
 		$github = Helper::initializeGithub();
+		$rate   = $github->authorization->getRateLimit();
 
 		// If over the API limit, we can't build this list
-		if ($github->authorization->getRateLimit()->resources->core->remaining == 0)
+		if ($rate->resources->core->remaining == 0)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', \JFactory::getDate($this->rate->reset)));
+			throw new \RuntimeException(
+				\JText::sprintf('COM_PATCHTESTER_API_LIMIT_LIST', \JFactory::getDate($rate->resources->core->reset))
+			);
 		}
 
 		// Sanity check, ensure there aren't any applied patches
