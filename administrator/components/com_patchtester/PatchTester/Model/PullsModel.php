@@ -128,10 +128,11 @@ class PullsModel extends \JModelDatabase
 
 		if (!empty($search))
 		{
+			$searchid = $search;
 			$search = $db->quote('%' . $db->escape($search, true) . '%');
 			$query->where(
 				'(' . $db->quoteName('a.title') . ' LIKE ' . $search . ') OR ' .
-				'(' . $db->quoteName('a.pull_id') . ' LIKE ' . $search . ') '
+				'(' . $db->quoteName('a.pull_id') . ' = ' . $searchid . ') '
 			);
 		}
 
