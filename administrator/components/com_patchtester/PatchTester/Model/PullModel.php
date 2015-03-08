@@ -84,9 +84,15 @@ class PullModel extends \JModelBase
 						$file->action = 'deleted';
 					}
 
+					// Binary files are presently unsupported, use this to reset the parser in the meantime
+					if (strpos($line, 'Binary files') === 0)
+					{
+						$state = 0;
+					}
+
 					if (strpos($line, '@@') === 0)
 					{
-						$state   = 0;
+						$state = 0;
 
 						/*
 						 * Check if the patch tester is running in a production environment
