@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS [#__patchtester_pulls] (
+CREATE TABLE [#__patchtester_pulls] (
   [id] [bigint] IDENTITY(1,1) NOT NULL,
   [pull_id] [bigint] NOT NULL,
   [title] [nvarchar](100) NOT NULL,
