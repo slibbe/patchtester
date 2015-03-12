@@ -2,7 +2,7 @@ CREATE TABLE [#__patchtester_pulls] (
   [id] [bigint] IDENTITY(1,1) NOT NULL,
   [pull_id] [bigint] NOT NULL,
   [title] [nvarchar](100) NOT NULL,
-  [description] [nvarchar](5000) NOT NULL DEFAULT '',
+  [description] [nvarchar](4000) NOT NULL DEFAULT '',
   [pull_url] [nvarchar](255) NOT NULL,
  CONSTRAINT [PK_#__patchtester_pulls] PRIMARY KEY CLUSTERED
 (
