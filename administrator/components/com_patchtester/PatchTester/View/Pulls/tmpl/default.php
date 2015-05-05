@@ -8,8 +8,7 @@
 
 /** @type  \PatchTester\View\Pulls\PullsHtmlView  $this */
 
-\JHtml::_('behavior.tooltip');
-\JHtml::_('behavior.modal');
+\JHtml::_('bootstrap.tooltip');
 \JHtml::_('formbehavior.chosen', 'select');
 
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
@@ -22,10 +21,10 @@ $sortFields    = $this->getSortFields();
 if (count($this->envErrors)) :
 	$this->loadTemplate('errors');
 else :
-?>
-<script type="text/javascript">
+\JFactory::getDocument()->addScriptDeclaration(
+	"
 	var submitpatch = function (task, id) {
-		document.id('pull_id').set('value', id);
+		document.getElementById('pull_id').set('value', id);
 		return Joomla.submitbutton(task);
 	}
 
@@ -33,7 +32,7 @@ else :
 		table = document.getElementById('sortTable');
 		direction = document.getElementById('directionTable');
 		order = table.options[table.selectedIndex].value;
-		if (order != '<?php echo $listOrder; ?>') {
+		if (order != '" . $listOrder . "') {
 			dirn = 'asc';
 		} else {
 			dirn = direction.options[direction.selectedIndex].value;
@@ -41,8 +40,9 @@ else :
 
 		Joomla.tableOrdering(order, dirn, '');
 	}
-</script>
-
+	"
+);
+?>
 <form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container">
 		<div id="filter-bar" class="btn-toolbar">
