@@ -8,7 +8,7 @@
 
 /** @type  \PatchTester\View\Pulls\PullsHtmlView  $this */
 
-\JHtml::_('behavior.tooltip');
+\JHtml::_('bootstrap.tooltip');
 \JHtml::_('formbehavior.chosen', 'select');
 
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
