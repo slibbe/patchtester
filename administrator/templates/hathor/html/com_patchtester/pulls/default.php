@@ -22,6 +22,15 @@ JFactory::getDocument()->addScriptDeclaration(
 	}
 	"
 );
+
+echo JHtmlBootstrap::renderModal(
+	'modal-refresh', array(
+		'url' => JUri::root() . 'administrator/index.php?option=com_patchtester&view=fetch&tmpl=component',
+		'title' => JText::_('COM_PATCHTESTER_TOOLBAR_FETCH_DATA'),
+		'width' => '800px',
+		'height' => '300px'
+	)
+);
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container">
