@@ -9,6 +9,7 @@
 /** @type  \PatchTester\View\DefaultHtmlView  $this */
 
 JHtml::_('jquery.framework');
+JHtml::_('behavior.core');
 JHtml::_('script', 'com_patchtester/fetcher.js', false, true);
 
 ?>
