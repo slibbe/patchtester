@@ -8,6 +8,7 @@
 
 defined('_JEXEC') or die;
 
+JHtml::stylesheet("com_patchtester/octicons.css", false, true, false);
 foreach ($this->items as $i => $item) :
 	$status = '';
 
@@ -21,17 +22,19 @@ foreach ($this->items as $i => $item) :
 		<?php echo $item->pull_id; ?>
 	</td>
 	<td>
-		<a class="icon icon16-github hasTooltip" title="<?php echo JText::_('COM_PATCHTESTER_OPEN_IN_GITHUB'); ?>" href="<?php echo $item->pull_url; ?>" target="_blank">
+		<p class="hasTooltip" title="<?php echo $this->escape(\JHtml::_('string.truncateComplex', $item->description, 100)); ?>">
 			<?php echo $this->escape($item->title); ?>
+		</p>
+	</td>
+	<td>
+		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
+			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 		</a>
 	</td>
 	<td>
-		<?php if ($item->title) :
-			echo JHtml::_('tooltip', htmlspecialchars($item->title), 'Info');
-		else :
-			echo '&nbsp;';
-		endif;
-		?>
+		<a class="btn btn-small btn-warning" href="http://issues.joomla.org/tracker/joomla-cms/<?php echo $item->pull_id; ?>" target="_blank">
+			<i class="icon-joomla"></i> <?php echo \JText::_('COM_PATCHTESTER_JISSUE'); ?>
+		</a>
 	</td>
 	<td class="center">
 		<?php if ($item->applied) : ?>
@@ -46,9 +49,9 @@ foreach ($this->items as $i => $item) :
 	</td>
 	<td class="center">
 		<?php if ($item->applied) :
-			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'revert\', ' . (int) $item->applied . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'pull.revert\', ' . (int) $item->id . ');">' . JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
 		else :
-			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'apply\', ' . (int) $item->pull_id . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'pull.apply\', ' . (int) $item->id . ');">' . JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
 		endif; ?>
 	</td>
 </tr>
