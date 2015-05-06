@@ -8,20 +8,21 @@
 
 defined('_JEXEC') or die;
 
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.modal');
+JHtml::_('behavior.core');
+JHtml::_('bootstrap.tooltip');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 
-?>
-<script type="text/javascript">
+JFactory::getDocument()->addScriptDeclaration(
+	"
 	var submitpatch = function (task, id) {
 		document.getElementById('pull_id').set('value', id);
 		return Joomla.submitbutton(task);
 	}
-</script>
-
+	"
+);
+?>
 <form action="<?php echo JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
 	<div id="j-main-container">
 		<fieldset id="filter-bar">
