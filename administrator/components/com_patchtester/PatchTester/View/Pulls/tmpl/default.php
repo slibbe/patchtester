@@ -13,14 +13,14 @@
 
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
 
+if (count($this->envErrors)) :
+	$this->loadTemplate('errors');
+else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
 $sortFields    = $this->getSortFields();
 
-if (count($this->envErrors)) :
-	$this->loadTemplate('errors');
-else :
 \JFactory::getDocument()->addScriptDeclaration(
 	"
 	var submitpatch = function (task, id) {
