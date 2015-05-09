@@ -161,15 +161,7 @@ class PullModel extends \JModelBase
 		$options->set('userAgent', 'JPatchTester/2.0');
 		$options->set('timeout', 120);
 
-		// Make sure we can use the cURL driver
-		$driver = \JHttpFactory::getAvailableDriver($options, 'curl');
-
-		if (!($driver instanceof \JHttpTransportCurl))
-		{
-			throw new \RuntimeException('Cannot use the PHP cURL adapter in this environment, cannot use patchtester', 500);
-		}
-
-		$transport = new \JHttp($options, $driver);
+		$transport = \JHttpFactory::getHttp($options);
 
 		try
 		{
