@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS "#__patchtester_pulls" (
   "id" serial NOT NULL,
   "pull_id" bigint NOT NULL,
-  "title" character varying(100) NOT NULL,
+  "title" character varying(200) NOT NULL,
   "description" character varying(5000) DEFAULT '' NOT NULL,
   "pull_url" character varying(255) NOT NULL,
   PRIMARY KEY ("id")
