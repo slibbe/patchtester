@@ -101,7 +101,7 @@ class DisplayController extends \JControllerBase
 			if (!class_exists($viewClass))
 			{
 				throw new \RuntimeException(
-					sprintf('The view class for the %1$s view in the %2$s was not found.', $view, $format), 500
+					sprintf('The view class for the %1$s view in the %2$s format was not found.', $view, $format), 500
 				);
 			}
 		}

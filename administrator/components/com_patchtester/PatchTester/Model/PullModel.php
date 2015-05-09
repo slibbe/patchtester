@@ -224,7 +224,11 @@ class PullModel extends \JModelBase
 				if (!\JFile::copy(\JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 				{
 					throw new \RuntimeException(
-						sprintf('Can not copy file %s to %s', JPATH_ROOT . '/' . $file->old, JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
+						\JText::sprintf(
+							'COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE',
+							JPATH_ROOT . '/' . $file->old,
+							JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'
+						)
 					);
 				}
 			}
@@ -235,7 +239,7 @@ class PullModel extends \JModelBase
 				case 'added':
 					if (!\JFile::write(\JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
 					{
-						throw new \RuntimeException(sprintf('Can not write the file: %s', JPATH_ROOT . '/' . $file->new));
+						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_WRITE_FILE', JPATH_ROOT . '/' . $file->new));
 					}
 
 					break;
@@ -243,7 +247,7 @@ class PullModel extends \JModelBase
 				case 'deleted':
 					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->old)))
 					{
-						throw new \RuntimeException(sprintf('Can not delete the file: %s', JPATH_ROOT . '/' . $file->old));
+						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->old));
 					}
 
 					break;
@@ -292,7 +296,7 @@ class PullModel extends \JModelBase
 
 		if (!$files)
 		{
-			throw new \RuntimeException(sprintf(\JText::_('%s - Error retrieving table data (%s)'), __METHOD__, htmlentities($table->data)));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_READING_DATABASE_TABLE', __METHOD__, htmlentities($table->data)));
 		}
 
 		jimport('joomla.filesystem.file');
@@ -306,8 +310,8 @@ class PullModel extends \JModelBase
 					if (!\JFile::copy(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt', JPATH_ROOT . '/' . $file->old))
 					{
 						throw new \RuntimeException(
-							sprintf(
-								\JText::_('Can not copy file %s to %s'),
+							\JText::sprintf(
+								'COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE',
 								JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt',
 								JPATH_ROOT . '/' . $file->old
 							)
@@ -316,7 +320,9 @@ class PullModel extends \JModelBase
 
 					if (!\JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new \RuntimeException(sprintf(\JText::_('Can not delete the file: %s'), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'));
+						throw new \RuntimeException(
+							\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
+						);
 					}
 
 					break;
@@ -324,7 +330,9 @@ class PullModel extends \JModelBase
 				case 'added':
 					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->new)))
 					{
-						throw new \RuntimeException(sprintf(\JText::_('Can not delete the file: %s'), JPATH_ROOT . '/' . $file->new));
+						throw new \RuntimeException(
+							\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->new)
+						);
 					}
 
 					break;
