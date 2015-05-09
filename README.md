@@ -19,3 +19,7 @@ You can check out this repo's [Wiki](https://github.com/joomla-extensions/patcht
 
 Video tutorial:
 http://www.youtube.com/watch?v=4OWgusZgIfk
+
+Github two factor authentication
+-----
+To use an account that has two factor authentication enabled, you'll have to [create a personal access token on GitHub](https://github.com/settings/applications) and store that token in the "GitHub Account Password" option in the component's config.
