@@ -64,7 +64,7 @@ class PullsModel extends \JModelDatabase
 		$db = $this->getDb();
 
 		$db->setQuery(
-		   $db->getQuery(true)
+			$db->getQuery(true)
 				->select('*')
 				->from($db->quoteName('#__patchtester_tests'))
 				->where($db->quoteName('applied') . ' = 1')

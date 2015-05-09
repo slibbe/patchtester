@@ -193,7 +193,8 @@ class PullModel extends \JModelBase
 					throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
 				}
 
-				$url = 'https://raw.github.com/' . urlencode($pull->head->user->login) . '/' . urlencode($pull->head->repo->name) . '/' . urlencode($pull->head->ref) . '/' . $file->new;
+				$url = 'https://raw.github.com/' . urlencode($pull->head->user->login) . '/' . urlencode($pull->head->repo->name)
+					. '/' . urlencode($pull->head->ref) . '/' . $file->new;
 
 				$file->body = $transport->get($url)->body;
 			}
