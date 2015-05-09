@@ -44,7 +44,23 @@ class StartfetchController extends DisplayController
 
 		// Make sure we can fetch the data from GitHub - throw an error on < 10 available requests
 		$github = Helper::initializeGithub();
-		$rate   = $github->authorization->getRateLimit();
+
+		try
+		{
+			$rate = $github->authorization->getRateLimit();
+		}
+		catch (\Exception $e)
+		{
+			$response = new \JResponseJson(
+				new \Exception(
+					\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage())
+				)
+			);
+
+			echo json_encode($response);
+
+			$this->getApplication()->close(1);
+		}
 
 		// If over the API limit, we can't build this list
 		if ($rate->resources->core->remaining < 10)
