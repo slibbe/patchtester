@@ -132,7 +132,15 @@ class PullModel extends \JModelBase
 	{
 		// Get the Github object
 		$github = Helper::initializeGithub();
-		$rate   = $github->authorization->getRateLimit();
+
+		try
+		{
+			$rate = $github->authorization->getRateLimit();
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+		}
 
 		// If over the API limit, we can't build this list
 		if ($rate->resources->core->remaining == 0)
