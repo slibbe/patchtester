@@ -21,7 +21,7 @@ foreach ($this->items as $i => $item) :
 		<?php echo $item->pull_id; ?>
 	</td>
 	<td>
-		<p class="hasTooltip" title="<?php echo $this->escape(\JHtml::_('string.truncateComplex', $item->description, 100)); ?>">
+		<p class="hasTooltip" title="<?php echo $this->escape($item->description); ?>">
 			<?php echo $this->escape($item->title); ?>
 		</p>
 	</td>

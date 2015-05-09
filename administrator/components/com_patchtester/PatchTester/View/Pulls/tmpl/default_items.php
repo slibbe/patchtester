@@ -20,7 +20,7 @@ foreach ($this->items as $i => $item) :
 		<?php echo $item->pull_id; ?>
 	</td>
 	<td>
-		<span class="hasTooltip" title="<strong>Info</strong><br/><?php echo $this->escape(\JHtml::_('string.truncateComplex', $item->description, 50)); ?>"><?php echo $this->escape($item->title); ?></span>
+		<span class="hasTooltip" title="<strong>Info</strong><br/><?php echo $this->escape($item->description); ?>"><?php echo $this->escape($item->title); ?></span>
 	</td>
 	<td class="center">
 		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">

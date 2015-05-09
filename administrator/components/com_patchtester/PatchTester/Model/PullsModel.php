@@ -343,7 +343,7 @@ class PullsModel extends \JModelDatabase
 		foreach ($pulls as $pull)
 		{
 			// Build the data object to store in the database
-			$pullData = array($pull->number, $pull->title, $pull->body, $pull->html_url);
+			$pullData = array($pull->number, $pull->title, \JHtml::_('string.truncateComplex', $pull->body, 100), $pull->html_url);
 			$data[] = implode($this->getDb()->quote($pullData), ',');
 		}
 
