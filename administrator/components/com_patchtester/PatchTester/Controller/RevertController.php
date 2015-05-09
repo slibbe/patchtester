@@ -35,7 +35,7 @@ class RevertController extends DisplayController
 
 			$model->revert($this->getInput()->getUint('pull_id'));
 
-			$msg  = \JText::_('COM_PATCHTESTER_APPLY_OK');
+			$msg  = \JText::_('COM_PATCHTESTER_REVERT_OK');
 			$type = 'message';
 		}
 		catch (\Exception $e)
