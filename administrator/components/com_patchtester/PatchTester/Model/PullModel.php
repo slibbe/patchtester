@@ -326,21 +326,27 @@ class PullModel extends \JModelBase
 						);
 					}
 
-					if (!\JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+					if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
 					{
-						throw new \RuntimeException(
-							\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
-						);
+						if (!\JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+						{
+							throw new \RuntimeException(
+								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
+							);
+						}
 					}
 
 					break;
 
 				case 'added':
-					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->new)))
+					if (file_exists(JPATH_ROOT . '/' . $file->new))
 					{
-						throw new \RuntimeException(
-							\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->new)
-						);
+						if (!\JFile::delete(JPATH_ROOT . '/' . $file->new))
+						{
+							throw new \RuntimeException(
+								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->new)
+							);
+						}
 					}
 
 					break;
