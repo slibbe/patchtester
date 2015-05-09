@@ -142,7 +142,14 @@ class PullModel extends \JModelBase
 			);
 		}
 
-		$pull = $github->pulls->get($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+		try
+		{
+			$pull = $github->pulls->get($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+		}
 
 		if (is_null($pull->head->repo))
 		{
@@ -164,7 +171,14 @@ class PullModel extends \JModelBase
 
 		$transport = new \JHttp($options, $driver);
 
-		$patch = $transport->get($pull->diff_url)->body;
+		try
+		{
+			$patch = $transport->get($pull->diff_url)->body;
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+		}
 
 		$files = $this->parsePatch($patch);
 
@@ -177,7 +191,7 @@ class PullModel extends \JModelBase
 		{
 			if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->old))
 			{
-				throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S'), $file->old));
+				throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S', $file->old));
 			}
 
 			if ($file->action == 'added' || $file->action == 'modified')
@@ -185,18 +199,25 @@ class PullModel extends \JModelBase
 				// If the backup file already exists, we can't apply the patch
 				if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->new) . '.txt'))
 				{
-					throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_CONFLICT_S'), $file->new));
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_CONFLICT_S', $file->new));
 				}
 
 				if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->old))
 				{
-					throw new \RuntimeException(sprintf(\JText::_('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S'), $file->old));
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S', $file->old));
 				}
 
 				$url = 'https://raw.github.com/' . urlencode($pull->head->user->login) . '/' . urlencode($pull->head->repo->name)
 					. '/' . urlencode($pull->head->ref) . '/' . $file->new;
 
-				$file->body = $transport->get($url)->body;
+				try
+				{
+					$file->body = $transport->get($url)->body;
+				}
+				catch (\Exception $e)
+				{
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+				}
 			}
 		}
 

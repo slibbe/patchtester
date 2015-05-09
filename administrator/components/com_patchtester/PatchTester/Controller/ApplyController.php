@@ -35,7 +35,7 @@ class ApplyController extends DisplayController
 
 			if ($model->apply($this->getInput()->getUint('pull_id')))
 			{
-				$msg  = \JText::_('COM_PATCHTESTER_APPLY_OK');
+				$msg = \JText::_('COM_PATCHTESTER_APPLY_OK');
 			}
 			else
 			{
