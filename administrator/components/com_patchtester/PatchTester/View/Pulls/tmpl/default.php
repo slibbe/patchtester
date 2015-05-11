@@ -14,7 +14,7 @@
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
 
 if (count($this->envErrors)) :
-	$this->loadTemplate('errors');
+	echo $this->loadTemplate('errors');
 else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
