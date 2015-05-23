@@ -343,14 +343,27 @@ class PullsModel extends \JModelDatabase
 		foreach ($pulls as $pull)
 		{
 			// Build the data object to store in the database
-			$pullData = array($pull->number, $pull->title, \JHtml::_('string.truncateComplex', $pull->body, 100), $pull->html_url);
-			$data[] = implode($this->getDb()->quote($pullData), ',');
+			$pullData = array(
+				$pull->number,
+				$this->getDb()->quote($pull->title),
+				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
+				$this->getDb()->quote($pull->html_url)
+			);
+
+			$data[] = implode($pullData, ',');
 		}
 
 		$this->getDb()->setQuery(
-			$this->db->getQuery(true)
-				->insert('#__patchtester_pulls')
-				->columns('pull_id, title, description, pull_url')
+			$this->getDb()->getQuery(true)
+				->insert($this->getDb()->quoteName('#__patchtester_pulls'))
+				->columns(
+					array(
+						$this->getDb()->quoteName('pull_id'),
+						$this->getDb()->quoteName('title'),
+						$this->getDb()->quoteName('description'),
+						$this->getDb()->quoteName('pull_url')
+					)
+				)
 				->values($data)
 		);
 
