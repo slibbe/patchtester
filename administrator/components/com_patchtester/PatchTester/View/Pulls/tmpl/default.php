@@ -85,7 +85,7 @@ $sortFields    = $this->getSortFields();
 
 		<?php if (empty($this->items)) : ?>
 			<div class="alert alert-no-items">
-				<?php echo JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+				<?php echo \JText::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
 			<table class="table table-striped">
@@ -113,7 +113,7 @@ $sortFields    = $this->getSortFields();
 				</thead>
 				<tfoot>
 					<tr>
-						<td colspan="7">
+						<td colspan="6">
 						</td>
 					</tr>
 				</tfoot>
