@@ -139,7 +139,7 @@ class PullModel extends \JModelBase
 		}
 		catch (\Exception $e)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
 
 		// If over the API limit, we can't build this list
@@ -156,7 +156,7 @@ class PullModel extends \JModelBase
 		}
 		catch (\Exception $e)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
 
 		if (is_null($pull->head->repo))
@@ -177,7 +177,7 @@ class PullModel extends \JModelBase
 		}
 		catch (\Exception $e)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
 
 		$files = $this->parsePatch($patch);
@@ -216,7 +216,7 @@ class PullModel extends \JModelBase
 				}
 				catch (\Exception $e)
 				{
-					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()));
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 				}
 			}
 		}

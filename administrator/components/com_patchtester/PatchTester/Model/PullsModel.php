@@ -327,7 +327,7 @@ class PullsModel extends \JModelDatabase
 		}
 		catch (\DomainException $e)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()), $e->getCode(), $e);
 		}
 
 		$count = is_array($pulls) ? count($pulls) : 0;
@@ -373,7 +373,7 @@ class PullsModel extends \JModelDatabase
 		}
 		catch (\RuntimeException $e)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_INSERT_DATABASE', $e->getMessage()), $e->getCode(), $e);
 		}
 
 		// Need to make another request

@@ -53,7 +53,9 @@ class StartfetchController extends DisplayController
 		{
 			$response = new \JResponseJson(
 				new \Exception(
-					\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage())
+					\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()),
+					$e->getCode(),
+					$e
 				)
 			);
 
