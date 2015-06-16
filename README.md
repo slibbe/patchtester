@@ -1,4 +1,4 @@
-Patch Tester
+Patch Tester [![Build Status](https://travis-ci.org/joomla-extensions/patchtester.png)](https://travis-ci.org/joomla-extensions/patchtester)
 =============
 
 Easily apply changes from pull requests.

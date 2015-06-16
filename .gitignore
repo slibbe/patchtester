@@ -3,16 +3,19 @@
 *.tar.*
 
 # Packages directories #
-build/packages
-build/packaging
-build/releases
+/build/packages
+/build/packaging
+/build/releases
 
 # Build #
-build/logs
+/build/logs
 
-# IDE & System#
-.buildpath
-.project
-.settings
+# IDE & System #
+/.buildpath
+/.project
+/.settings
 .DS_Store
-.idea
+/.idea
+
+# Composer Install #
+/vendor

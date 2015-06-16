@@ -1,0 +1,14 @@
+{
+    "name": "joomla/patchtester",
+    "type": "project",
+    "description": "Joomla! Patch Testing Component",
+    "keywords": ["joomla", "cms"],
+    "homepage": "https://github.com/joomla-extensions/patchtester",
+    "license": "GPL-2.0+",
+    "require": {
+        "php": ">=5.3.10"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "~1.5"
+    }
+}
