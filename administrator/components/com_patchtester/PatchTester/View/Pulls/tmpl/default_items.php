@@ -22,6 +22,9 @@ foreach ($this->items as $i => $item) :
 	<td>
 		<span class="hasTooltip" title="<strong>Info</strong><br/><?php echo $this->escape($item->description); ?>"><?php echo $this->escape($item->title); ?></span>
 	</td>
+	<td>
+		<?php echo substr($item->sha, 0, 10); ?>
+	</td>
 	<td class="center">
 		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
 			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
