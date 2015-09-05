@@ -4,6 +4,7 @@ CREATE TABLE [#__patchtester_pulls] (
   [title] [nvarchar](200) NOT NULL,
   [description] [nvarchar](150) NOT NULL DEFAULT '',
   [pull_url] [nvarchar](255) NOT NULL,
+  [sha] [nvarchar](40) NOT NULL,
  CONSTRAINT [PK_#__patchtester_pulls] PRIMARY KEY CLUSTERED
 (
   [id] ASC

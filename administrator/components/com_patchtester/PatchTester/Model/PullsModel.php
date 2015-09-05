@@ -347,7 +347,8 @@ class PullsModel extends \JModelDatabase
 				$pull->number,
 				$this->getDb()->quote($pull->title),
 				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
-				$this->getDb()->quote($pull->html_url)
+				$this->getDb()->quote($pull->html_url),
+				$this->getDb()->quote($pull->head->sha)
 			);
 
 			$data[] = implode($pullData, ',');
@@ -361,7 +362,8 @@ class PullsModel extends \JModelDatabase
 						$this->getDb()->quoteName('pull_id'),
 						$this->getDb()->quoteName('title'),
 						$this->getDb()->quoteName('description'),
-						$this->getDb()->quoteName('pull_url')
+						$this->getDb()->quoteName('pull_url'),
+						$this->getDb()->quoteName('sha')
 					)
 				)
 				->values($data)
