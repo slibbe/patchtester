@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `title` varchar(200) NOT NULL,
   `description` varchar(150) NOT NULL DEFAULT '',
   `pull_url` varchar(255) NOT NULL,
+  `sha` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
 

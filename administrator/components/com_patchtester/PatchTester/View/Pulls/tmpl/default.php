@@ -97,6 +97,9 @@ $sortFields    = $this->getSortFields();
 					<th class="nowrap">
 						<?php echo \JText::_('JGLOBAL_TITLE'); ?>
 					</th>
+					<th class="nowrap">
+						<?php echo \JText::_('COM_PATCHTESTER_SHA'); ?>
+					</th>
 					<th width="8%" class="nowrap center">
 						<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 					</th>

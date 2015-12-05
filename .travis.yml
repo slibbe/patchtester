@@ -1,18 +1,24 @@
+# Forces new Travis-CI Infrastructure
+sudo: false
+
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
+env:
+  global:
+    - RUN_PHPCS="no"
 
 matrix:
-  allow_failures:
+  include:
+    - php: 5.3
+      env: RUN_PHPCS="yes"
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
     - php: 7.0
 
 before_script:
+  # Make sure all dev dependencies are installed
   - composer install
 
 script:
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '7.0' ]; then vendor/bin/phpcs --report=full --extensions=php -p --standard=build/phpcs/Joomla --ignore=./*tmpl/* administrator/components/com_patchtester; fi"
+  - if [ "$RUN_PHPCS" == "yes" ]; then vendor/bin/phpcs --report=full --extensions=php -p --standard=build/phpcs/Joomla --ignore=./*tmpl/* administrator/components/com_patchtester; fi
