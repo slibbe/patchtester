@@ -6,7 +6,7 @@
  * @license    GNU General Public License version 2 or later
  */
 
-/** @type  \PatchTester\View\Pulls\PullsHtmlView  $this */
+/** @var \PatchTester\View\DefaultHtmlView $this */
 
 \JHtml::_('behavior.core');
 \JHtml::_('bootstrap.tooltip');

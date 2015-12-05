@@ -6,15 +6,14 @@
  * @license    GNU General Public License version 2 or later
  */
 
-/** @type  \PatchTester\View\Pulls\PullsHtmlView  $this */
+/** @var  \PatchTester\View\Pulls\PullsHtmlView  $this */
 
 \JHtml::_('bootstrap.tooltip');
 \JHtml::_('formbehavior.chosen', 'select');
 
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
 
-if (count($this->envErrors)) :
-	echo $this->loadTemplate('errors');
+if (count($this->envErrors)) : echo $this->loadTemplate('errors');
 else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));

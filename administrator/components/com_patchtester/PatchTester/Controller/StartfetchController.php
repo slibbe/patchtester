@@ -28,15 +28,17 @@ class StartfetchController extends DisplayController
 	public function execute()
 	{
 		// We don't want this request to be cached.
-		header('Pragma: no-cache');
-		header('Cache-Control: no-cache');
-		header('Expires: -1');
+		$this->getApplication()->setHeader('Pragma: no-cache');
+		$this->getApplication()->setHeader('Cache-Control: no-cache');
+		$this->getApplication()->setHeader('Expires: -1');
+		$this->getApplication()->setHeader('Content-Type', $this->getApplication()->mimeType . '; charset=' . $this->getApplication()->charSet);
 
 		// Check for a valid token. If invalid, send a 403 with the error message.
 		if (!\JSession::checkToken('request'))
 		{
 			$response = new \JResponseJson(new \Exception(\JText::_('JINVALID_TOKEN'), 403));
 
+			$this->getApplication()->sendHeaders();
 			echo json_encode($response);
 
 			$this->getApplication()->close(1);
@@ -59,6 +61,7 @@ class StartfetchController extends DisplayController
 				)
 			);
 
+			$this->getApplication()->sendHeaders();
 			echo json_encode($response);
 
 			$this->getApplication()->close(1);
@@ -74,6 +77,7 @@ class StartfetchController extends DisplayController
 				)
 			);
 
+			$this->getApplication()->sendHeaders();
 			echo json_encode($response);
 
 			$this->getApplication()->close(1);
@@ -92,6 +96,7 @@ class StartfetchController extends DisplayController
 			{
 				$response = new \JResponseJson(new \Exception(\JText::_('COM_PATCHTESTER_ERROR_APPLIED_PATCHES'), 500));
 
+				$this->getApplication()->sendHeaders();
 				echo json_encode($response);
 
 				$this->getApplication()->close(1);
@@ -101,6 +106,7 @@ class StartfetchController extends DisplayController
 		{
 			$response = new \JResponseJson($e);
 
+			$this->getApplication()->sendHeaders();
 			echo json_encode($response);
 
 			$this->getApplication()->close(1);
@@ -116,6 +122,7 @@ class StartfetchController extends DisplayController
 			true
 		);
 
+		$this->getApplication()->sendHeaders();
 		echo json_encode($response);
 
 		$this->getApplication()->close();

@@ -28,7 +28,13 @@ class DefaultHtmlView extends \JViewHtml
 	public function loadTemplate($tpl = null)
 	{
 		// Get the path to the file
-		$file = isset($tpl) ? $this->getLayout() . '_' . $tpl : $this->getLayout();
+		$file = $this->getLayout();
+
+		if (isset($tpl))
+		{
+			$file .= '_' . $tpl;
+		}
+
 		$path = $this->getPath($file);
 
 		if (!$path)

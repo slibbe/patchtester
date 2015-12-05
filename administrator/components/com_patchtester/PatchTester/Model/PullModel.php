@@ -43,7 +43,7 @@ class PullModel extends \JModelBase
 
 		$lines = explode("\n", $patch);
 
-		foreach ($lines AS $line)
+		foreach ($lines as $line)
 		{
 			switch ($state)
 			{
@@ -169,11 +169,10 @@ class PullModel extends \JModelBase
 		$options->set('userAgent', 'JPatchTester/2.0');
 		$options->set('timeout', 120);
 
-		$transport = \JHttpFactory::getHttp($options);
-
 		try
 		{
-			$patch = $transport->get($pull->diff_url)->body;
+			$transport = \JHttpFactory::getHttp($options);
+			$patch     = $transport->get($pull->diff_url)->body;
 		}
 		catch (\Exception $e)
 		{
@@ -262,6 +261,7 @@ class PullModel extends \JModelBase
 			}
 		}
 
+		/** @var \PatchTester\Table\TestsTable $table */
 		$table                  = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
 		$table->pull_id         = $pull->number;
 		$table->data            = json_encode($files);
@@ -289,6 +289,7 @@ class PullModel extends \JModelBase
 	 */
 	public function revert($id)
 	{
+		/** @var \PatchTester\Table\TestsTable $table */
 		$table = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
 		$table->load($id);
 

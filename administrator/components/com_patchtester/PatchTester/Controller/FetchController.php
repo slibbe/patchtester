@@ -27,9 +27,10 @@ class FetchController extends DisplayController
 	public function execute()
 	{
 		// We don't want this request to be cached.
-		header('Pragma: no-cache');
-		header('Cache-Control: no-cache');
-		header('Expires: -1');
+		$this->getApplication()->setHeader('Pragma: no-cache');
+		$this->getApplication()->setHeader('Cache-Control: no-cache');
+		$this->getApplication()->setHeader('Expires: -1');
+		$this->getApplication()->setHeader('Content-Type', $this->getApplication()->mimeType . '; charset=' . $this->getApplication()->charSet);
 
 		try
 		{
@@ -48,6 +49,7 @@ class FetchController extends DisplayController
 		{
 			$response = new \JResponseJson($e);
 
+			$this->getApplication()->sendHeaders();
 			echo json_encode($response);
 
 			$this->getApplication()->close(1);
@@ -68,6 +70,7 @@ class FetchController extends DisplayController
 
 		$response = new \JResponseJson($status, $message, false, true);
 
+		$this->getApplication()->sendHeaders();
 		echo json_encode($response);
 
 		$this->getApplication()->close();

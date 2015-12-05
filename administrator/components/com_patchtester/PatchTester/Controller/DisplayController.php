@@ -14,6 +14,8 @@ use Joomla\Registry\Registry;
  * Default display controller
  *
  * @since  2.0
+ *
+ * @method  \JApplicationCms  getApplication()  getApplication()  Get the application object.
  */
 class DisplayController extends \JControllerBase
 {
@@ -62,7 +64,7 @@ class DisplayController extends \JControllerBase
 		parent::__construct($input, $app);
 
 		// Set the context for the controller
-		$this->context = \JApplicationHelper::getComponentName() . '.' . $this->getInput()->getCmd('view', $this->defaultView);
+		$this->context = 'com_patchtester.' . $this->getInput()->getCmd('view', $this->defaultView);
 	}
 
 	/**
@@ -83,10 +85,10 @@ class DisplayController extends \JControllerBase
 		$paths = new \SplPriorityQueue;
 
 		// Add the path for template overrides
-		$paths->insert(JPATH_THEMES . '/' . $this->getApplication()->getTemplate() . '/html/' . \JApplicationHelper::getComponentName() . '/' . $view, 2);
+		$paths->insert(JPATH_THEMES . '/' . $this->getApplication()->getTemplate() . '/html/com_patchtester/' . $view, 2);
 
 		// Add the path for the default layouts
-		$paths->insert(JPATH_BASE . '/components/' . \JApplicationHelper::getComponentName() . '/PatchTester/View/' . ucfirst($view) . '/tmpl', 1);
+		$paths->insert(dirname(__DIR__) . '//View/' . ucfirst($view) . '/tmpl', 1);
 
 		// Build the class names for the model and view
 		$viewClass  = '\\PatchTester\\View\\' . ucfirst($view) . '\\' . ucfirst($view) . ucfirst($format) . 'View';

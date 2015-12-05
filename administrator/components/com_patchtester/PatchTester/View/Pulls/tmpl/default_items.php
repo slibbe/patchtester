@@ -6,7 +6,7 @@
  * @license    GNU General Public License version 2 or later
  */
 
-/** @type  \PatchTester\View\Pulls\PullsHtmlView  $this */
+/** @var \PatchTester\View\DefaultHtmlView $this */
 
 foreach ($this->items as $i => $item) :
 	$status = '';
@@ -31,7 +31,7 @@ foreach ($this->items as $i => $item) :
 		</a>
 	</td>
 	<td class="center">
-		<a class="btn btn-small btn-warning" href="http://issues.joomla.org/tracker/joomla-cms/<?php echo $item->pull_id; ?>" target="_blank">
+		<a class="btn btn-small btn-warning" href="https://issues.joomla.org/tracker/joomla-cms/<?php echo $item->pull_id; ?>" target="_blank">
 			<i class="icon-joomla"></i> <?php echo \JText::_('COM_PATCHTESTER_JISSUE'); ?>
 		</a>
 	</td>

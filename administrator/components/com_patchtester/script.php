@@ -1,6 +1,6 @@
 <?php
 /**
- * @package    PatchTester
+ * Patch testing component for the Joomla! CMS
  *
  * @copyright  Copyright (C) 2011 - 2012 Ian MacLennan, Copyright (C) 2013 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later
@@ -9,8 +9,7 @@
 /**
  * Installation class to perform additional changes during install/uninstall/update
  *
- * @package  Patchtester
- * @since    2.0
+ * @since  2.0
  */
 class Com_PatchtesterInstallerScript
 {

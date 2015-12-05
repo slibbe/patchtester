@@ -6,7 +6,7 @@
  * @license    GNU General Public License version 2 or later
  */
 
-/** @type  \PatchTester\View\DefaultHtmlView  $this */
+/** @var \PatchTester\View\DefaultHtmlView $this */
 
 JHtml::_('jquery.framework');
 JHtml::_('behavior.core');

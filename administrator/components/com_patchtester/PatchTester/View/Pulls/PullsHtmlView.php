@@ -14,6 +14,8 @@ use PatchTester\View\DefaultHtmlView;
  * View class for a list of pull requests.
  *
  * @since  2.0
+ *
+ * @property-read  \PatchTester\Model\PullsModel  $model  The model object.
  */
 class PullsHtmlView extends DefaultHtmlView
 {
@@ -32,14 +34,6 @@ class PullsHtmlView extends DefaultHtmlView
 	 * @since  2.0
 	 */
 	protected $items;
-
-	/**
-	 * The model object - redeclared for proper type hinting.
-	 *
-	 * @var    \PatchTester\Model\PullsModel
-	 * @since  2.0
-	 */
-	protected $model;
 
 	/**
 	 * State object
@@ -102,8 +96,7 @@ class PullsHtmlView extends DefaultHtmlView
 
 		if (!count($this->envErrors))
 		{
-			$toolbar = \JToolbar::getInstance('toolbar');
-			$toolbar->appendButton(
+			\JToolbar::getInstance('toolbar')->appendButton(
 				'Popup',
 				'refresh',
 				'COM_PATCHTESTER_TOOLBAR_FETCH_DATA',

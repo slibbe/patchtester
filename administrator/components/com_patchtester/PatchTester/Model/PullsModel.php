@@ -145,14 +145,7 @@ class PullsModel extends \JModelDatabase
 		if (!empty($applied))
 		{
 			// Not applied patches have a NULL value, so build our value part of the query based on this
-			if ($applied == 'no')
-			{
-				$value = ' IS NULL';
-			}
-			else
-			{
-				$value = ' = 1';
-			}
+			$value = $applied == 'no' ? ' IS NULL' : ' = 1';
 
 			$query->where($db->quoteName('applied') . $value);
 		}
@@ -400,9 +393,8 @@ class PullsModel extends \JModelDatabase
 	protected function _getList($query, $limitstart = 0, $limit = 0)
 	{
 		$this->getDb()->setQuery($query, $limitstart, $limit);
-		$result = $this->getDb()->loadObjectList();
 
-		return $result;
+		return $this->getDb()->loadObjectList();
 	}
 
 	/**
