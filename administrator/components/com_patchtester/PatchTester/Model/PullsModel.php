@@ -128,12 +128,15 @@ class PullsModel extends \JModelDatabase
 
 		if (!empty($search))
 		{
-			$searchid = $db->quote($db->escape($search, true));
-			$search = $db->quote('%' . $db->escape($search, true) . '%');
-			$query->where(
-				'(' . $db->quoteName('a.title') . ' LIKE ' . $search . ') OR ' .
-				'(' . $db->quoteName('a.pull_id') . ' = ' . $searchid . ') '
-			);
+			if (stripos($search, 'id:') === 0)
+			{
+				$query->where($db->quoteName('a.id') . ' = ' . (int) substr($search, 3));
+			}
+			else
+			{
+				$search = $db->quote('%' . $db->escape($search, true) . '%');
+				$query->where('(' . $db->quoteName('a.title') . ' LIKE ' . $search . ')');
+			}
 		}
 
 		// Filter for applied patches
