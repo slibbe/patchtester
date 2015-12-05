@@ -10,8 +10,8 @@
 
 \JHtml::_('behavior.core');
 \JHtml::_('bootstrap.tooltip');
-
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
+\JHtml::_('script', 'com_patchtester/patchtester.js', false, true);
 
 if (count($this->envErrors)) :
 	echo $this->loadTemplate('errors');
@@ -20,15 +20,6 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
 $sortFields    = $this->getSortFields();
-
-\JFactory::getDocument()->addScriptDeclaration(
-	"
-	var submitpatch = function (task, id) {
-		jQuery('#pull_id').val(id);
-		return Joomla.submitbutton(task);
-	}
-	"
-);
 
 \JFactory::getDocument()->addStyleDeclaration(
 	'

@@ -27,9 +27,10 @@ class FetchController extends DisplayController
 	public function execute()
 	{
 		// We don't want this request to be cached.
-		$this->getApplication()->setHeader('Pragma: no-cache');
-		$this->getApplication()->setHeader('Cache-Control: no-cache');
-		$this->getApplication()->setHeader('Expires: -1');
+		$this->getApplication()->setHeader('Expires', 'Mon, 1 Jan 2001 00:00:00 GMT', true);
+		$this->getApplication()->setHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT', true);
+		$this->getApplication()->setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0', false);
+		$this->getApplication()->setHeader('Pragma', 'no-cache');
 		$this->getApplication()->setHeader('Content-Type', $this->getApplication()->mimeType . '; charset=' . $this->getApplication()->charSet);
 
 		try

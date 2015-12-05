@@ -48,9 +48,9 @@ foreach ($this->items as $i => $item) :
 	</td>
 	<td class="center">
 		<?php if ($item->applied) :
-			echo '<a class="btn btn-small btn-success" href="javascript:submitpatch(\'revert\', ' . (int) $item->applied . ');">' . \JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-success" href="javascript:PatchTester.submitpatch(\'revert\', ' . (int) $item->applied . ');">' . \JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
 		else :
-			echo '<a class="btn btn-small btn-primary" href="javascript:submitpatch(\'apply\', ' . (int) $item->pull_id . ');">' . \JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
+			echo '<a class="btn btn-small btn-primary" href="javascript:PatchTester.submitpatch(\'apply\', ' . (int) $item->pull_id . ');">' . \JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
 		endif; ?>
 	</td>
 </tr>

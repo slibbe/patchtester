@@ -10,39 +10,18 @@
 
 \JHtml::_('bootstrap.tooltip');
 \JHtml::_('formbehavior.chosen', 'select');
-
 \JHtml::_('stylesheet', 'com_patchtester/octicons.css', array(), true);
+\JHtml::_('script', 'com_patchtester/patchtester.js', false, true);
 
-if (count($this->envErrors)) : echo $this->loadTemplate('errors');
+if (count($this->envErrors)) :
+	echo $this->loadTemplate('errors');
 else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
 $sortFields    = $this->getSortFields();
-
-\JFactory::getDocument()->addScriptDeclaration(
-	"
-	var submitpatch = function (task, id) {
-		jQuery('#pull_id').val(id);
-		return Joomla.submitbutton(task);
-	}
-
-	Joomla.orderTable = function() {
-		table = document.getElementById('sortTable');
-		direction = document.getElementById('directionTable');
-		order = table.options[table.selectedIndex].value;
-		if (order != '" . $listOrder . "') {
-			dirn = 'asc';
-		} else {
-			dirn = direction.options[direction.selectedIndex].value;
-		}
-
-		Joomla.tableOrdering(order, dirn, '');
-	}
-	"
-);
 ?>
-<form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm" data-order="<?php echo $listOrder; ?>">
 	<div id="j-main-container">
 		<div id="filter-bar" class="btn-toolbar">
 			<div class="filter-search btn-group pull-left">
@@ -59,7 +38,7 @@ $sortFields    = $this->getSortFields();
 			</div>
 			<div class="btn-group pull-right hidden-phone">
 				<label for="directionTable" class="element-invisible"><?php echo \JText::_('JFIELD_ORDERING_DESC'); ?></label>
-				<select name="directionTable" id="directionTable" class="input-medium" onchange="Joomla.orderTable()">
+				<select name="directionTable" id="directionTable" class="input-medium" onchange="PatchTester.orderTable()">
 					<option value=""><?php echo \JText::_('JFIELD_ORDERING_DESC');?></option>
 					<option value="asc" <?php if ($listDirn == 'asc') echo 'selected="selected"'; ?>><?php echo \JText::_('JGLOBAL_ORDER_ASCENDING'); ?></option>
 					<option value="desc" <?php if ($listDirn == 'desc') echo 'selected="selected"'; ?>><?php echo \JText::_('JGLOBAL_ORDER_DESCENDING'); ?></option>
@@ -67,7 +46,7 @@ $sortFields    = $this->getSortFields();
 			</div>
 			<div class="btn-group pull-right">
 				<label for="sortTable" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
-				<select name="sortTable" id="sortTable" class="input-medium" onchange="Joomla.orderTable()">
+				<select name="sortTable" id="sortTable" class="input-medium" onchange="PatchTester.orderTable()">
 					<option value=""><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></option>
 					<?php echo \JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
 				</select>

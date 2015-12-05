@@ -8,14 +8,14 @@
 
 /** @var \PatchTester\View\DefaultHtmlView $this */
 
-JHtml::_('jquery.framework');
-JHtml::_('behavior.core');
-JHtml::_('script', 'com_patchtester/fetcher.js', false, true);
+\JHtml::_('jquery.framework');
+\JHtml::_('behavior.core');
+\JHtml::_('script', 'com_patchtester/fetcher.js', false, true);
 
 ?>
 
 <div id="patchtester-container">
 	<h1 id="patchtester-progress-header"><?php echo \JText::_('COM_PATCHTESTER_FETCH_INITIALIZING'); ?></h1>
 	<p id="patchtester-progress-message"><?php echo \JText::_('COM_PATCHTESTER_FETCH_INITIALIZING_DESCRIPTION'); ?></p>
-	<input id="patchtester-token" type="hidden" name="<?php echo JFactory::getSession()->getFormToken(); ?>" value="1" />
+	<input id="patchtester-token" type="hidden" name="<?php echo \JFactory::getSession()->getFormToken(); ?>" value="1" />
 </div>
