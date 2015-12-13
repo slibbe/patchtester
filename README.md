@@ -40,7 +40,7 @@ Pour installer la dernière version du composant **PatchTester** :
 
 Pour utiliser le dernier code pour ce répertoire GitHub :
 
-1. Téléchargez les fichiers dans le fichier temporaire de votre site Joomla,
+1. Téléchargez les fichiers dans le dossier temporaire de votre site Joomla,
 2. Connectez-vous à l'interface d'administration de votre site Joomla! et allez dans _Extensions_ **>** _Gérer (Découvrir)_ cliquez sur "Découvrir" et installez le composant.
 
 Une fois le composant installé, rendez-vous sur _Composants_**>**_Joomla! Patch Tester_ et appliquez les correctifs proposés.
