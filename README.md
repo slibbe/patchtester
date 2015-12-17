@@ -17,7 +17,7 @@ To use the latest code from this GitHub repo:
 Click Apply Patch to apply the proposed changes from the pull request.
 Click Revert Patch to revert an applied patch.
 
-You can check out this repo's [Component Patchtester for Testers](https://docs.joomla.org/Component_Patchtester_for_Testers) for more information about the extension.
+You can read more about this extension on the [Joomla! Documentation Wiki](https://docs.joomla.org/Component_Patchtester_for_Testers).
 
 Video tutorial:
 http://www.youtube.com/watch?v=4OWgusZgIfk
