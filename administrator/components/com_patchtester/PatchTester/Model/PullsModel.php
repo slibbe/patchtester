@@ -128,7 +128,7 @@ class PullsModel extends \JModelDatabase
 
 		if (!empty($search))
 		{
-			if (stripos($search, 'id:') === 0)
+			if (stripos($search, 'id:') === 0 || is_numeric($search))
 			{
 				$query->where($db->quoteName('a.id') . ' = ' . (int) substr($search, 3));
 			}
