@@ -146,7 +146,14 @@ class Com_PatchtesterInstallerScript
 			if (is_dir($tmplRoot))
 			{
 				// If there's a failure in copying the overrides, log it to the error array
-				if (!JFolder::copy($source, $destination, '', true))
+				try
+				{
+					if (!JFolder::copy($source, $destination, '', true))
+					{
+						$errorTemplates[] = ucfirst($template);
+					}
+				}
+				catch (RuntimeException $exception)
 				{
 					$errorTemplates[] = ucfirst($template);
 				}
