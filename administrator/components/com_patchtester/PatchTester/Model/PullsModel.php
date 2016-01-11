@@ -132,6 +132,10 @@ class PullsModel extends \JModelDatabase
 			{
 				$query->where($db->quoteName('a.id') . ' = ' . (int) substr($search, 3));
 			}
+			elseif (is_numeric($search))
+			{
+				$query->where('(' . $db->quoteName('a.id') . ' LIKE % ' . (int) $search . '%)');
+			}
 			else
 			{
 				$search = $db->quote('%' . $db->escape($search, true) . '%');
