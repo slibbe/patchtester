@@ -54,7 +54,7 @@ class DisplayController extends AbstractController
 		$paths->insert(JPATH_THEMES . '/' . $this->getApplication()->getTemplate() . '/html/com_patchtester/' . $view, 2);
 
 		// Add the path for the default layouts
-		$paths->insert(dirname(__DIR__) . '//View/' . ucfirst($view) . '/tmpl', 1);
+		$paths->insert(dirname(__DIR__) . '/View/' . ucfirst($view) . '/tmpl', 1);
 
 		// Build the class names for the model and view
 		$viewClass  = '\\PatchTester\\View\\' . ucfirst($view) . '\\' . ucfirst($view) . ucfirst($format) . 'View';
