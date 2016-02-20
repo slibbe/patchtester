@@ -17,7 +17,7 @@ use PatchTester\Helper;
  *
  * @since  2.0
  */
-class PullModel extends \JModelBase
+class PullModel extends \JModelDatabase
 {
 	/**
 	 * Array containing top level non-production folders
@@ -177,6 +177,30 @@ class PullModel extends \JModelBase
 		catch (\Exception $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
+		}
+
+		// Compare the pull's HEAD SHA to what patch tester has pulled; if it's newer set a flag
+		try
+		{
+			$db = $this->getDb();
+			$stateSha = $db->setQuery(
+				$db->getQuery(true)
+					->select('sha')
+					->from($db->quoteName('#__patchtester_pulls'))
+					->where($db->quoteName('pull_id') . ' = ' . (int) $id)
+			)->loadResult();
+		}
+		catch (\RuntimeException $e)
+		{
+			// Not a fatal error, keep on truckin'
+			$stateSha = false;
+		}
+
+		if ($stateSha && $stateSha !== $pull->head->sha)
+		{
+			$this->getState()->set('pull.sha_different', true);
+			$this->getState()->set('pull.applied_sha', $pull->head->sha);
+			$this->getState()->set('pull.state_sha', $stateSha);
 		}
 
 		$files = $this->parsePatch($patch);

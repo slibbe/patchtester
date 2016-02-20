@@ -28,7 +28,7 @@ class ApplyController extends AbstractController
 	{
 		try
 		{
-			$model = new PullModel;
+			$model = new PullModel($this->context, null, \JFactory::getDbo());
 
 			// Initialize the state for the model
 			$model->setState($this->initializeState($model));
@@ -36,6 +36,19 @@ class ApplyController extends AbstractController
 			if ($model->apply($this->getInput()->getUint('pull_id')))
 			{
 				$msg = \JText::_('COM_PATCHTESTER_APPLY_OK');
+
+				// Check if the SHA's were different and alert the user
+				if ($model->getState()->get('pull.sha_different', false))
+				{
+					$this->getApplication()->enqueueMessage(
+						\JText::sprintf(
+							'COM_PATCHTESTER_DIFFERENT_SHA',
+							substr($model->getState()->get('pull.state_sha'), 0, 10),
+							substr($model->getState()->get('pull.applied_sha'), 0, 10)
+						),
+						'warning'
+					);
+				}
 			}
 			else
 			{
