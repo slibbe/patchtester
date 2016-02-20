@@ -15,7 +15,7 @@ use PatchTester\Model\PullModel;
  *
  * @since  2.0
  */
-class RevertController extends DisplayController
+class RevertController extends AbstractController
 {
 	/**
 	 * Execute the controller.

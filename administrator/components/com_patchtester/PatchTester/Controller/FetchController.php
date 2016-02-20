@@ -15,7 +15,7 @@ use PatchTester\Model\PullsModel;
  *
  * @since  2.0
  */
-class FetchController extends DisplayController
+class FetchController extends AbstractController
 {
 	/**
 	 * Execute the controller.
@@ -38,7 +38,6 @@ class FetchController extends DisplayController
 			// Fetch our page from the session
 			$page = \JFactory::getSession()->get('com_patchtester_fetcher_page', 1);
 
-			// TODO - Decouple the model and context?
 			$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
 
 			// Initialize the state for the model

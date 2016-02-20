@@ -14,19 +14,9 @@ use Joomla\Registry\Registry;
  * Default display controller
  *
  * @since  2.0
- *
- * @method  \JApplicationCms  getApplication()  getApplication()  Get the application object.
  */
-class DisplayController extends \JControllerBase
+class DisplayController extends AbstractController
 {
-	/**
-	 * The object context
-	 *
-	 * @var    string
-	 * @since  2.0
-	 */
-	protected $context;
-
 	/**
 	 * Default ordering column
 	 *
@@ -42,30 +32,6 @@ class DisplayController extends \JControllerBase
 	 * @since  2.0
 	 */
 	protected $defaultDirection = 'DESC';
-
-	/**
-	 * The default view to display
-	 *
-	 * @var    string
-	 * @since  2.0
-	 */
-	protected $defaultView = 'pulls';
-
-	/**
-	 * Instantiate the controller
-	 *
-	 * @param   \JInput            $input  The input object.
-	 * @param   \JApplicationBase  $app    The application object.
-	 *
-	 * @since   2.0
-	 */
-	public function __construct(\JInput $input = null, \JApplicationBase $app = null)
-	{
-		parent::__construct($input, $app);
-
-		// Set the context for the controller
-		$this->context = 'com_patchtester.' . $this->getInput()->getCmd('view', $this->defaultView);
-	}
 
 	/**
 	 * Execute the controller.
@@ -137,40 +103,26 @@ class DisplayController extends \JControllerBase
 	 * @return  Registry
 	 *
 	 * @since   2.0
-	 * @todo    This should really be more generic for a default controller
 	 */
 	protected function initializeState(\JModel $model)
 	{
-		$state = new Registry;
+		$state = parent::initializeState($model);
 
 		// Load the filter state.
-		$search = $this->getApplication()->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '');
-		$state->set('filter.search', $search);
+		$state->set('filter.search', $this->getApplication()->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', ''));
+		$state->set('filter.applied', $this->getApplication()->getUserStateFromRequest($this->context . '.filter.applied', 'filter_applied', ''));
 
-		$applied = $this->getApplication()->getUserStateFromRequest($this->context . '.filter.applied', 'filter_applied', '');
-		$state->set('filter.applied', $applied);
-
-		// Load the parameters.
-		$params = \JComponentHelper::getParams('com_patchtester');
-
-		$state->set('params', $params);
-		$state->set('github_user', $params->get('org', 'joomla'));
-		$state->set('github_repo', $params->get('repo', 'joomla-cms'));
-
-		// Pre-fill the limits
+		// Pre-fill the limits.
 		$limit = $this->getApplication()->getUserStateFromRequest('global.list.limit', 'limit', $this->getApplication()->get('list_limit'), 'uint');
 		$state->set('list.limit', $limit);
 
 		// Check if the ordering field is in the white list, otherwise use the incoming value.
 		$value = $this->getApplication()->getUserStateFromRequest($this->context . '.ordercol', 'filter_order', $this->defaultOrderColumn);
 
-		if (method_exists($model, 'getSortFields'))
+		if (!in_array($value, $model->getSortFields()))
 		{
-			if (!in_array($value, $model->getSortFields()))
-			{
-				$value = $this->defaultOrderColumn;
-				$this->getApplication()->setUserState($this->context . '.ordercol', $value);
-			}
+			$value = $this->defaultOrderColumn;
+			$this->getApplication()->setUserState($this->context . '.ordercol', $value);
 		}
 
 		$state->set('list.ordering', $value);

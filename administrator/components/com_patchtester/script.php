@@ -32,8 +32,8 @@ class Com_PatchtesterInstallerScript
 	/**
 	 * Function to act prior to installation process begins
 	 *
-	 * @param   string               $type    The action being performed
-	 * @param   JInstallerComponent  $parent  The class calling this method
+	 * @param   string                      $type    The action being performed
+	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
 	 *
 	 * @return  boolean  True on success
 	 *
@@ -54,7 +54,7 @@ class Com_PatchtesterInstallerScript
 	/**
 	 * Function to perform changes during install
 	 *
-	 * @param   JInstallerComponent  $parent  The class calling this method
+	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
 	 *
 	 * @return  void
 	 *
@@ -68,7 +68,7 @@ class Com_PatchtesterInstallerScript
 	/**
 	 * Function to perform changes during update
 	 *
-	 * @param   JInstallerComponent  $parent  The class calling this method
+	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
 	 *
 	 * @return  void
 	 *
@@ -82,7 +82,7 @@ class Com_PatchtesterInstallerScript
 	/**
 	 * Function to perform changes during uninstall
 	 *
-	 * @param   JInstallerComponent  $parent  The class calling this method
+	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
 	 *
 	 * @return  void
 	 *

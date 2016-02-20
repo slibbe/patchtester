@@ -33,7 +33,7 @@ class PullsModel extends \JModelDatabase
 	 * @var    array
 	 * @since  2.0
 	 */
-	protected $sortFields = array();
+	protected $sortFields = array('a.pull_id', 'a.title', 'applied');
 
 	/**
 	 * Instantiate the model.
@@ -48,8 +48,7 @@ class PullsModel extends \JModelDatabase
 	{
 		parent::__construct($state, $db);
 
-		$this->context    = $context;
-		$this->sortFields = array('a.pull_id', 'a.title', 'applied');
+		$this->context = $context;
 	}
 
 	/**

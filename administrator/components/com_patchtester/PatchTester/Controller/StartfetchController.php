@@ -16,7 +16,7 @@ use PatchTester\Model\PullsModel;
  *
  * @since  2.0
  */
-class StartfetchController extends DisplayController
+class StartfetchController extends AbstractController
 {
 	/**
 	 * Execute the controller.

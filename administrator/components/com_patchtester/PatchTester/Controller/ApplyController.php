@@ -15,7 +15,7 @@ use PatchTester\Model\PullModel;
  *
  * @since  2.0
  */
-class ApplyController extends DisplayController
+class ApplyController extends AbstractController
 {
 	/**
 	 * Execute the controller.
