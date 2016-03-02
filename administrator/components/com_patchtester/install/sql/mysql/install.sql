@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `pull_url` varchar(255) NOT NULL,
   `sha` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__patchtester_tests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_tests` (
   `applied_version` varchar(25) NOT NULL,
   `comments` varchar(3000) NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
