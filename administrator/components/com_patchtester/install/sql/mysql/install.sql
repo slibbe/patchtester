@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS `#__patchtester_pulls`;
-
 CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pull_id` int(11) NOT NULL,
@@ -9,8 +7,6 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `sha` varchar(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
-
-DROP TABLE IF EXISTS `#__patchtester_tests`;
 
 CREATE TABLE IF NOT EXISTS `#__patchtester_tests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
