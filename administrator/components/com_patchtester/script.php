@@ -19,7 +19,7 @@ class Com_PatchtesterInstallerScript
 	 * @var    string
 	 * @since  2.0
 	 */
-	protected $minCmsVersion = '3.3.0';
+	protected $minCmsVersion = '3.5.0';
 
 	/**
 	 * Array of templates with supported overrides
