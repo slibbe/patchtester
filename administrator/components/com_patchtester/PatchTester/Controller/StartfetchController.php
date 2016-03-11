@@ -84,7 +84,6 @@ class StartfetchController extends AbstractController
 			$this->getApplication()->close(1);
 		}
 
-		// TODO - Decouple the model and context?
 		$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
 
 		// Initialize the state for the model

@@ -90,13 +90,8 @@ class PullsModel extends \JModelDatabase
 			return $this->cache[$store];
 		}
 
-		// Load the list items.
-		$query = $this->_getListQuery();
-
-		$items = $this->_getList($query, $this->getStart(), $this->getState()->get('list.limit'));
-
-		// Add the items to the internal cache.
-		$this->cache[$store] = $items;
+		// Load the list items and add the items to the internal cache.
+		$this->cache[$store] = $this->_getList($this->_getListQuery(), $this->getStart(), $this->getState()->get('list.limit'));
 
 		return $this->cache[$store];
 	}
@@ -115,12 +110,12 @@ class PullsModel extends \JModelDatabase
 		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
-		$query->select($this->getState()->get('list.select', 'a.*'));
-		$query->from($db->quoteName('#__patchtester_pulls', 'a'));
+		$query->select('a.*');
+		$query->from('#__patchtester_pulls', 'a');
 
 		// Join the tests table to get applied patches
-		$query->select($db->quoteName('t.id', 'applied'));
-		$query->join('LEFT', $db->quoteName('#__patchtester_tests', 't') . ' ON t.pull_id = a.pull_id');
+		$query->select('t.id AS applied');
+		$query->join('LEFT', '#__patchtester_tests AS t ON t.pull_id = a.pull_id');
 
 		// Filter by search
 		$search = $this->getState()->get('filter.search');
@@ -129,16 +124,15 @@ class PullsModel extends \JModelDatabase
 		{
 			if (stripos($search, 'id:') === 0)
 			{
-				$query->where($db->quoteName('a.pull_id') . ' = ' . (int) substr($search, 3));
+				$query->where('a.pull_id = ' . (int) substr($search, 3));
 			}
 			elseif (is_numeric($search))
 			{
-				$query->where($db->quoteName('a.pull_id') . ' LIKE ' . $db->quote('%' . (int) $search . '%'));
+				$query->where('a.pull_id LIKE ' . $db->quote('%' . (int) $search . '%'));
 			}
 			else
 			{
-				$search = $db->quote('%' . $db->escape($search, true) . '%');
-				$query->where('(' . $db->quoteName('a.title') . ' LIKE ' . $search . ')');
+				$query->where('(a.title LIKE ' . $db->quote('%' . $db->escape($search, true) . '%') . ')');
 			}
 		}
 
@@ -189,12 +183,8 @@ class PullsModel extends \JModelDatabase
 			return $this->cache[$store];
 		}
 
-		// Create the pagination object.
-		$limit = (int) $this->getState()->get('list.limit') - (int) $this->getState()->get('list.links');
-		$page = new \JPagination($this->getTotal(), $this->getStart(), $limit);
-
-		// Add the object to the internal cache.
-		$this->cache[$store] = $page;
+		// Create the pagination object and add the object to the internal cache.
+		$this->cache[$store] = new \JPagination($this->getTotal(), $this->getStart(), (int) $this->getState()->get('list.limit', 20));
 
 		return $this->cache[$store];
 	}
@@ -252,8 +242,8 @@ class PullsModel extends \JModelDatabase
 			return $this->cache[$store];
 		}
 
-		$start = $this->getState()->get('list.start');
-		$limit = $this->getState()->get('list.limit');
+		$start = $this->getState()->get('list.start', 0);
+		$limit = $this->getState()->get('list.limit', 20);
 		$total = $this->getTotal();
 
 		if ($start > $total - $limit)
@@ -285,13 +275,8 @@ class PullsModel extends \JModelDatabase
 			return $this->cache[$store];
 		}
 
-		// Load the total.
-		$query = $this->_getListQuery();
-
-		$total = (int) $this->_getListCount($query);
-
-		// Add the total to the internal cache.
-		$this->cache[$store] = $total;
+		// Load the total and add the total to the internal cache.
+		$this->cache[$store] = (int) $this->_getListCount($this->_getListQuery());
 
 		return $this->cache[$store];
 	}
@@ -343,7 +328,7 @@ class PullsModel extends \JModelDatabase
 		{
 			// Build the data object to store in the database
 			$pullData = array(
-				$pull->number,
+				(int) $pull->number,
 				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
 				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
 				$this->getDb()->quote($pull->html_url),
@@ -355,16 +340,8 @@ class PullsModel extends \JModelDatabase
 
 		$this->getDb()->setQuery(
 			$this->getDb()->getQuery(true)
-				->insert($this->getDb()->quoteName('#__patchtester_pulls'))
-				->columns(
-					array(
-						$this->getDb()->quoteName('pull_id'),
-						$this->getDb()->quoteName('title'),
-						$this->getDb()->quoteName('description'),
-						$this->getDb()->quoteName('pull_url'),
-						$this->getDb()->quoteName('sha')
-					)
-				)
+				->insert('#__patchtester_pulls')
+				->columns(array('pull_id', 'title', 'description', 'pull_url', 'sha'))
 				->values($data)
 		);
 
@@ -395,9 +372,7 @@ class PullsModel extends \JModelDatabase
 	 */
 	protected function _getList($query, $limitstart = 0, $limit = 0)
 	{
-		$this->getDb()->setQuery($query, $limitstart, $limit);
-
-		return $this->getDb()->loadObjectList();
+		return $this->getDb()->setQuery($query, $limitstart, $limit)->loadObjectList();
 	}
 
 	/**

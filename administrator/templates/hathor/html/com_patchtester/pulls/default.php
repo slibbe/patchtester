@@ -16,10 +16,9 @@
 if (count($this->envErrors)) :
 	echo $this->loadTemplate('errors');
 else :
-$listOrder = $this->escape($this->state->get('list.ordering'));
-$listDirn  = $this->escape($this->state->get('list.direction'));
+$listOrder     = $this->escape($this->state->get('list.ordering'));
+$listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
-$sortFields    = $this->getSortFields();
 
 \JFactory::getDocument()->addStyleDeclaration(
 	'

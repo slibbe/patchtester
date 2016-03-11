@@ -69,7 +69,7 @@ class DisplayController extends AbstractController
 			if (!class_exists($viewClass))
 			{
 				throw new \RuntimeException(
-					sprintf('The view class for the %1$s view in the %2$s format was not found.', $view, $format), 500
+					sprintf('A view class for the %1$s view in the %2$s format was not found.', $view, $format), 500
 				);
 			}
 		}
@@ -113,7 +113,7 @@ class DisplayController extends AbstractController
 		$state->set('filter.applied', $this->getApplication()->getUserStateFromRequest($this->context . '.filter.applied', 'filter_applied', ''));
 
 		// Pre-fill the limits.
-		$limit = $this->getApplication()->getUserStateFromRequest('global.list.limit', 'limit', $this->getApplication()->get('list_limit'), 'uint');
+		$limit = $this->getApplication()->getUserStateFromRequest('global.list.limit', 'limit', $this->getApplication()->get('list_limit', 20), 'uint');
 		$state->set('list.limit', $limit);
 
 		// Check if the ordering field is in the white list, otherwise use the incoming value.

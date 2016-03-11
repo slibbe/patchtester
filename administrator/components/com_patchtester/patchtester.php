@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_patchtester'))
 {
-	return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+	throw new RuntimeException(JText::_('JERROR_ALERTNOAUTHOR'), 403);
 }
 
 // Application reference

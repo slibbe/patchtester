@@ -304,7 +304,7 @@ class PullModel extends \JModelDatabase
 	/**
 	 * Reverts the specified pull request
 	 *
-	 * @param   integer  $id  ID of the pull request to Reverts
+	 * @param   integer  $id  ID of the pull request to revert
 	 *
 	 * @return  boolean
 	 *

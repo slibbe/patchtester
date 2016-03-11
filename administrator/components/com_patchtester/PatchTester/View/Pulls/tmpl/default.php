@@ -19,7 +19,6 @@ else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
-$sortFields    = $this->getSortFields();
 ?>
 <form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm" data-order="<?php echo $listOrder; ?>">
 	<div id="j-main-container">
@@ -48,7 +47,7 @@ $sortFields    = $this->getSortFields();
 				<label for="sortTable" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
 				<select name="sortTable" id="sortTable" class="input-medium" onchange="PatchTester.orderTable()">
 					<option value=""><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></option>
-					<?php echo \JHtml::_('select.options', $sortFields, 'value', 'text', $listOrder);?>
+					<?php echo \JHtml::_('select.options', $this->getSortFields(), 'value', 'text', $listOrder);?>
 				</select>
 			</div>
 			<div class="btn-group pull-right">

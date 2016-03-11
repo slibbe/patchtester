@@ -59,8 +59,6 @@ class DefaultHtmlView extends \JViewHtml
 		include $path;
 
 		// Get the layout contents.
-		$output = ob_get_clean();
-
-		return $output;
+		return ob_get_clean();
 	}
 }

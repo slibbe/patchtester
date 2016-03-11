@@ -22,7 +22,7 @@ class TestsTable extends \JTable
 	 *
 	 * @since   2.0
 	 */
-	public function __construct(&$db)
+	public function __construct(\JDatabaseDriver &$db)
 	{
 		parent::__construct('#__patchtester_tests', 'id', $db);
 	}
