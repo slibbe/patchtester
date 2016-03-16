@@ -111,7 +111,7 @@ class PullsModel extends \JModelDatabase
 
 		// Select the required fields from the table.
 		$query->select('a.*');
-		$query->from('#__patchtester_pulls', 'a');
+		$query->from('#__patchtester_pulls AS a');
 
 		// Join the tests table to get applied patches
 		$query->select('t.id AS applied');
