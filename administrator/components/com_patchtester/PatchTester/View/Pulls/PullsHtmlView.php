@@ -8,6 +8,7 @@
 
 namespace PatchTester\View\Pulls;
 
+use PatchTester\TrackerHelper;
 use PatchTester\View\DefaultHtmlView;
 
 /**
@@ -36,7 +37,15 @@ class PullsHtmlView extends DefaultHtmlView
 	protected $items;
 
 	/**
-	 * State object
+	 * Pagination object
+	 *
+	 * @var    \JPagination
+	 * @since  2.0
+	 */
+	protected $pagination;
+
+	/**
+	 * The model state
 	 *
 	 * @var    \Joomla\Registry\Registry
 	 * @since  2.0
@@ -44,12 +53,12 @@ class PullsHtmlView extends DefaultHtmlView
 	protected $state;
 
 	/**
-	 * Pagination object
+	 * The issue tracker project alias
 	 *
-	 * @var    \JPagination
+	 * @var    string|boolean
 	 * @since  2.0
 	 */
-	protected $pagination;
+	protected $trackerAlias;
 
 	/**
 	 * Method to render the view.
@@ -73,9 +82,10 @@ class PullsHtmlView extends DefaultHtmlView
 		// Only process the data if there are no environment errors
 		if (!count($this->envErrors))
 		{
-			$this->state      = $this->model->getState();
-			$this->items      = $this->model->getItems();
-			$this->pagination = $this->model->getPagination();
+			$this->state        = $this->model->getState();
+			$this->items        = $this->model->getItems();
+			$this->pagination   = $this->model->getPagination();
+			$this->trackerAlias = TrackerHelper::getTrackerAlias($this->state->get('github_user'), $this->state->get('github_repo'));
 		}
 
 		$this->addToolbar();
@@ -92,7 +102,7 @@ class PullsHtmlView extends DefaultHtmlView
 	 */
 	protected function addToolbar()
 	{
-		\JToolBarHelper::title(\JText::_('COM_PATCHTESTER'), 'patchtester icon-apply');
+		\JToolbarHelper::title(\JText::_('COM_PATCHTESTER'), 'patchtester icon-apply');
 
 		if (!count($this->envErrors))
 		{
@@ -110,7 +120,7 @@ class PullsHtmlView extends DefaultHtmlView
 			);
 		}
 
-		\JToolBarHelper::preferences('com_patchtester');
+		\JToolbarHelper::preferences('com_patchtester');
 	}
 
 	/**

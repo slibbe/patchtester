@@ -29,11 +29,13 @@ foreach ($this->items as $i => $item) :
 			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 		</a>
 	</td>
+	<?php if ($this->trackerAlias !== false) : ?>
 	<td>
-		<a class="btn btn-small btn-warning" href="https://issues.joomla.org/tracker/joomla-cms/<?php echo $item->pull_id; ?>" target="_blank">
+		<a class="btn btn-small btn-warning" href="https://issues.joomla.org/tracker/<?php echo $this->trackerAlias; ?>/<?php echo $item->pull_id; ?>" target="_blank">
 			<i class="icon-joomla"></i> <?php echo \JText::_('COM_PATCHTESTER_JISSUE'); ?>
 		</a>
 	</td>
+	<?php endif; ?>
 	<td class="center">
 		<?php if ($item->applied) : ?>
 			<span class="label label-success">

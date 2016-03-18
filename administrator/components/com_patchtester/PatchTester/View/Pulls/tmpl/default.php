@@ -81,9 +81,11 @@ $filterApplied = $this->escape($this->state->get('filter.applied'));
 					<th width="8%" class="nowrap center">
 						<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 					</th>
+					<?php if ($this->trackerAlias !== false) : ?>
 					<th width="8%" class="nowrap center">
 						<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
 					</th>
+					<?php endif; ?>
 					<th width="10%" class="nowrap center">
 						<?php echo \JText::_('JSTATUS'); ?>
 					</th>

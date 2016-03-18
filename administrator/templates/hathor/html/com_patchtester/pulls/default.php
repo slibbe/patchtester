@@ -70,9 +70,11 @@ echo \JHtml::_(
 				<th width="8%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
 				</th>
+				<?php if ($this->trackerAlias !== false) : ?>
 				<th width="8%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_JISSUES'); ?>
 				</th>
+				<?php endif; ?>
 				<th width="10%" class="nowrap center">
 					<?php echo \JHtml::_('grid.sort', 'JSTATUS', 'applied', $listDirn, $listOrder); ?>
 				</th>
