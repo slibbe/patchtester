@@ -31,12 +31,12 @@
 			<schemapath type="sqlsrv">install/sql/updates/sqlsrv</schemapath>
 		</schemas>
 	</update>
-    <media destination="com_patchtester" folder="media">
-   		<folder>css</folder>
-        <folder>fonts</folder>
-   		<folder>images</folder>
-        <folder>js</folder>
-   	</media>
+	<media destination="com_patchtester" folder="media">
+		<folder>css</folder>
+		<folder>fonts</folder>
+		<folder>images</folder>
+		<folder>js</folder>
+	</media>
 	<administration>
 		<menu img="../media/com_patchtester/images/icon-16-patchtester.png">com_patchtester</menu>
 		<files folder="admin">
