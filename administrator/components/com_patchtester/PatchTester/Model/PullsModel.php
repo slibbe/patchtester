@@ -52,27 +52,6 @@ class PullsModel extends \JModelDatabase
 	}
 
 	/**
-	 * Retrieves a list of applied patches
-	 *
-	 * @return  mixed
-	 *
-	 * @since   1.0
-	 */
-	public function getAppliedPatches()
-	{
-		$db = $this->getDb();
-
-		$db->setQuery(
-			$db->getQuery(true)
-				->select('*')
-				->from($db->quoteName('#__patchtester_tests'))
-				->where($db->quoteName('applied') . ' = 1')
-		);
-
-		return $db->loadObjectList('pull_id');
-	}
-
-	/**
 	 * Method to get an array of data items.
 	 *
 	 * @return  mixed  An array of data items on success, false on failure.
@@ -356,6 +335,18 @@ class PullsModel extends \JModelDatabase
 
 		// Need to make another request
 		return array('complete' => false, 'page' => ($page + 1));
+	}
+
+	/**
+	 * Truncates the pulls table
+	 *
+	 * @return  void
+	 *
+	 * @since   2.0
+	 */
+	public function truncateTable()
+	{
+		$this->getDb()->truncateTable('#__patchtester_pulls');
 	}
 
 	/**

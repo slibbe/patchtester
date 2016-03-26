@@ -45,4 +45,9 @@ if (typeof Joomla === 'undefined') {
         }
     };
 
+    Joomla.submitbutton = function (task) {
+        if (task != 'reset' || confirm(Joomla.JText._('COM_PATCHTESTER_CONFIRM_RESET'))) {
+            Joomla.submitform(task);
+        }
+    };
 }(Joomla, window, document);

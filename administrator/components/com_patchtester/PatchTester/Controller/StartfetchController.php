@@ -10,6 +10,7 @@ namespace PatchTester\Controller;
 
 use PatchTester\Helper;
 use PatchTester\Model\PullsModel;
+use PatchTester\Model\TestsModel;
 
 /**
  * Controller class to start fetching remote data
@@ -84,15 +85,12 @@ class StartfetchController extends AbstractController
 			$this->getApplication()->close(1);
 		}
 
-		$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
-
-		// Initialize the state for the model
-		$model->setState($this->initializeState($model));
+		$testsModel = new TestsModel(null, \JFactory::getDbo());
 
 		try
 		{
 			// Sanity check, ensure there aren't any applied patches
-			if (count($model->getAppliedPatches()) >= 1)
+			if (count($testsModel->getAppliedPatches()) >= 1)
 			{
 				$response = new \JResponseJson(new \Exception(\JText::_('COM_PATCHTESTER_ERROR_APPLIED_PATCHES'), 500));
 

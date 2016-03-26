@@ -90,6 +90,9 @@ class PullsHtmlView extends DefaultHtmlView
 
 		$this->addToolbar();
 
+		// Make text strings available in the JavaScript API
+		\JText::script('COM_PATCHTESTER_CONFIRM_RESET');
+
 		return parent::render();
 	}
 
@@ -106,7 +109,9 @@ class PullsHtmlView extends DefaultHtmlView
 
 		if (!count($this->envErrors))
 		{
-			\JToolbar::getInstance('toolbar')->appendButton(
+			$toolbar = \JToolbar::getInstance('toolbar');
+
+			$toolbar->appendButton(
 				'Popup',
 				'refresh',
 				'COM_PATCHTESTER_TOOLBAR_FETCH_DATA',
@@ -118,6 +123,9 @@ class PullsHtmlView extends DefaultHtmlView
 				'window.parent.location.reload()',
 				'COM_PATCHTESTER_HEADING_FETCH_DATA'
 			);
+
+			// Add a reset button.
+			$toolbar->appendButton('Standard', 'expired', 'COM_PATCHTESTER_TOOLBAR_RESET', 'reset', false);
 		}
 
 		\JToolbarHelper::preferences('com_patchtester');
