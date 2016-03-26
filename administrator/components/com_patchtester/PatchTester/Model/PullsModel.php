@@ -284,8 +284,19 @@ class PullsModel extends \JModelDatabase
 		try
 		{
 			// TODO - Option to configure the batch size
-			$pulls = $github->pulls->getList(
-				$this->getState()->get('github_user'), $this->getState()->get('github_repo'), 'open', $page, 100
+			$pulls = $github->issues->getListByRepository(
+				$this->getState()->get('github_user'),
+				$this->getState()->get('github_repo'),
+				null,
+				'open',
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				$page,
+				100
 			);
 		}
 		catch (\DomainException $e)
@@ -305,16 +316,19 @@ class PullsModel extends \JModelDatabase
 
 		foreach ($pulls as $pull)
 		{
-			// Build the data object to store in the database
-			$pullData = array(
-				(int) $pull->number,
-				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
-				$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
-				$this->getDb()->quote($pull->html_url),
-				$this->getDb()->quote($pull->head->sha)
-			);
+			if (isset($pull->pull_request))
+			{
+				// Build the data object to store in the database
+				$pullData = array(
+					(int) $pull->number,
+					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
+					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
+					$this->getDb()->quote($pull->pull_request->url),
+					$this->getDb()->quote(/*$pull->head->sha*/'')
+				);
 
-			$data[] = implode($pullData, ',');
+				$data[] = implode($pullData, ',');
+			}
 		}
 
 		$this->getDb()->setQuery(
