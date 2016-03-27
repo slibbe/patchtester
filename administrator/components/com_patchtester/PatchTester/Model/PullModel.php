@@ -106,6 +106,8 @@ class PullModel extends \JModelDatabase
 					if (strpos($line, 'Binary files') === 0)
 					{
 						$state = 0;
+
+						$this->state->set('pull.has_binary', true);
 					}
 
 					if (strpos($line, '@@') === 0)

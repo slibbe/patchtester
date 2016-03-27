@@ -37,17 +37,10 @@ class ApplyController extends AbstractController
 			{
 				$msg = \JText::_('COM_PATCHTESTER_APPLY_OK');
 
-				// Check if the SHA's were different and alert the user
-				if ($model->getState()->get('pull.sha_different', false))
+				// Check if the pull request includes binary files and raise a warning about non-support if so
+				if ($model->getState()->get('pull.has_binary', false))
 				{
-					$this->getApplication()->enqueueMessage(
-						\JText::sprintf(
-							'COM_PATCHTESTER_DIFFERENT_SHA',
-							substr($model->getState()->get('pull.state_sha'), 0, 10),
-							substr($model->getState()->get('pull.applied_sha'), 0, 10)
-						),
-						'warning'
-					);
+					$this->getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_PATCH_INCLUDES_BINARY_FILES'), 'warning');
 				}
 			}
 			else
