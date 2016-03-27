@@ -25,7 +25,25 @@ class PullModel extends \JModelDatabase
 	 * @var    array
 	 * @since  2.0
 	 */
-	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests');
+	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests', '.github');
+
+	/**
+	 * Array containing non-production files
+	 *
+	 * @var    array
+	 * @since  2.0
+	 */
+	protected $nonProductionFiles = array(
+		'.gitignore',
+		'.travis.yml',
+		'README.md',
+		'build.xml',
+		'composer.json',
+		'composer.lock',
+		'phpunit.xml.dist',
+		'robots.txt.dist',
+		'travisci-phpunit.xml',
+	);
 
 	/**
 	 * Method to parse a patch and extract the affected files
@@ -101,6 +119,11 @@ class PullModel extends \JModelDatabase
 						if (!file_exists(JPATH_ROOT . '/installation/index.php'))
 						{
 							$filePath = explode('/', $file->new);
+
+							if (in_array($filePath[0], $this->nonProductionFiles))
+							{
+								continue;
+							}
 
 							if (in_array($filePath[0], $this->nonProductionFolders))
 							{
