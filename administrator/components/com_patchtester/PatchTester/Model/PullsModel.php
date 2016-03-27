@@ -126,6 +126,17 @@ class PullsModel extends \JModelDatabase
 			$query->where($db->quoteName('applied') . $value);
 		}
 
+		// Filter for RTC patches
+		$applied = $this->getState()->get('filter.rtc');
+
+		if (!empty($applied))
+		{
+			// Not applied patches have a NULL value, so build our value part of the query based on this
+			$value = $applied == 'no' ? '0' : '1';
+
+			$query->where($db->quoteName('is_rtc') . ' = ' . $value);
+		}
+
 		// Handle the list ordering.
 		$ordering  = $this->getState()->get('list.ordering');
 		$direction = $this->getState()->get('list.direction');
@@ -318,12 +329,26 @@ class PullsModel extends \JModelDatabase
 		{
 			if (isset($pull->pull_request))
 			{
+				// Check if this PR is RTC
+				$isRTC = false;
+
+				foreach ($pull->labels as $label)
+				{
+					if ($label->name === 'RTC')
+					{
+						$isRTC = true;
+
+						break;
+					}
+				}
+
 				// Build the data object to store in the database
 				$pullData = array(
 					(int) $pull->number,
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
 					$this->getDb()->quote($pull->pull_request->url),
+					(int) $isRTC,
 				);
 
 				$data[] = implode($pullData, ',');
@@ -333,7 +358,7 @@ class PullsModel extends \JModelDatabase
 		$this->getDb()->setQuery(
 			$this->getDb()->getQuery(true)
 				->insert('#__patchtester_pulls')
-				->columns(array('pull_id', 'title', 'description', 'pull_url'))
+				->columns(array('pull_id', 'title', 'description', 'pull_url', 'is_rtc'))
 				->values($data)
 		);
 

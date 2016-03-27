@@ -19,6 +19,7 @@ else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
+$filterRtc     = $this->escape($this->state->get('filter.rtc'));
 
 \JFactory::getDocument()->addStyleDeclaration(
 	'
@@ -53,6 +54,12 @@ echo \JHtml::_(
 					<option value="yes"<?php if ($filterApplied == 'yes') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?></option>
 					<option value="no"<?php if ($filterApplied == 'no') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?></option>
 				</select>
+				<label class="selectlabel" for="filter_rtc"><?php echo JText::_('COM_PATCHTESTER_FILTER_RTC_PATCHES'); ?></label>
+				<select name="filter_rtc" id="filter_rtc">
+					<option value=""><?php echo \JText::_('COM_PATCHTESTER_FILTER_RTC_PATCHES'); ?></option>
+					<option value="yes"<?php if ($filterRtc == 'yes') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_RTC'); ?></option>
+					<option value="no"<?php if ($filterRtc == 'no') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_NOT_RTC'); ?></option>
+				</select>
 				<button type="submit" id="filter-go"><?php echo \JText::_('JSUBMIT'); ?></button>
 			</div>
 		</fieldset>
@@ -66,6 +73,9 @@ echo \JHtml::_(
 				</th>
 				<th class="nowrap">
 					<?php echo \JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
+				</th>
+				<th width="8%" class="nowrap center">
+					<?php echo \JText::_('COM_PATCHTESTER_READY_TO_COMMIT'); ?>
 				</th>
 				<th width="8%" class="nowrap center">
 					<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>

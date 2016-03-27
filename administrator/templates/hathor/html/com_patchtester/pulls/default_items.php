@@ -29,6 +29,13 @@ foreach ($this->items as $i => $item) :
 			</p>
 		<?php endif; ?>
 	</td>
+	<td class="center">
+		<?php if ($item->is_rtc) : ?>
+			<span class="label label-success"><?php echo \JText::_('JYES'); ?></span>
+		<?php else : ?>
+			<span class="label label-primary"><?php echo \JText::_('JNO'); ?></span>
+		<?php endif; ?>
+	</td>
 	<td>
 		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
 			<span class="octicon octicon-mark-github"></span> <?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>

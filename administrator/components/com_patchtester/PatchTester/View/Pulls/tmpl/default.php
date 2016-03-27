@@ -20,6 +20,7 @@ else :
 $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
+$filterRtc     = $this->escape($this->state->get('filter.rtc'));
 ?>
 <form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm" data-order="<?php echo $listOrder; ?>">
 	<div id="j-main-container">
@@ -52,11 +53,19 @@ $filterApplied = $this->escape($this->state->get('filter.applied'));
 				</select>
 			</div>
 			<div class="btn-group pull-right">
-				<label for="filter_applied" class="element-invisible"><?php echo \JText::_('JGLOBAL_SORT_BY'); ?></label>
+				<label for="filter_applied" class="element-invisible"><?php echo \JText::_('JSEARCH_TOOLS_DESC'); ?></label>
 				<select name="filter_applied" class="input-medium" onchange="this.form.submit();">
 					<option value=""><?php echo \JText::_('COM_PATCHTESTER_FILTER_APPLIED_PATCHES'); ?></option>
 					<option value="yes"<?php if ($filterApplied == 'yes') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?></option>
 					<option value="no"<?php if ($filterApplied == 'no') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?></option>
+				</select>
+			</div>
+			<div class="btn-group pull-right">
+				<label for="filter_rtc" class="element-invisible"><?php echo \JText::_('JSEARCH_TOOLS_DESC'); ?></label>
+				<select name="filter_rtc" class="input-medium" onchange="this.form.submit();">
+					<option value=""><?php echo \JText::_('COM_PATCHTESTER_FILTER_RTC_PATCHES'); ?></option>
+					<option value="yes"<?php if ($filterRtc == 'yes') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_RTC'); ?></option>
+					<option value="no"<?php if ($filterRtc == 'no') echo ' selected="selected"'; ?>><?php echo \JText::_('COM_PATCHTESTER_NOT_RTC'); ?></option>
 				</select>
 			</div>
 		</div>
@@ -74,6 +83,9 @@ $filterApplied = $this->escape($this->state->get('filter.applied'));
 					</th>
 					<th class="nowrap">
 						<?php echo \JText::_('JGLOBAL_TITLE'); ?>
+					</th>
+					<th width="8%" class="nowrap center">
+						<?php echo \JText::_('COM_PATCHTESTER_READY_TO_COMMIT'); ?>
 					</th>
 					<th width="8%" class="nowrap center">
 						<?php echo \JText::_('COM_PATCHTESTER_GITHUB'); ?>
