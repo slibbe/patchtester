@@ -23,6 +23,11 @@ foreach ($this->items as $i => $item) :
 		<p class="hasTooltip" title="<?php echo $this->escape($item->description); ?>">
 			<?php echo $this->escape($item->title); ?>
 		</p>
+		<?php if ($item->applied) : ?>
+			<p class="smallsub">
+				<span class="label label-info"><?php echo \JText::sprintf('COM_PATCHTESTER_APPLIED_COMMIT_SHA', substr($item->sha, 0, 10)); ?></span>
+			</p>
+		<?php endif; ?>
 	</td>
 	<td>
 		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
@@ -38,21 +43,17 @@ foreach ($this->items as $i => $item) :
 	<?php endif; ?>
 	<td class="center">
 		<?php if ($item->applied) : ?>
-			<span class="label label-success">
-			<?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?>
-			</span>
+			<span class="label label-success"><?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?></span>
 		<?php else : ?>
-			<span class="label">
-			<?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?>
-			</span>
+			<span class="label"><?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?></span>
 		<?php endif; ?>
 	</td>
 	<td class="center">
-		<?php if ($item->applied) :
-			echo '<a class="btn btn-small btn-success" href="javascript:PatchTester.submitpatch(\'revert\', ' . (int) $item->applied . ');">' . \JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
-		else :
-			echo '<a class="btn btn-small btn-primary" href="javascript:PatchTester.submitpatch(\'apply\', ' . (int) $item->pull_id . ');">' . \JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
-		endif; ?>
+		<?php if ($item->applied) : ?>
+			<a class="btn btn-small btn-success" href="javascript:PatchTester.submitpatch('revert', '<?php echo (int) $item->applied; ?>');"><?php echo \JText::_('COM_PATCHTESTER_REVERT_PATCH'); ?></a><br />
+		<?php else : ?>
+			<a class="btn btn-small btn-primary" href="javascript:PatchTester.submitpatch('apply', '<?php echo (int) $item->pull_id; ?>');"><?php echo \JText::_('COM_PATCHTESTER_APPLY_PATCH'); ?></a>
+		<?php endif; ?>
 	</td>
 </tr>
 <?php endforeach;

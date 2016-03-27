@@ -179,30 +179,6 @@ class PullModel extends \JModelDatabase
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
 
-		// Compare the pull's HEAD SHA to what patch tester has pulled; if it's newer set a flag
-		try
-		{
-			$db = $this->getDb();
-			$stateSha = $db->setQuery(
-				$db->getQuery(true)
-					->select('sha')
-					->from($db->quoteName('#__patchtester_pulls'))
-					->where($db->quoteName('pull_id') . ' = ' . (int) $id)
-			)->loadResult();
-		}
-		catch (\RuntimeException $e)
-		{
-			// Not a fatal error, keep on truckin'
-			$stateSha = false;
-		}
-
-		if ($stateSha && $stateSha !== $pull->head->sha)
-		{
-			$this->getState()->set('pull.sha_different', true);
-			$this->getState()->set('pull.applied_sha', $pull->head->sha);
-			$this->getState()->set('pull.state_sha', $stateSha);
-		}
-
 		$files = $this->parsePatch($patch);
 
 		if (!$files)
@@ -298,6 +274,15 @@ class PullModel extends \JModelDatabase
 			throw new \RuntimeException($table->getError());
 		}
 
+		// Insert the retrieved commit SHA into the pulls table for this item
+		$db = $this->getDb();
+		$db->setQuery(
+			$db->getQuery(true)
+				->update('#__patchtester_pulls')
+				->set('sha = ' . $db->quote($pull->head->sha))
+				->where($db->quoteName('pull_id') . ' = ' . (int) $id)
+		)->execute();
+
 		return true;
 	}
 
@@ -320,9 +305,19 @@ class PullModel extends \JModelDatabase
 		// We don't want to restore files from an older version
 		if ($table->applied_version != JVERSION)
 		{
+			// Remove the retrieved commit SHA from the pulls table for this item
+			$db = $this->getDb();
+			$db->setQuery(
+				$db->getQuery(true)
+					->update('#__patchtester_pulls')
+					->set('sha = ' . $db->quote(''))
+					->where($db->quoteName('pull_id') . ' = ' . (int) $table->pull_id)
+			)->execute();
+
+			// And delete the record from the tests table
 			$table->delete();
 
-			return $this;
+			return true;
 		}
 
 		$files = json_decode($table->data);
@@ -378,6 +373,16 @@ class PullModel extends \JModelDatabase
 			}
 		}
 
+		// Remove the retrieved commit SHA from the pulls table for this item
+		$db = $this->getDb();
+		$db->setQuery(
+			$db->getQuery(true)
+				->update('#__patchtester_pulls')
+				->set('sha = ' . $db->quote(''))
+				->where($db->quoteName('pull_id') . ' = ' . (int) $table->pull_id)
+		)->execute();
+
+		// And delete the record from the tests table
 		$table->delete();
 
 		return true;

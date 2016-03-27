@@ -21,9 +21,11 @@ foreach ($this->items as $i => $item) :
 	</td>
 	<td>
 		<span class="hasTooltip" title="<strong>Info</strong><br/><?php echo $this->escape($item->description); ?>"><?php echo $this->escape($item->title); ?></span>
-	</td>
-	<td>
-		<?php echo substr($item->sha, 0, 10); ?>
+		<?php if ($item->applied) : ?>
+			<div class="small">
+				<span class="label label-info"><?php echo \JText::sprintf('COM_PATCHTESTER_APPLIED_COMMIT_SHA', substr($item->sha, 0, 10)); ?></span>
+			</div>
+		<?php endif; ?>
 	</td>
 	<td class="center">
 		<a class="btn btn-small btn-info" href="<?php echo $item->pull_url; ?>" target="_blank">
@@ -39,9 +41,9 @@ foreach ($this->items as $i => $item) :
 	<?php endif; ?>
 	<td class="center">
 		<?php if ($item->applied) : ?>
-			<span class="label label-success">
-			<?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?>
-			</span>
+			<div>
+				<span class="label label-success"><?php echo \JText::_('COM_PATCHTESTER_APPLIED'); ?></span>
+			</div>
 		<?php else : ?>
 			<span class="label">
 			<?php echo \JText::_('COM_PATCHTESTER_NOT_APPLIED'); ?>
@@ -49,11 +51,11 @@ foreach ($this->items as $i => $item) :
 		<?php endif; ?>
 	</td>
 	<td class="center">
-		<?php if ($item->applied) :
-			echo '<a class="btn btn-small btn-success" href="javascript:PatchTester.submitpatch(\'revert\', ' . (int) $item->applied . ');">' . \JText::_('COM_PATCHTESTER_REVERT_PATCH') . '</a>';
-		else :
-			echo '<a class="btn btn-small btn-primary" href="javascript:PatchTester.submitpatch(\'apply\', ' . (int) $item->pull_id . ');">' . \JText::_('COM_PATCHTESTER_APPLY_PATCH') . '</a>';
-		endif; ?>
+		<?php if ($item->applied) : ?>
+			<a class="btn btn-small btn-success" href="javascript:PatchTester.submitpatch('revert', '<?php echo (int) $item->applied; ?>');"><?php echo \JText::_('COM_PATCHTESTER_REVERT_PATCH'); ?></a><br />
+		<?php else : ?>
+			<a class="btn btn-small btn-primary" href="javascript:PatchTester.submitpatch('apply', '<?php echo (int) $item->pull_id; ?>');"><?php echo \JText::_('COM_PATCHTESTER_APPLY_PATCH'); ?></a>
+		<?php endif; ?>
 	</td>
 </tr>
 <?php endforeach;
