@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `#__patchtester_pulls` (
   `title` varchar(200) NOT NULL,
   `description` varchar(150) NOT NULL DEFAULT '',
   `pull_url` varchar(255) NOT NULL,
-  `sha` varchar(40) NOT NULL,
+  `sha` varchar(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 

@@ -324,7 +324,6 @@ class PullsModel extends \JModelDatabase
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
 					$this->getDb()->quote($pull->pull_request->url),
-					$this->getDb()->quote(/*$pull->head->sha*/'')
 				);
 
 				$data[] = implode($pullData, ',');
@@ -334,7 +333,7 @@ class PullsModel extends \JModelDatabase
 		$this->getDb()->setQuery(
 			$this->getDb()->getQuery(true)
 				->insert('#__patchtester_pulls')
-				->columns(array('pull_id', 'title', 'description', 'pull_url', 'sha'))
+				->columns(array('pull_id', 'title', 'description', 'pull_url'))
 				->values($data)
 		);
 

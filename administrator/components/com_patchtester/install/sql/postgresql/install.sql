@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "#__patchtester_pulls" (
   "title" character varying(200) NOT NULL,
   "description" character varying(150) DEFAULT '' NOT NULL,
   "pull_url" character varying(255) NOT NULL,
-  "sha" character varying(40) NOT NULL,
+  "sha" character varying(40) DEFAULT '' NOT NULL,
   PRIMARY KEY ("id")
 );
 
