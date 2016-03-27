@@ -49,4 +49,7 @@
 			<filename>patchtester.php</filename>
 		</files>
 	</administration>
+	<updateservers>
+		<server type="extension" name="Patch Tester Component">https://raw.githubusercontent.com/joomla-extensions/patchtester/master/manifest.xml</server>
+	</updateservers>
 </extension>
