@@ -120,7 +120,7 @@ class ResetController extends AbstractController
 			else
 			{
 				$msg  = \JText::_('COM_PATCHTESTER_RESET_OK');
-				$type = 'info';
+				$type = 'notice';
 			}
 		}
 		catch (\Exception $e)
