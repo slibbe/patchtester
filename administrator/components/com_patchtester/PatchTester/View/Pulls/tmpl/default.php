@@ -21,6 +21,7 @@ $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
 $filterRtc     = $this->escape($this->state->get('filter.rtc'));
+$colSpan       = $this->trackerAlias !== false ? 7 : 6;
 ?>
 <form action="<?php echo \JRoute::_('index.php?option=com_patchtester&view=pulls'); ?>" method="post" name="adminForm" id="adminForm" data-order="<?php echo $listOrder; ?>">
 	<div id="j-main-container">
@@ -105,7 +106,7 @@ $filterRtc     = $this->escape($this->state->get('filter.rtc'));
 				</thead>
 				<tfoot>
 					<tr>
-						<td colspan="6">
+						<td colspan="<?php echo $colSpan; ?>">
 						</td>
 					</tr>
 				</tfoot>
