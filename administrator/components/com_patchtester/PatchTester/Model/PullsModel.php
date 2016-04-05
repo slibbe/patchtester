@@ -347,7 +347,7 @@ class PullsModel extends \JModelDatabase
 					(int) $pull->number,
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->title, 150)),
 					$this->getDb()->quote(\JHtml::_('string.truncate', $pull->body, 100)),
-					$this->getDb()->quote($pull->pull_request->url),
+					$this->getDb()->quote($pull->pull_request->html_url),
 					(int) $isRTC,
 				);
 
