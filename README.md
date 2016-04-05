@@ -1,4 +1,4 @@
-Patch Tester [![Build Status](https://travis-ci.org/joomla-extensions/patchtester.png)](https://travis-ci.org/joomla-extensions/patchtester)
+Patch Tester [![Build Status](https://travis-ci.org/joomla-extensions/patchtester.png)](https://travis-ci.org/joomla-extensions/patchtester) [![Crowdin](https://d322cqt584bo4o.cloudfront.net/joomla-patchtester/localized.svg)](https://crowdin.com/project/joomla-patchtester)
 =============
 
 License
@@ -35,6 +35,11 @@ GitHub Two Factor Authentication
 =============
 
 To use an account that has two factor authentication enabled, you'll have to [create a personal access token on GitHub](https://github.com/settings/applications) and store that token in the "GitHub Account Password" option in the component's config.
+
+Translations
+=============
+
+Translations for the patch tester component are managed on [Crowdin](https://crowdin.com/project/joomla-patchtester).
 
 
 fr-FR - Patch Tester en français
