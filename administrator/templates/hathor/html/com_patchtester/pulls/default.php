@@ -20,6 +20,7 @@ $listOrder     = $this->escape($this->state->get('list.ordering'));
 $listDirn      = $this->escape($this->state->get('list.direction'));
 $filterApplied = $this->escape($this->state->get('filter.applied'));
 $filterRtc     = $this->escape($this->state->get('filter.rtc'));
+$colSpan       = $this->trackerAlias !== false ? 7 : 6;
 
 \JFactory::getDocument()->addStyleDeclaration(
 	'
@@ -95,7 +96,7 @@ echo \JHtml::_(
 			</thead>
 			<tfoot>
 				<tr>
-					<td colspan="6">
+					<td colspan="<?php echo $colSpan; ?>">
 					</td>
 				</tr>
 			</tfoot>
