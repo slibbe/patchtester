@@ -1,6 +1,9 @@
 Patch Tester [![Build Status](https://travis-ci.org/joomla-extensions/patchtester.png)](https://travis-ci.org/joomla-extensions/patchtester) [![Crowdin](https://d322cqt584bo4o.cloudfront.net/joomla-patchtester/localized.svg)](https://crowdin.com/project/joomla-patchtester)
 =============
 
+* [In English](#license)
+* [En français](#translations)
+
 License
 =======
 The patch tester component follow's Joomla's license, the [GNU General Public License Version 2 or Later](http://www.gnu.org/licenses/gpl-2.0.txt).
