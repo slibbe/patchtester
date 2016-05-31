@@ -2,9 +2,9 @@
 <config>
 
 	<fieldset
-		name="component"
-		label="COM_PATCHTESTER_COMPONENT_LABEL"
-		description="COM_PATCHTESTER_COMPONENT_DESC"
+		name="repositories"
+		label="COM_PATCHTESTER_FIELDSET_REPOSITORIES_LABEL"
+		description="COM_PATCHTESTER_FIELDSET_REPOSITORIES_DESC"
 		>
 
 		<field
@@ -44,9 +44,9 @@
 	</fieldset>
 
 	<fieldset
-		name="component"
-		label="COM_PATCHTESTER_COMPONENT_AUTH_LABEL"
-		description="COM_PATCHTESTER_COMPONENT_AUTH_DESC"
+		name="authentication"
+		label="COM_PATCHTESTER_FIELDSET_AUTHENTICATION_LABEL"
+		description="COM_PATCHTESTER_FIELDSET_AUTHENTICATION_DESC"
 		>
 
 		<field
@@ -67,6 +67,7 @@
 			label="COM_PATCHTESTER_FIELD_GH_USER_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_USER_DESC"
 			autocomplete="off"
+			default=""
 			showon="gh_auth:credentials"
 		/>
 
@@ -75,8 +76,8 @@
 			type="password"
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
-			default=""
 			autocomplete="off"
+			default=""
 			showon="gh_auth:credentials"
 		/>
 
