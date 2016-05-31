@@ -61,7 +61,7 @@
 			<option value="token">COM_PATCHTESTER_FIELD_GH_AUTH_OPTION_TOKEN</option>
 		</field>
 
-		<!-- Note: Default username is a space to avoid browser autocomplete, -->
+		<!-- Note: Default username is a space to avoid browser autocomplete. -->
 		<field
 			name="gh_user"
 			type="text"
