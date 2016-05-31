@@ -1,39 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="component" label="COM_PATCHTESTER_COMPONENT_LABEL" description="COM_PATCHTESTER_COMPONENT_DESC">
-		<field name="org" type="text" default="joomla"
-			description="COM_PATCHTESTER_FIELD_ORG_DESC"
+
+	<fieldset
+		name="component"
+		label="COM_PATCHTESTER_COMPONENT_LABEL"
+		description="COM_PATCHTESTER_COMPONENT_DESC"
+		>
+
+		<field
+			name="org"
+			type="text"
 			label="COM_PATCHTESTER_FIELD_ORG_LABEL"
+			description="COM_PATCHTESTER_FIELD_ORG_DESC"
+			default="joomla"
 		/>
 
-		<field name="repo" type="text" default="joomla-cms"
-			description="COM_PATCHTESTER_FIELD_REPO_DESC"
+		<field
+			name="repo"
+			type="text"
 			label="COM_PATCHTESTER_FIELD_REPO_LABEL"
+			description="COM_PATCHTESTER_FIELD_REPO_DESC"
+			default="joomla-cms"
 		/>
 
-		<field name="gh_user" type="text"
-			description="COM_PATCHTESTER_FIELD_GH_USER_DESC"
+		<field
+			name="gh_user"
+			type="text"
 			label="COM_PATCHTESTER_FIELD_GH_USER_LABEL"
+			description="COM_PATCHTESTER_FIELD_GH_USER_DESC"
+			autocomplete="off"
 		/>
 
-		<field name="gh_password" type="password"
-			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
+		<field
+			name="gh_password"
+			type="password"
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
+			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
+			autocomplete="off"
 		/>
 
-		<field name="gh_token" type="text"
-			description="COM_PATCHTESTER_FIELD_GH_TOKEN_DESC"
+		<field
+			name="gh_token"
+			type="text"
 			label="COM_PATCHTESTER_FIELD_GH_TOKEN_LABEL"
+			description="COM_PATCHTESTER_FIELD_GH_TOKEN_DESC"
 		/>
+
 	</fieldset>
 
-	<fieldset name="permissions" description="JCONFIG_PERMISSIONS_DESC" label="JCONFIG_PERMISSIONS_LABEL">
-		<field name="rules" type="rules"
+	<fieldset
+		name="permissions"
+		label="JCONFIG_PERMISSIONS_LABEL"
+		description="JCONFIG_PERMISSIONS_DESC"
+		>
+
+		<field
+			name="rules"
+			type="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
 			component="com_patchtester"
 			filter="rules"
 			validate="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
 			section="component"
 		/>
+
 	</fieldset>
+
 </config>
