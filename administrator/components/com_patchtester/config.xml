@@ -36,7 +36,6 @@
 			type="password"
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
-			default=""
 			autocomplete="off"
 		/>
 
