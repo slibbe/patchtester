@@ -2,10 +2,24 @@
 <config>
 
 	<fieldset
-		name="component"
-		label="COM_PATCHTESTER_COMPONENT_LABEL"
-		description="COM_PATCHTESTER_COMPONENT_DESC"
+		name="repositories"
+		label="COM_PATCHTESTER_FIELDSET_REPOSITORIES_LABEL"
+		description="COM_PATCHTESTER_FIELDSET_REPOSITORIES_DESC"
 		>
+
+		<field
+			name="repository"
+			type="list"
+			label="COM_PATCHTESTER_FIELD_REPOSITORY_LABEL"
+			description="COM_PATCHTESTER_FIELD_REPOSITORY_DESC"
+			default="joomla:joomla-cms"
+			onchange="if (jQuery(this).val() != 'custom') { var parts = jQuery(this).val().split(':'); } else { var parts = ['', '']; }  document.getElementById('jform_org').value = parts[0]; document.getElementById('jform_repo').value = parts[1];"
+			>
+			<option value="joomla:joomla-cms">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_JOOMLA_CMS</option>
+			<option value="joomla-extensions:patchtester">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_PATCHTESTER</option>
+			<option value="joomla-extensions:install-from-web-client">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_INSTALL_FROM_WEB</option>
+			<option value="custom">COM_PATCHTESTER_FIELD_REPOSITORY_CUSTOM</option>
+		</field>
 
 		<field
 			name="org"
@@ -13,6 +27,8 @@
 			label="COM_PATCHTESTER_FIELD_ORG_LABEL"
 			description="COM_PATCHTESTER_FIELD_ORG_DESC"
 			default="joomla"
+			id="org"
+			showon="repository:custom"
 		/>
 
 		<field
@@ -21,14 +37,39 @@
 			label="COM_PATCHTESTER_FIELD_REPO_LABEL"
 			description="COM_PATCHTESTER_FIELD_REPO_DESC"
 			default="joomla-cms"
+			id="repo"
+			showon="repository:custom"
 		/>
 
+	</fieldset>
+
+	<fieldset
+		name="authentication"
+		label="COM_PATCHTESTER_FIELDSET_AUTHENTICATION_LABEL"
+		description="COM_PATCHTESTER_FIELDSET_AUTHENTICATION_DESC"
+		>
+
+		<field
+			name="gh_auth"
+			type="list"
+			label="COM_PATCHTESTER_FIELD_GH_AUTH_LABEL"
+			description="COM_PATCHTESTER_FIELD_GH_AUTH_DESC"
+			default=""
+			>
+			<option value="">JNONE</option>
+			<option value="credentials">COM_PATCHTESTER_FIELD_GH_AUTH_OPTION_CREDENTIALS</option>
+			<option value="token">COM_PATCHTESTER_FIELD_GH_AUTH_OPTION_TOKEN</option>
+		</field>
+
+		<!-- Note: Default username is a space to avoid browser autocomplete. -->
 		<field
 			name="gh_user"
 			type="text"
 			label="COM_PATCHTESTER_FIELD_GH_USER_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_USER_DESC"
 			autocomplete="off"
+			default=" "
+			showon="gh_auth:credentials"
 		/>
 
 		<field
@@ -37,6 +78,8 @@
 			label="COM_PATCHTESTER_FIELD_GH_PASSWORD_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_PASSWORD_DESC"
 			autocomplete="off"
+			default=""
+			showon="gh_auth:credentials"
 		/>
 
 		<field
@@ -44,6 +87,7 @@
 			type="text"
 			label="COM_PATCHTESTER_FIELD_GH_TOKEN_LABEL"
 			description="COM_PATCHTESTER_FIELD_GH_TOKEN_DESC"
+			showon="gh_auth:token"
 		/>
 
 	</fieldset>
