@@ -31,6 +31,12 @@ if ($task === '')
 
 $class = '\\PatchTester\\Controller\\' . ucfirst(strtolower($task)) . 'Controller';
 
+if (!class_exists($class))
+{
+	throw new InvalidArgumentException(JText::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER_CLASS', $class), 404);	
+}
+
 // Instantiate and execute the controller
+/** @var \PatchTester\Controller\AbstractController $controller */
 $controller = new $class($app->input, $app);
 $controller->execute();

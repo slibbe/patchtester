@@ -68,15 +68,13 @@ class DisplayController extends AbstractController
 
 			if (!class_exists($viewClass))
 			{
-				throw new \RuntimeException(
-					sprintf('A view class for the %1$s view in the %2$s format was not found.', $view, $format), 500
-				);
+				throw new \RuntimeException(JText::sprintf('COM_PATCHTESTER_ERROR_VIEW_NOT_FOUND', $view, $format), 500);
 			}
 		}
 
 		if (!class_exists($modelClass))
 		{
-			throw new \RuntimeException(sprintf('The model class for the %s view was not found.', $view), 500);
+			throw new \RuntimeException(JText::sprintf('COM_PATCHTESTER_ERROR_MODEL_NOT_FOUND', $modelClass), 500);
 		}
 
 		// Initialize the model class now; need to do it before setting the state to get required data from it
