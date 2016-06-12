@@ -33,7 +33,7 @@ $class = '\\PatchTester\\Controller\\' . ucfirst(strtolower($task)) . 'Controlle
 
 if (!class_exists($class))
 {
-	throw new InvalidArgumentException(JText::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER_CLASS', $class), 404);	
+	throw new InvalidArgumentException(JText::sprintf('JLIB_APPLICATION_ERROR_INVALID_CONTROLLER_CLASS', $class), 404);
 }
 
 // Instantiate and execute the controller
