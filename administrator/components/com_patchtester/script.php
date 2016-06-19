@@ -11,16 +11,8 @@
  *
  * @since  2.0
  */
-class Com_PatchtesterInstallerScript
+class Com_PatchtesterInstallerScript extends JInstallerScript
 {
-	/**
-	 * Minimum supported version of the CMS
-	 *
-	 * @var    string
-	 * @since  2.0
-	 */
-	protected $minCmsVersion = '3.5';
-
 	/**
 	 * Array of templates with supported overrides
 	 *
@@ -30,25 +22,18 @@ class Com_PatchtesterInstallerScript
 	protected $templateOverrides = array('hathor');
 
 	/**
-	 * Function to act prior to installation process begins
+	 * Extension script constructor.
 	 *
-	 * @param   string                      $type    The action being performed
-	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
-	 *
-	 * @return  boolean  True on success
-	 *
-	 * @since   2.0
+	 * @since   __DEPLOY_VERSION__
 	 */
-	public function preflight($type, $parent)
+	public function __construct()
 	{
-		if (version_compare(JVERSION, $this->minCmsVersion, 'lt'))
-		{
-			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_ERROR_INSTALL_JVERSION', $this->minCmsVersion));
+		$this->minimumJoomla = '3.6';
+		$this->minimumPhp    = JOOMLA_MINIMUM_PHP;
 
-			return false;
-		}
-
-		return true;
+		$this->deleteFolders = array(
+			'/administrator/components/com_patchtester/PatchTester/Table',
+		);
 	}
 
 	/**
@@ -118,6 +103,21 @@ class Com_PatchtesterInstallerScript
 		{
 			JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_PATCHTESTER_COULD_NOT_REMOVE_OVERRIDES', implode(', ', $errorTemplates)));
 		}
+	}
+
+	/**
+	 * Function to perform changes during postflight
+	 *
+	 * @param   string                      $type    The action being performed
+	 * @param   JInstallerAdapterComponent  $parent  The class calling this method
+	 *
+	 * @return  void
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function postflight($type, $parent)
+	{
+		$this->removeFiles();
 	}
 
 	/**
