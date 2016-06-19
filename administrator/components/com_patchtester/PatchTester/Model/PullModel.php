@@ -395,7 +395,7 @@ class PullModel extends \JModelDatabase
 	/**
 	 * Remove the database record for a test
 	 *
-	 * @param   $testRecord
+	 * @param   stdClass  $testRecord  The record being deleted
 	 *
 	 * @return  boolean
 	 *
