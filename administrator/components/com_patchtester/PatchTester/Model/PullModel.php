@@ -286,21 +286,19 @@ class PullModel extends \JModelDatabase
 			}
 		}
 
-		/** @var \PatchTester\Table\TestsTable $table */
-		$table                  = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
-		$table->pull_id         = $pull->number;
-		$table->data            = json_encode($files);
-		$table->patched_by      = \JFactory::getUser()->id;
-		$table->applied         = 1;
-		$table->applied_version = JVERSION;
+		$record = (object) array(
+			'pull_id'         => $pull->number,
+			'data'            => json_encode($files),
+			'patched_by'      => \JFactory::getUser()->id,
+			'applied'         => 1,
+			'applied_version' => JVERSION,
+		);
 
-		if (!$table->store())
-		{
-			throw new \RuntimeException($table->getError());
-		}
+		$db = $this->getDb();
+
+		$db->insertObject('#__patchtester_tests', $record);
 
 		// Insert the retrieved commit SHA into the pulls table for this item
-		$db = $this->getDb();
 		$db->setQuery(
 			$db->getQuery(true)
 				->update('#__patchtester_pulls')
@@ -323,33 +321,26 @@ class PullModel extends \JModelDatabase
 	 */
 	public function revert($id)
 	{
-		/** @var \PatchTester\Table\TestsTable $table */
-		$table = \JTable::getInstance('TestsTable', '\\PatchTester\\Table\\');
-		$table->load($id);
+		$db = $this->getDb();
+
+		$testRecord = $db->setQuery(
+			$db->getQuery(true)
+				->select('*')
+				->from('#__patchtester_tests')
+				->where('id = ' . (int) $id)
+		)->loadObject();
 
 		// We don't want to restore files from an older version
-		if ($table->applied_version != JVERSION)
+		if ($testRecord->applied_version != JVERSION)
 		{
-			// Remove the retrieved commit SHA from the pulls table for this item
-			$db = $this->getDb();
-			$db->setQuery(
-				$db->getQuery(true)
-					->update('#__patchtester_pulls')
-					->set('sha = ' . $db->quote(''))
-					->where($db->quoteName('pull_id') . ' = ' . (int) $table->pull_id)
-			)->execute();
-
-			// And delete the record from the tests table
-			$table->delete();
-
-			return true;
+			return $this->removeTest($testRecord);
 		}
 
-		$files = json_decode($table->data);
+		$files = json_decode($testRecord->data);
 
 		if (!$files)
 		{
-			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_READING_DATABASE_TABLE', __METHOD__, htmlentities($table->data)));
+			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_READING_DATABASE_TABLE', __METHOD__, htmlentities($testRecord->data)));
 		}
 
 		jimport('joomla.filesystem.file');
@@ -398,17 +389,36 @@ class PullModel extends \JModelDatabase
 			}
 		}
 
-		// Remove the retrieved commit SHA from the pulls table for this item
+		return $this->removeTest($testRecord);
+	}
+
+	/**
+	 * Remove the database record for a test
+	 *
+	 * @param   $testRecord
+	 *
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	private function removeTest($testRecord)
+	{
 		$db = $this->getDb();
+
+		// Remove the retrieved commit SHA from the pulls table for this item
 		$db->setQuery(
 			$db->getQuery(true)
 				->update('#__patchtester_pulls')
 				->set('sha = ' . $db->quote(''))
-				->where($db->quoteName('pull_id') . ' = ' . (int) $table->pull_id)
+				->where($db->quoteName('pull_id') . ' = ' . (int) $testRecord->pull_id)
 		)->execute();
 
 		// And delete the record from the tests table
-		$table->delete();
+		$db->setQuery(
+			$db->getQuery(true)
+				->delete('#__patchtester_tests')
+				->where('id = ' . (int) $testRecord->id)
+		)->execute();
 
 		return true;
 	}
