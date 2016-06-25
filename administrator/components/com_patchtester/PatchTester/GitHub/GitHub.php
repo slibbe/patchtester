@@ -152,7 +152,7 @@ class GitHub
 		// Build the request path.
 		$path = "/repos/$user/$repo/pulls/" . (int) $pullId . '/files';
 
-		$prepared = $this->prepareRequest($path, 0, 0, $headers);
+		$prepared = $this->prepareRequest($path, 0, 0);
 
 		return $this->processResponse($this->client->get($prepared['url'], $prepared['headers']));
 	}

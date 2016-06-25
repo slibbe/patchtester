@@ -47,101 +47,47 @@ class PullModel extends \JModelDatabase
 	);
 
 	/**
-	 * Method to parse a patch and extract the affected files
+	 * Parse the list of modified files from a pull request
 	 *
-	 * @param   string  $patch  Patch file to parse
+	 * @param   object  $files  The modified files to parse
 	 *
-	 * @return  array  Array of files within a patch
+	 * @return  array
 	 *
-	 * @since   2.0
+	 * @since   __DEPLOY_VERSION__
 	 */
-	protected function parsePatch($patch)
+	protected function parseFileList($files)
 	{
-		$state = 0;
-		$files = array();
+		$parsedFiles = array();
 
-		$lines = explode("\n", $patch);
-
-		foreach ($lines as $line)
+		foreach ($files as $file)
 		{
-			switch ($state)
+			/*
+			 * Check if the patch tester is running in a production environment
+			 * If so, do not patch certain files as errors will be thrown
+			 */
+			if (!file_exists(JPATH_ROOT . '/installation/index.php'))
 			{
-				case 0:
-					if (strpos($line, 'diff --git') === 0)
-					{
-						$state = 1;
-					}
+				$filePath = explode('/', $file->filename);
 
-					$file         = new \stdClass;
-					$file->action = 'modified';
+				if (in_array($filePath[0], $this->nonProductionFiles))
+				{
+					continue;
+				}
 
-					break;
-
-				case 1:
-					if (strpos($line, 'index') === 0)
-					{
-						$file->index = substr($line, 6);
-					}
-
-					if (strpos($line, '---') === 0)
-					{
-						$file->old = substr($line, 6);
-					}
-
-					if (strpos($line, '+++') === 0)
-					{
-						$file->new = substr($line, 6);
-					}
-
-					if (strpos($line, 'new file mode') === 0)
-					{
-						$file->action = 'added';
-					}
-
-					if (strpos($line, 'deleted file mode') === 0)
-					{
-						$file->action = 'deleted';
-					}
-
-					// Binary files are presently unsupported, use this to reset the parser in the meantime
-					if (strpos($line, 'Binary files') === 0)
-					{
-						$state = 0;
-
-						$this->state->set('pull.has_binary', true);
-					}
-
-					if (strpos($line, '@@') === 0)
-					{
-						$state = 0;
-
-						/*
-						 * Check if the patch tester is running in a production environment
-						 * If so, do not patch certain files as errors will be thrown
-						 */
-						if (!file_exists(JPATH_ROOT . '/installation/index.php'))
-						{
-							$filePath = explode('/', $file->new);
-
-							if (in_array($filePath[0], $this->nonProductionFiles))
-							{
-								continue;
-							}
-
-							if (in_array($filePath[0], $this->nonProductionFolders))
-							{
-								continue;
-							}
-						}
-
-						$files[] = $file;
-					}
-
-					break;
+				if (in_array($filePath[0], $this->nonProductionFolders))
+				{
+					continue;
+				}
 			}
+
+			$parsedFiles[] = (object) array(
+				'action'   => $file->status,
+				'filename' => $file->filename,
+				'fileurl'  => $file->contents_url,
+			);
 		}
 
-		return $files;
+		return $parsedFiles;
 	}
 
 	/**
@@ -194,24 +140,24 @@ class PullModel extends \JModelDatabase
 
 		try
 		{
-			$patchResponse = $github->getDiffForPullRequest($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
-			$patch         = json_decode($patchResponse->body);
+			$filesResponse = $github->getFilesForPullRequest($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+			$files         = json_decode($filesResponse->body);
 		}
 		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
 
-		$files = $this->parsePatch($patch);
-
-		if (!$files)
+		if (!count($files))
 		{
 			return false;
 		}
 
-		foreach ($files as $file)
+		$parsedFiles = $this->parseFileList($files);
+
+		foreach ($parsedFiles as $file)
 		{
-			if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->old))
+			if ($file->action == 'deleted' && !file_exists(JPATH_ROOT . '/' . $file->filename))
 			{
 				throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_FILE_DELETED_DOES_NOT_EXIST_S', $file->old));
 			}
@@ -219,24 +165,37 @@ class PullModel extends \JModelDatabase
 			if ($file->action == 'added' || $file->action == 'modified')
 			{
 				// If the backup file already exists, we can't apply the patch
-				if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->new) . '.txt'))
+				if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->filename) . '.txt'))
 				{
-					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_CONFLICT_S', $file->new));
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_CONFLICT_S', $file->filename));
 				}
 
-				if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->old))
+				if ($file->action == 'modified' && !file_exists(JPATH_ROOT . '/' . $file->filename))
 				{
-					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S', $file->old));
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_FILE_MODIFIED_DOES_NOT_EXIST_S', $file->filename));
 				}
-
-				$url = 'https://raw.github.com/' . urlencode($pull->head->user->login) . '/' . urlencode($pull->head->repo->name)
-					. '/' . urlencode($pull->head->ref) . '/' . $file->new;
 
 				try
 				{
-					$file->body = $github->getClient()->get($url)->body;
+					$contentsResponse = $github->getFileContents(
+						$this->getState()->get('github_user'), $this->getState()->get('github_repo'), $file->filename, urlencode($pull->head->ref)
+					);
+
+					$contents = json_decode($contentsResponse->body);
+
+					// In case encoding type ever changes
+					switch ($contents->encoding)
+					{
+						case 'base64':
+							$file->body = base64_decode($contents->content);
+
+							break;
+
+						default:
+							throw new \RuntimeException(\JText::_('COM_PATCHTESTER_ERROR_UNSUPPORTED_ENCODING'));
+					}
 				}
-				catch (\Exception $e)
+				catch (UnexpectedResponse $e)
 				{
 					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 				}
@@ -247,20 +206,17 @@ class PullModel extends \JModelDatabase
 		jimport('joomla.filesystem.path');
 
 		// At this point, we have ensured that we have all the new files and there are no conflicts
-		foreach ($files as $file)
+		foreach ($parsedFiles as $file)
 		{
 			// We only create a backup if the file already exists
-			if ($file->action == 'deleted' || (file_exists(JPATH_ROOT . '/' . $file->new) && $file->action == 'modified'))
+			if ($file->action == 'deleted' || (file_exists(JPATH_ROOT . '/' . $file->filename) && $file->action == 'modified'))
 			{
-				if (!\JFile::copy(\JPath::clean(JPATH_ROOT . '/' . $file->old), JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+				$src  = JPATH_ROOT . '/' . $file->filename;
+				$dest = JPATH_COMPONENT . '/backups/' . md5($file->filename) . '.txt';
+
+				if (!\JFile::copy(\JPath::clean($src), $dest))
 				{
-					throw new \RuntimeException(
-						\JText::sprintf(
-							'COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE',
-							JPATH_ROOT . '/' . $file->old,
-							JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'
-						)
-					);
+					throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE', $src, $dest));
 				}
 			}
 
@@ -268,17 +224,17 @@ class PullModel extends \JModelDatabase
 			{
 				case 'modified':
 				case 'added':
-					if (!\JFile::write(\JPath::clean(JPATH_ROOT . '/' . $file->new), $file->body))
+					if (!\JFile::write(\JPath::clean(JPATH_ROOT . '/' . $file->filename), $file->body))
 					{
-						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_WRITE_FILE', JPATH_ROOT . '/' . $file->new));
+						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_WRITE_FILE', JPATH_ROOT . '/' . $file->filename));
 					}
 
 					break;
 
 				case 'deleted':
-					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->old)))
+					if (!\JFile::delete(\JPath::clean(JPATH_ROOT . '/' . $file->filename)))
 					{
-						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->old));
+						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->filename));
 					}
 
 					break;
@@ -287,7 +243,7 @@ class PullModel extends \JModelDatabase
 
 		$record = (object) array(
 			'pull_id'         => $pull->number,
-			'data'            => json_encode($files),
+			'data'            => json_encode($parsedFiles),
 			'patched_by'      => \JFactory::getUser()->id,
 			'applied'         => 1,
 			'applied_version' => JVERSION,
@@ -350,23 +306,20 @@ class PullModel extends \JModelDatabase
 			{
 				case 'deleted':
 				case 'modified':
-					if (!\JFile::copy(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt', JPATH_ROOT . '/' . $file->old))
+					$src  = JPATH_COMPONENT . '/backups/' . md5($file->filename) . '.txt';
+					$dest = JPATH_ROOT . '/' . $file->filename;
+
+					if (!\JFile::copy($src, $dest))
 					{
-						throw new \RuntimeException(
-							\JText::sprintf(
-								'COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE',
-								JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt',
-								JPATH_ROOT . '/' . $file->old
-							)
-						);
+						throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_COPY_FILE', $src, $dest));
 					}
 
-					if (file_exists(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+					if (file_exists($src))
 					{
-						if (!\JFile::delete(JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt'))
+						if (!\JFile::delete($src))
 						{
 							throw new \RuntimeException(
-								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_COMPONENT . '/backups/' . md5($file->old) . '.txt')
+								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', $src)
 							);
 						}
 					}
@@ -374,12 +327,14 @@ class PullModel extends \JModelDatabase
 					break;
 
 				case 'added':
-					if (file_exists(JPATH_ROOT . '/' . $file->new))
+					$src = JPATH_ROOT . '/' . $file->filename;
+
+					if (file_exists($src))
 					{
-						if (!\JFile::delete(JPATH_ROOT . '/' . $file->new))
+						if (!\JFile::delete($src))
 						{
 							throw new \RuntimeException(
-								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', JPATH_ROOT . '/' . $file->new)
+								\JText::sprintf('COM_PATCHTESTER_ERROR_CANNOT_DELETE_FILE', $src)
 							);
 						}
 					}
