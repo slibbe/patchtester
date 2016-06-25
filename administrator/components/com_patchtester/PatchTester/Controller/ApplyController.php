@@ -36,12 +36,6 @@ class ApplyController extends AbstractController
 			if ($model->apply($this->getInput()->getUint('pull_id')))
 			{
 				$msg = \JText::_('COM_PATCHTESTER_APPLY_OK');
-
-				// Check if the pull request includes binary files and raise a warning about non-support if so
-				if ($model->getState()->get('pull.has_binary', false))
-				{
-					$this->getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_PATCH_INCLUDES_BINARY_FILES'), 'warning');
-				}
 			}
 			else
 			{
