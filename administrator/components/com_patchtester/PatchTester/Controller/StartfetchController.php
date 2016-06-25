@@ -8,6 +8,7 @@
 
 namespace PatchTester\Controller;
 
+use PatchTester\GitHub\Exception\UnexpectedResponse;
 use PatchTester\Helper;
 use PatchTester\Model\PullsModel;
 use PatchTester\Model\TestsModel;
@@ -47,13 +48,12 @@ class StartfetchController extends AbstractController
 		}
 
 		// Make sure we can fetch the data from GitHub - throw an error on < 10 available requests
-		$github = Helper::initializeGithub();
-
 		try
 		{
-			$rate = $github->authorization->getRateLimit();
+			$rateResponse = Helper::initializeGithub()->getRateLimit();
+			$rate         = json_decode($rateResponse->body);
 		}
-		catch (\Exception $e)
+		catch (UnexpectedResponse $e)
 		{
 			$response = new \JResponseJson(
 				new \Exception(

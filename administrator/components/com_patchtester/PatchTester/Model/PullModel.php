@@ -10,6 +10,7 @@ namespace PatchTester\Model;
 
 use Joomla\Registry\Registry;
 
+use PatchTester\GitHub\Exception\UnexpectedResponse;
 use PatchTester\Helper;
 
 /**
@@ -160,9 +161,10 @@ class PullModel extends \JModelDatabase
 
 		try
 		{
-			$rate = $github->authorization->getRateLimit();
+			$rateResponse = $github->getRateLimit();
+			$rate         = json_decode($rateResponse->body);
 		}
-		catch (\Exception $e)
+		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
@@ -177,9 +179,10 @@ class PullModel extends \JModelDatabase
 
 		try
 		{
-			$pull = $github->pulls->get($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+			$pullResponse = $github->getPullRequest($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+			$pull         = json_decode($pullResponse->body);
 		}
-		catch (\Exception $e)
+		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
@@ -189,17 +192,12 @@ class PullModel extends \JModelDatabase
 			throw new \RuntimeException(\JText::_('COM_PATCHTESTER_REPO_IS_GONE'));
 		}
 
-		// Set up the JHttp object
-		$options = new Registry;
-		$options->set('userAgent', 'JPatchTester/2.0');
-		$options->set('timeout', 120);
-
 		try
 		{
-			$transport = \JHttpFactory::getHttp($options);
-			$patch     = $transport->get($pull->diff_url)->body;
+			$patchResponse = $github->getDiffForPullRequest($this->getState()->get('github_user'), $this->getState()->get('github_repo'), $id);
+			$patch         = json_decode($patchResponse->body);
 		}
-		catch (\Exception $e)
+		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_COULD_NOT_CONNECT_TO_GITHUB', $e->getMessage()), $e->getCode(), $e);
 		}
@@ -236,7 +234,7 @@ class PullModel extends \JModelDatabase
 
 				try
 				{
-					$file->body = $transport->get($url)->body;
+					$file->body = $github->getClient()->get($url)->body;
 				}
 				catch (\Exception $e)
 				{
@@ -246,6 +244,7 @@ class PullModel extends \JModelDatabase
 		}
 
 		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.path');
 
 		// At this point, we have ensured that we have all the new files and there are no conflicts
 		foreach ($files as $file)

@@ -9,6 +9,7 @@
 namespace PatchTester;
 
 use Joomla\Registry\Registry;
+use PatchTester\GitHub\GitHub;
 
 /**
  * Helper class for the patch tester component
@@ -18,9 +19,9 @@ use Joomla\Registry\Registry;
 abstract class Helper
 {
 	/**
-	 * Initializes the JGithub object
+	 * Initializes the GitHub object
 	 *
-	 * @return  \JGithub
+	 * @return  GitHub
 	 *
 	 * @since   2.0
 	 */
@@ -29,6 +30,15 @@ abstract class Helper
 		$params = \JComponentHelper::getParams('com_patchtester');
 
 		$options = new Registry;
+
+		// Set a user agent for the request
+		$options->set('userAgent', 'PatchTester/3.0');
+
+		// Set the default timeout to 120 seconds
+		$options->set('timeout', 120);
+
+		// Set the API URL
+		$options->set('api.url', 'https://api.github.com');
 
 		// If an API token is set in the params, use it for authentication
 		if ($params->get('gh_token', ''))
@@ -47,6 +57,6 @@ abstract class Helper
 			\JFactory::getApplication()->enqueueMessage(\JText::_('COM_PATCHTESTER_NO_CREDENTIALS'), 'notice');
 		}
 
-		return new \JGithub($options);
+		return new GitHub($options);
 	}
 }

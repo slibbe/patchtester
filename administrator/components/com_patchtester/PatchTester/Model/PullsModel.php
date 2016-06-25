@@ -10,6 +10,7 @@ namespace PatchTester\Model;
 
 use Joomla\Registry\Registry;
 
+use PatchTester\GitHub\Exception\UnexpectedResponse;
 use PatchTester\Helper;
 
 /**
@@ -283,9 +284,6 @@ class PullsModel extends \JModelDatabase
 	 */
 	public function requestFromGithub($page)
 	{
-		// Get the Github object
-		$github = Helper::initializeGithub();
-
 		// If on page 1, dump the old data
 		if ($page === 1)
 		{
@@ -295,22 +293,13 @@ class PullsModel extends \JModelDatabase
 		try
 		{
 			// TODO - Option to configure the batch size
-			$pulls = $github->issues->getListByRepository(
-				$this->getState()->get('github_user'),
-				$this->getState()->get('github_repo'),
-				null,
-				'open',
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				$page,
-				100
+			$pullsResponse = Helper::initializeGithub()->getOpenIssues(
+				$this->getState()->get('github_user'), $this->getState()->get('github_repo'), $page, 100
 			);
+
+			$pulls = json_decode($pullsResponse->body);
 		}
-		catch (\DomainException $e)
+		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()), $e->getCode(), $e);
 		}
