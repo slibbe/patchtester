@@ -137,6 +137,35 @@ class GitHub
 	}
 
 	/**
+	 * Get a file's contents from a repository.
+	 *
+	 * @param   string  $user  The name of the owner of the GitHub repository.
+	 * @param   string  $repo  The name of the GitHub repository.
+	 * @param   string  $path  The content path.
+	 * @param   string  $ref   The name of the commit/branch/tag. Default: the repository’s default branch (usually master)
+	 *
+	 * @return  \JHttpResponse
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 */
+	public function getFileContents($user, $repo, $path, $ref = null)
+	{
+		$path = "/repos/$user/$repo/contents/$path";
+
+		$prepared = $this->prepareRequest($path);
+
+		if ($ref)
+		{
+			$url = new \JUri($prepared['url']);
+			$url->setVar('ref', $ref);
+
+			$prepared['url'] = (string) $url;
+		}
+
+		return $this->processResponse($this->client->get($prepared['url'], $prepared['headers']));
+	}
+
+	/**
 	 * Get the list of modified files for a pull request.
 	 *
 	 * @param   string   $user    The name of the owner of the GitHub repository.
@@ -152,7 +181,7 @@ class GitHub
 		// Build the request path.
 		$path = "/repos/$user/$repo/pulls/" . (int) $pullId . '/files';
 
-		$prepared = $this->prepareRequest($path, 0, 0);
+		$prepared = $this->prepareRequest($path);
 
 		return $this->processResponse($this->client->get($prepared['url'], $prepared['headers']));
 	}
@@ -243,9 +272,10 @@ class GitHub
 		if ($response->code != $expectedCode)
 		{
 			// Decode the error response and throw an exception.
-			$body = json_decode($response->body);
+			$body  = json_decode($response->body);
+			$error = isset($body->error) ? $body->error : (isset($body->message) ? $body->message : 'Unknown Error');
 
-			throw new Exception\UnexpectedResponse($response, $body->error, $response->code);
+			throw new Exception\UnexpectedResponse($response, $error, $response->code);
 		}
 
 		return $response;
