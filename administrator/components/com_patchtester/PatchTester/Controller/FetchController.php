@@ -33,10 +33,12 @@ class FetchController extends AbstractController
 		$this->getApplication()->setHeader('Pragma', 'no-cache');
 		$this->getApplication()->setHeader('Content-Type', $this->getApplication()->mimeType . '; charset=' . $this->getApplication()->charSet);
 
+		$session = \JFactory::getSession();
+
 		try
 		{
 			// Fetch our page from the session
-			$page = \JFactory::getSession()->get('com_patchtester_fetcher_page', 1);
+			$page = $session->get('com_patchtester_fetcher_page', 1);
 
 			$model = new PullsModel('com_patchtester.fetch', null, \JFactory::getDbo());
 
@@ -55,17 +57,36 @@ class FetchController extends AbstractController
 			$this->getApplication()->close(1);
 		}
 
-		// Update the UI and session now
-		if (isset($status['page']))
+		// Store the last page to the session if given one
+		if (isset($status['lastPage']) && $status['lastPage'] !== false)
 		{
-			\JFactory::getSession()->set('com_patchtester_fetcher_page', $status['page']);
-			$message = \JText::sprintf('COM_PATCHTESTER_FETCH_PAGE_NUMBER', $status['page']);
-			unset($status['page']);
+			$session->set('com_patchtester_fetcher_last_page', $status['lastPage']);
 		}
-		else
+
+		// Update the UI and session now
+		if ($status['complete'] || $page === $session->get('com_patchtester_fetcher_last_page', false))
 		{
-			$status['header'] = \JText::_('COM_PATCHTESTER_FETCH_SUCCESSFUL', true);
+			$status['complete'] = true;
+			$status['header']   = \JText::_('COM_PATCHTESTER_FETCH_SUCCESSFUL', true);
+
 			$message = \JText::_('COM_PATCHTESTER_FETCH_COMPLETE_CLOSE_WINDOW', true);
+		}
+		elseif (isset($status['page']))
+		{
+			$session->set('com_patchtester_fetcher_page', $status['page']);
+
+			if ($session->has('com_patchtester_fetcher_last_page'))
+			{
+				$message = \JText::sprintf(
+					'COM_PATCHTESTER_FETCH_PAGE_NUMBER_OF_TOTAL', $status['page'], $session->get('com_patchtester_fetcher_last_page')
+				);
+			}
+			else
+			{
+				$message = \JText::sprintf('COM_PATCHTESTER_FETCH_PAGE_NUMBER', $status['page']);
+			}
+
+			unset($status['page']);
 		}
 
 		$response = new \JResponseJson($status, $message, false, true);

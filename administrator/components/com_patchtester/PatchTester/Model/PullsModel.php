@@ -293,8 +293,10 @@ class PullsModel extends \JModelDatabase
 		try
 		{
 			// TODO - Option to configure the batch size
+			$batchSize = 100;
+
 			$pullsResponse = Helper::initializeGithub()->getOpenIssues(
-				$this->getState()->get('github_user'), $this->getState()->get('github_repo'), $page, 100
+				$this->getState()->get('github_user'), $this->getState()->get('github_repo'), $page, $batchSize
 			);
 
 			$pulls = json_decode($pullsResponse->body);
@@ -302,6 +304,26 @@ class PullsModel extends \JModelDatabase
 		catch (UnexpectedResponse $e)
 		{
 			throw new \RuntimeException(\JText::sprintf('COM_PATCHTESTER_ERROR_GITHUB_FETCH', $e->getMessage()), $e->getCode(), $e);
+		}
+
+		// If this is page 1, let's check to see if we need to paginate
+		if ($page === 1)
+		{
+			// Default this to being a single page of results
+			$lastPage = 1;
+
+			if (isset($pullsResponse->headers['Link']))
+			{
+				preg_match('/(\?page=[0-9]&per_page=' . $batchSize . '+>; rel=\"last\")/', $pullsResponse->headers['Link'], $matches);
+
+				if ($matches && isset($matches[0]))
+				{
+					$pageSegment = str_replace('&per_page=' . $batchSize, '', $matches[0]);
+
+					preg_match('/\d+/', $pageSegment, $pages);
+					$lastPage = (int) $pages[0];
+				}
+			}
 		}
 
 		$count = is_array($pulls) ? count($pulls) : 0;
@@ -361,7 +383,7 @@ class PullsModel extends \JModelDatabase
 		}
 
 		// Need to make another request
-		return array('complete' => false, 'page' => ($page + 1));
+		return array('complete' => false, 'page' => ($page + 1), 'lastPage' => isset($lastPage) ? $lastPage : false);
 	}
 
 	/**
