@@ -239,6 +239,9 @@ class PullModel extends \JModelDatabase
 
 					break;
 			}
+
+			// We don't need the file's body any longer (and it causes issues with binary data when json_encode() is run), so remove it
+			unset($file->body);
 		}
 
 		$record = (object) array(
