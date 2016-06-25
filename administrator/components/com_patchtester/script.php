@@ -24,7 +24,7 @@ class Com_PatchtesterInstallerScript extends JInstallerScript
 	/**
 	 * Extension script constructor.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function __construct()
 	{
@@ -113,7 +113,7 @@ class Com_PatchtesterInstallerScript extends JInstallerScript
 	 *
 	 * @return  void
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function postflight($type, $parent)
 	{

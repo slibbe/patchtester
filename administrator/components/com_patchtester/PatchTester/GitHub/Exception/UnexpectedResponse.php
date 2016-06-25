@@ -11,7 +11,7 @@ namespace PatchTester\GitHub\Exception;
 /**
  * Exception representing an unexpected response
  *
- * @since  __DEPLOY_VERSION__
+ * @since  3.0.0
  */
 class UnexpectedResponse extends \DomainException
 {
@@ -19,7 +19,7 @@ class UnexpectedResponse extends \DomainException
 	 * The Response object.
 	 *
 	 * @var    \JHttpResponse
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.0.0
 	 */
 	private $response;
 
@@ -31,7 +31,7 @@ class UnexpectedResponse extends \DomainException
 	 * @param   integer         $code      The Exception code.
 	 * @param   \Exception      $previous  The previous exception used for the exception chaining.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function __construct(\JHttpResponse $response, $message = '', $code = 0, \Exception $previous = null)
 	{
@@ -45,7 +45,7 @@ class UnexpectedResponse extends \DomainException
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.0.0
 	 */
 	public function getResponse()
 	{

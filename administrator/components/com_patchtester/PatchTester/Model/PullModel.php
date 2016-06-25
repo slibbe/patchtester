@@ -53,7 +53,7 @@ class PullModel extends \JModelDatabase
 	 *
 	 * @return  array
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	protected function parseFileList($files)
 	{
@@ -356,7 +356,7 @@ class PullModel extends \JModelDatabase
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	private function removeTest($testRecord)
 	{

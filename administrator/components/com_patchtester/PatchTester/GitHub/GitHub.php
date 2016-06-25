@@ -13,7 +13,7 @@ use Joomla\Registry\Registry;
 /**
  * Helper class for interacting with the GitHub API.
  *
- * @since  __DEPLOY_VERSION__
+ * @since  3.0.0
  */
 class GitHub
 {
@@ -21,7 +21,7 @@ class GitHub
 	 * Options for the connector.
 	 *
 	 * @var    Registry
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.0.0
 	 */
 	protected $options;
 
@@ -29,7 +29,7 @@ class GitHub
 	 * The HTTP client object to use in sending HTTP requests.
 	 *
 	 * @var    \JHttp
-	 * @since  __DEPLOY_VERSION__
+	 * @since  3.0.0
 	 */
 	protected $client;
 
@@ -39,7 +39,7 @@ class GitHub
 	 * @param   Registry  $options  Connector options.
 	 * @param   \JHttp    $client   The HTTP client object.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function __construct(Registry $options = null, \JHttp $client = null)
 	{
@@ -59,7 +59,7 @@ class GitHub
 	 *
 	 * @return  string   The request URL.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	protected function fetchUrl($path, $page = 0, $limit = 0)
 	{
@@ -105,7 +105,7 @@ class GitHub
 	 *
 	 * @return  \JHttp
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getClient()
 	{
@@ -121,7 +121,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getDiffForPullRequest($user, $repo, $pullId)
 	{
@@ -146,7 +146,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getFileContents($user, $repo, $path, $ref = null)
 	{
@@ -174,7 +174,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getFilesForPullRequest($user, $repo, $pullId)
 	{
@@ -196,7 +196,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getOpenIssues($user, $repo, $page = 0, $limit = 0)
 	{
@@ -213,7 +213,7 @@ class GitHub
 	 *
 	 * @return  mixed  The option value.
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getOption($key, $default = null)
 	{
@@ -229,7 +229,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getPullRequest($user, $repo, $pullId)
 	{
@@ -246,7 +246,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function getRateLimit()
 	{
@@ -263,7 +263,7 @@ class GitHub
 	 *
 	 * @return  \JHttpResponse
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 * @throws  Exception\UnexpectedResponse
 	 */
 	protected function processResponse(\JHttpResponse $response, $expectedCode = 200)
@@ -293,7 +293,7 @@ class GitHub
 	 *
 	 * @return  array  Associative array containing the prepared URL and request headers
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	protected function prepareRequest($path, $page = 0, $limit = 0, array $headers = array())
 	{
@@ -315,7 +315,7 @@ class GitHub
 	 *
 	 * @return  $this
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   3.0.0
 	 */
 	public function setOption($key, $value)
 	{
