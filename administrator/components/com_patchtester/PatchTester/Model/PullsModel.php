@@ -326,10 +326,8 @@ class PullsModel extends \JModelDatabase
 			}
 		}
 
-		$count = is_array($pulls) ? count($pulls) : 0;
-
 		// If there are no pulls to insert then bail, assume we're finished
-		if ($count === 0 || empty($pulls))
+		if (count($pulls) === 0)
 		{
 			return array('complete' => true);
 		}
@@ -364,6 +362,12 @@ class PullsModel extends \JModelDatabase
 
 				$data[] = implode($pullData, ',');
 			}
+		}
+
+		// If there are no pulls to insert then bail, assume we're finished
+		if (count($data) === 0)
+		{
+			return array('complete' => true);
 		}
 
 		$this->getDb()->setQuery(
