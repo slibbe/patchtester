@@ -178,7 +178,7 @@ class PullModel extends \JModelDatabase
 				try
 				{
 					$contentsResponse = $github->getFileContents(
-						$this->getState()->get('github_user'), $this->getState()->get('github_repo'), $file->filename, urlencode($pull->head->ref)
+						$pull->head->user->login, $this->getState()->get('github_repo'), $file->filename, urlencode($pull->head->ref)
 					);
 
 					$contents = json_decode($contentsResponse->body);
