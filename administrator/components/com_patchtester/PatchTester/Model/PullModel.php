@@ -94,19 +94,20 @@ class PullModel extends \JModelDatabase
 				}
 			}
 
-			// Remove the `src` here to match the CMS paths if needed
-			$repofilename = $file->filename;
-			$filePath = explode('/', $repofilename);
+			// Sometimes the repo filename is not the production file name
+			$prodfilename = $file->filename;
+			$filePath     = explode('/', $repofilename);
 
+			// Remove the `src` here to match the CMS paths if needed
 			if ($filePath[0] === 'src')
 			{
-				$repofilename = str_replace('src/', '', $file->filename);
+				$prodfilename = str_replace('src/', '', $file->filename);
 			}
 
 			$parsedFiles[] = (object) array(
 				'action'       => $file->status,
-				'filename'     => $file->filename,
-				'repofilename' => $repofilename,
+				'filename'     => $prodfilename,
+				'repofilename' => $file->filename,
 				'fileurl'      => $file->contents_url,
 			);
 		}
