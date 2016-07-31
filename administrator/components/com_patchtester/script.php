@@ -35,10 +35,6 @@ class Com_PatchtesterInstallerScript extends JInstallerScript
 			'/administrator/components/com_patchtester/PatchTester/Table',
 			'/components/com_patchtester',
 		);
-
-		$this->deleteFiles = array(
-			'components/com_patchtester/patchtester.php',
-		);
 	}
 
 	/**
