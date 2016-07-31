@@ -26,7 +26,13 @@ class PullModel extends \JModelDatabase
 	 * @var    array
 	 * @since  2.0
 	 */
-	protected $nonProductionFolders = array('build', 'docs', 'installation', 'tests', '.github');
+	protected $nonProductionFolders = array(
+		'build',
+		'docs',
+		'installation',
+		'tests',
+		'.github',
+	);
 
 	/**
 	 * Array containing non-production files
@@ -44,6 +50,14 @@ class PullModel extends \JModelDatabase
 		'phpunit.xml.dist',
 		'robots.txt.dist',
 		'travisci-phpunit.xml',
+		'LICENSE',
+		'RoboFile.dist.ini',
+		'RoboFile.php',
+		'codeception.yml',
+		'jorobo.dist.ini',
+		'manifest.xml',
+		'crowdin.yaml',
+		'travis-lang-update.sh',
 	);
 
 	/**
@@ -80,10 +94,21 @@ class PullModel extends \JModelDatabase
 				}
 			}
 
+			// Sometimes the repo filename is not the production file name
+			$prodFileName = $file->filename;
+			$filePath     = explode('/', $prodFileName);
+
+			// Remove the `src` here to match the CMS paths if needed
+			if ($filePath[0] === 'src')
+			{
+				$prodFileName = str_replace('src/', '', $prodFileName);
+			}
+
 			$parsedFiles[] = (object) array(
-				'action'   => $file->status,
-				'filename' => $file->filename,
-				'fileurl'  => $file->contents_url,
+				'action'       => $file->status,
+				'filename'     => $prodFileName,
+				'repofilename' => $file->filename,
+				'fileurl'      => $file->contents_url,
 			);
 		}
 
@@ -178,7 +203,7 @@ class PullModel extends \JModelDatabase
 				try
 				{
 					$contentsResponse = $github->getFileContents(
-						$pull->head->user->login, $this->getState()->get('github_repo'), $file->filename, urlencode($pull->head->ref)
+						$pull->head->user->login, $this->getState()->get('github_repo'), $file->repofilename, urlencode($pull->head->ref)
 					);
 
 					$contents = json_decode($contentsResponse->body);

@@ -18,6 +18,7 @@
 			<option value="joomla:joomla-cms">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_JOOMLA_CMS</option>
 			<option value="joomla-extensions:patchtester">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_PATCHTESTER</option>
 			<option value="joomla-extensions:install-from-web-client">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_INSTALL_FROM_WEB</option>
+			<option value="joomla-extensions:weblinks">COM_PATCHTESTER_FIELD_REPOSITORY_OPTION_WEBLINKS</option>
 			<option value="custom">COM_PATCHTESTER_FIELD_REPOSITORY_CUSTOM</option>
 		</field>
 
