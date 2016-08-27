@@ -5,7 +5,9 @@ base_path: ./administrator/components/com_patchtester/language
 files:
   -
     source: /en-GB/en-GB.com_patchtester.ini
+    dest: com_patchtester/en-GB.com_patchtester.ini
     translation: /%locale%/%locale%.com_patchtester.ini
   -
     source: /en-GB/en-GB.com_patchtester.sys.ini
+    dest: com_patchtester/en-GB.com_patchtester.sys.ini
     translation: /%locale%/%locale%.com_patchtester.sys.ini

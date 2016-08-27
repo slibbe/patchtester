@@ -57,7 +57,6 @@ class PullModel extends \JModelDatabase
 		'jorobo.dist.ini',
 		'manifest.xml',
 		'crowdin.yaml',
-		'travis-lang-update.sh',
 	);
 
 	/**
