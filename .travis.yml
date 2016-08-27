@@ -11,11 +11,8 @@ env:
 
 matrix:
   include:
-    - php: 5.3
-      env: RUN_PHPCS="yes"
-    - php: 5.4
-    - php: 5.5
     - php: 5.6
+      env: RUN_PHPCS="yes"
     - php: 7.0
       env: UPDATE_CROWDIN="yes"
 
@@ -25,6 +22,4 @@ before_script:
 
 script:
   - if [[ $RUN_PHPCS == "yes" ]]; then vendor/bin/phpcs --report=full --extensions=php -p --standard=build/phpcs/Joomla --ignore=./*tmpl/* administrator/components/com_patchtester; fi
-
-after_success:
- - if [[ $UPDATE_CROWDIN == "yes" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then vendor/bin/crowdin --upload; fi
+  - if [[ $UPDATE_CROWDIN == "yes" && $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then vendor/bin/crowdin --upload; fi
