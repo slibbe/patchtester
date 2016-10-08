@@ -8,8 +8,6 @@
 
 namespace PatchTester\Model;
 
-use Joomla\Registry\Registry;
-
 use PatchTester\GitHub\Exception\UnexpectedResponse;
 use PatchTester\Helper;
 
@@ -74,13 +72,15 @@ class PullModel extends \JModelDatabase
 	{
 		$parsedFiles = array();
 
+		/*
+		 * Check if the patch tester is running in a development environment
+		 * If we are not in development, we'll need to check the exclusion lists
+		 */
+		$isDev = file_exists(JPATH_INSTALLATION . '/index.php');
+
 		foreach ($files as $file)
 		{
-			/*
-			 * Check if the patch tester is running in a production environment
-			 * If so, do not patch certain files as errors will be thrown
-			 */
-			if (!file_exists(JPATH_ROOT . '/installation/index.php'))
+			if (!$isDev)
 			{
 				$filePath = explode('/', $file->filename);
 
