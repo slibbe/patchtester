@@ -41,7 +41,9 @@ class PullModel extends \JModelDatabase
 	 * @since  2.0
 	 */
 	protected $nonProductionFiles = array(
+		'.drone.yml',
 		'.gitignore',
+		'.php_cs',
 		'.travis.yml',
 		'README.md',
 		'build.xml',
